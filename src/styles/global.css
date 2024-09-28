@@ -1,0 +1,175 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    --radius: 0.5rem;
+
+    /* code highlight */
+    --sh-class: #2d5e9d;
+    --sh-identifier: #354150;
+    --sh-sign: #8996a3;
+    --sh-string: #007f7a;
+    --sh-keyword: #e02518;
+    --sh-comment: #a19595;
+    --sh-jsxliterals: #6266d1;
+    --sh-property: #e25a1c;
+    --sh-entity: #e25a1c;
+
+    /* Recommended for smooth scrolling across all browsers */
+    scroll-behavior: smooth;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+
+    /* code highlight */
+    --sh-class: #ab9df2;
+    --sh-identifier: #78dce8;
+    --sh-sign: #fc9867;
+    --sh-string: #a9dc76;
+    --sh-keyword: #ff6188;
+    --sh-comment: #727072;
+    --sh-jsxliterals: #ffd866;
+    --sh-property: #ff6188;
+    --sh-entity: #ff6188;
+  }
+}
+
+@layer base {
+  /* 
+  Ensures all elements, including pseudo-elements, respect the border-box model.
+  This avoids padding or borders from affecting an element’s width/height. 
+  */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    @apply flex min-h-screen flex-col bg-background text-foreground;
+    font-family: "Inter", sans-serif; /* Tailwind doesn't define a default font, so it's good to set */
+    font-size: 16px; /* Establish a base font-size for accessibility */
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  img {
+    /* Ensures images scale properly on small screens. */
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  input,
+  button,
+  textarea,
+  select {
+    /* Inherits font styles to form elements for consistency */
+    font-family: inherit;
+    font-size: 100%;
+    line-height: inherit;
+    margin: 0;
+  }
+
+  a {
+    font-weight: 500;
+    color: #646cff; /* Ensures accessible contrast */
+    text-decoration: inherit;
+    transition: color 0.2s ease-in-out;
+  }
+  a:hover {
+    color: #535bf2; /* Provides a clear hover effect for links */
+  }
+
+  /* Enables smooth scrolling experience across the page */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Focusable elements outline for accessibility */
+  button:focus,
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: 2px solid #646cff; /* Clear and accessible focus outline */
+    outline-offset: 2px;
+  }
+}
+
+.anchor:hover {
+  @apply visible;
+}
+
+@layer components {
+  /* Internal links styled with an arrow */
+  .internal-link {
+    @apply text-lightmode-red transition after:content-['→'] hover:text-lightmode-red-300 dark:text-darkmode-red dark:hover:text-darkmode-red-300;
+  }
+
+  /* External links styled with an arrow pointing outward */
+  .external-link {
+    @apply text-lightmode-red transition after:content-['↗'] hover:text-lightmode-red-300 dark:text-darkmode-red dark:hover:text-darkmode-red-300;
+  }
+
+  /* Example of how modals or body overflow can be handled */
+  body.modal-open {
+    overflow: hidden; /* Disables scrolling when a modal is open */
+  }
+}

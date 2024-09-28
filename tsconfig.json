@@ -1,0 +1,32 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ],
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext"], // Required for DOM and modern JS features
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true, // Disable emitting files
+    "esModuleInterop": true, // Ensure compatibility with CommonJS modules
+    "module": "esnext",
+    "moduleResolution": "bundler", // Aligned with bundler resolution
+    "resolveJsonModule": true,
+    "isolatedModules": true, // Ensures module-level isolation, useful for TypeScript + Babel
+    "jsx": "react", // Set to 'react' for JSX processing in React
+    "incremental": true, // Speed up subsequent builds
+    "typeRoots": ["./node_modules/@types", "./types"],
+    "types": ["node", "playwright"], // Added Playwright typings
+    "paths": {
+      "@/*": ["./src/*"] // Keep your custom paths
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "src/tests/**/*.ts" // Ensure tests are included
+  ],
+  "exclude": ["node_modules"]
+}
