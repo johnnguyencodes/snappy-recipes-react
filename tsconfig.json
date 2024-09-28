@@ -5,6 +5,7 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
+    "baseUrl": ".",
     "lib": ["dom", "dom.iterable", "esnext"], // Required for DOM and modern JS features
     "allowJs": true,
     "skipLibCheck": true,
