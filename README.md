@@ -1,6 +1,3 @@
-Here’s a comprehensive `README.md` file that summarizes the main packages used in your app, explains their purpose, and provides guidance on how to use them.
-
-````markdown
 # React Scaffold Project
 
 ## Overview
@@ -191,7 +188,7 @@ This project is a React scaffold built with **Vite**, **TypeScript**, **Redux To
 
 ## Project Structure
 
-```bash
+```
 src/
 ├── components/        # Reusable React components
 ├── pages/             # Individual page components (e.g., Home, About)
@@ -200,7 +197,6 @@ src/
 ├── App.tsx            # Main React component
 └── index.tsx          # Entry point for React
 ```
-````
 
 ## Scripts
 
@@ -262,8 +258,6 @@ src/
 ## Conclusion
 
 This scaffold is designed to help you quickly spin up React applications with essential tools such as TypeScript, Redux Toolkit, Playwright for testing, and more. You can now build your features on top of this foundation, ensuring a solid development and testing environment.
-
-```
 
 ### Key Points:
 
