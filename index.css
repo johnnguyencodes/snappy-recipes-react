@@ -160,12 +160,12 @@
 @layer components {
   /* Internal links styled with an arrow */
   .internal-link {
-    @apply text-lightmode-red transition after:content-['→'] hover:text-lightmode-red-300 dark:text-darkmode-red dark:hover:text-darkmode-red-300;
+    @apply text-lightmode-red hover:text-lightmode-red-300 dark:text-darkmode-red dark:hover:text-darkmode-red-300 transition after:content-['→'];
   }
 
   /* External links styled with an arrow pointing outward */
   .external-link {
-    @apply text-lightmode-red transition after:content-['↗'] hover:text-lightmode-red-300 dark:text-darkmode-red dark:hover:text-darkmode-red-300;
+    @apply text-lightmode-red hover:text-lightmode-red-300 dark:text-darkmode-red dark:hover:text-darkmode-red-300 transition after:content-['↗'];
   }
 
   /* Example of how modals or body overflow can be handled */

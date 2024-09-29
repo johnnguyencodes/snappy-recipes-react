@@ -15,7 +15,7 @@ function App() {
   return (
     <>
       <Router>
-        <h1 className="text-3xl font-bold text-lightmode-blue underline">
+        <h1 className="text-9xl font-bold text-lightmode-blue underline">
           Hello world! {message}
         </h1>
         <button
