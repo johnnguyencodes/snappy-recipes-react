@@ -4,6 +4,16 @@
 
 This project is a React scaffold built with **Vite**, **TypeScript**, **Redux Toolkit**, and **Playwright** for testing. The app structure is designed to be used as a base template for future projects with built-in tools and configurations for a smooth developer experience. Below, you'll find the key packages used and how to work with each of them.
 
+## Features
+
+- Vite for fast development
+- TypeScript for type safety
+- Redux Toolkit for state management
+- Tailwind CSS for styling
+- Shadcn UI for reusable components
+- Jest and Playwright for testing
+- ESLint for code linting
+
 ## Main Packages
 
 ### 1. **Vite**
@@ -40,8 +50,34 @@ This project is a React scaffold built with **Vite**, **TypeScript**, **Redux To
         import { Link } from "react-router-dom";
         <Link to="/about">Go to About</Link>;
         ```
+### 4. Using Shadcn UI
 
-### 4. **Redux Toolkit**
+This project integrates **Shadcn UI** for building highly customizable and accessible components.
+- **Usage:**
+
+    -  Installing a new Shadcn UI component:
+
+       ```bash
+       npx shadcn add button
+       ```
+
+    -  Using the Button Component
+
+       Once Shadcn is installed, you can import and use its components like this:
+
+       ```tsx
+       import { Button } from "@/components/ui/button";
+
+       function App() {
+         return (
+           <div className="App">
+             <Button variant="default">Click me</Button>
+           </div>
+         );
+       }
+       ```
+
+### 5. **Redux Toolkit**
 
 -   **Purpose:** Redux Toolkit simplifies state management in React applications by providing a standard way to write Redux logic.
 -   **Usage:**
@@ -80,7 +116,7 @@ This project is a React scaffold built with **Vite**, **TypeScript**, **Redux To
         const count = useSelector((state: RootState) => state.counter);
         ```
 
-### 5. **React Router**
+### 6. **React Router**
 
 -   **Purpose:** React Router provides routing capabilities, enabling navigation between different components.
 -   **Usage:**
@@ -108,7 +144,7 @@ This project is a React scaffold built with **Vite**, **TypeScript**, **Redux To
         }
         ```
 
-### 6. **Playwright**
+### 7. **Playwright**
 
 -   **Purpose:** Playwright is a framework for end-to-end testing of web apps, allowing you to run automated browser tests.
 -   **Usage:**
@@ -137,7 +173,7 @@ This project is a React scaffold built with **Vite**, **TypeScript**, **Redux To
         npx playwright show-report
         ```
 
-### 7. **Jest**
+### 8. **Jest**
 
 -   **Purpose:** Jest is a testing framework used for unit and integration tests, particularly for React components.
 -   **Usage:**
@@ -162,7 +198,7 @@ This project is a React scaffold built with **Vite**, **TypeScript**, **Redux To
         npm run test
         ```
 
-### 8. **ESLint**
+### 9. **ESLint**
 
 -   **Purpose:** ESLint helps identify and fix problems in your code, ensuring consistent code quality.
 -   **Usage:**
@@ -174,7 +210,7 @@ This project is a React scaffold built with **Vite**, **TypeScript**, **Redux To
         npm run lint
         ```
 
-### 9. **Prettier**
+### 10. **Prettier**
 
 -   **Purpose:** Prettier is an opinionated code formatter that ensures your code looks consistent.
 -   **Usage:**
@@ -254,6 +290,30 @@ src/
 
 -   **Redux DevTools:**
     Make sure to install the [Redux DevTools Extension](https://github.com/reduxjs/redux-devtools) in your browser for debugging Redux state.
+
+## Available Scripts
+
+In the project directory, you can run:
+
+### `npm run dev`
+
+Runs the app in development mode. Open [http://localhost:5173](http://localhost:5173) to view it in the browser.
+
+### `npm run build`
+
+Builds the app for production.
+
+### `npm run lint`
+
+Runs ESLint to analyze and fix code issues.
+
+### `npm test`
+
+Runs unit tests using Jest.
+
+### `npx playwright test`
+
+Runs end-to-end tests using Playwright.
 
 ## Conclusion
 
