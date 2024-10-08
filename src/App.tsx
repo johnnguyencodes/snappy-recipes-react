@@ -1,40 +1,50 @@
-import React, { Suspense } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { increment } from "./store/counterSlice";
-import { RootState } from "./store/store";
-import { Link, BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useState, ChangeEvent } from "react";
 
-const Home = React.lazy(() => import("./pages/Home"));
-const About = React.lazy(() => import("./pages/About"));
+const spoonacularApiKey = import.meta.env.VITE_SPOONACULAR_API_KEY;
+const SPOONACULAR_BASE_URL = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${spoonacularApiKey}&addRecipeNutrition=true&size=636x393`;
+const spoonacularFetchConfig = {
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+  },
+};
 
 function App() {
-  const dispatch = useDispatch();
-  const count = useSelector((state: RootState) => state.counter);
+  const [query, setQuery] = useState("");
 
-  const message: string = "Hello, Typescript!";
+  const handleQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+  };
+
+  const getRecipes = async (query: string) => {
+    try {
+      const response = await fetch(
+        `${SPOONACULAR_BASE_URL}&number=100&query=${query}`,
+        spoonacularFetchConfig
+      );
+      if (!response.ok) {
+        throw new Error(`Error with get fetch request with query ${query}`);
+      }
+      const json = await response.json();
+      console.log(json);
+    } catch (error) {
+      console.error(`Error with fetching recipes with query ${query}`);
+    }
+  };
+
   return (
     <>
-      <Router>
-        <h1 className="text-9xl font-bold text-lightmode-blue underline">
-          Hello world! {message}
-        </h1>
-        <Button className="" onClick={() => dispatch(increment())}>
-          count is {count}
-        </Button>
-        <Link className="text-6xl text-black hover:text-gray-200" to="/">
-          Home
-        </Link>
-        <Link className="text-6xl text-black hover:text-gray-200" to="/about">
-          About
-        </Link>
-        <Suspense fallback={<div>Loading...</div>}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-          </Routes>
-        </Suspense>
-      </Router>
+      <h1>Recipe Search</h1>
+      <div>
+        <Input
+          id="input"
+          placeholder="placeholder"
+          onChange={(event) => handleQueryChange(event)}
+        />
+        <Button onClick={() => getRecipes(query)}>Submit</Button>
+      </div>
     </>
   );
 }
