@@ -21,11 +21,11 @@ function App() {
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      getRecipes(query);
+      getRecipes();
     }
   };
 
-  const getRecipes = async (query: string) => {
+  const getRecipes = async () => {
     try {
       const response = await fetch(
         `${SPOONACULAR_BASE_URL}&number=100&query=${query}`,
@@ -67,7 +67,7 @@ function App() {
             className="rounded-br-none rounded-tr-none"
           />
           <Button
-            onClick={() => getRecipes(query)}
+            onClick={() => getRecipes()}
             className="rounded-bl-none rounded-tl-none"
           >
             Submit
