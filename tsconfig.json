@@ -13,21 +13,18 @@
     "noEmit": true, // Disable emitting files
     "esModuleInterop": true, // Ensure compatibility with CommonJS modules
     "module": "esnext",
-    "moduleResolution": "bundler", // Aligned with bundler resolution
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true, // Ensures module-level isolation, useful for TypeScript + Babel
     "jsx": "react", // Set to 'react' for JSX processing in React
     "incremental": true, // Speed up subsequent builds
+    "target": "ESNext",
     "typeRoots": ["./node_modules/@types", "./types"],
-    "types": ["node", "playwright"], // Added Playwright typings
+    "types": ["node", "playwright", "jest"], // Added Playwright typings
     "paths": {
       "@/*": ["./src/*"] // Keep your custom paths
     }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "src/tests/**/*.ts" // Ensure tests are included
-  ],
+  "include": ["**/*.ts", "**/*.tsx", "src/tests/**/*.ts", "src/global.d.ts"],
   "exclude": ["node_modules"]
 }
