@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState, ChangeEvent, KeyboardEvent } from "react";
+import React, { useState, ChangeEvent, KeyboardEvent } from "react";
 import { Settings } from "lucide-react";
 
 const spoonacularApiKey = import.meta.env.VITE_SPOONACULAR_API_KEY;
