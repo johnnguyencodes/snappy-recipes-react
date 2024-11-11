@@ -1,10 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import React, { useState, ChangeEvent, KeyboardEvent } from "react";
-import { Settings } from "lucide-react";
+import React, { useState, useRef, ChangeEvent, KeyboardEvent } from "react";
+import { useForm } from "react-hook-form";
+import { Settings, Upload } from "lucide-react";
+import dotenv from "dotenv";
 
-const spoonacularApiKey = import.meta.env.VITE_SPOONACULAR_API_KEY;
-const SPOONACULAR_BASE_URL = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${spoonacularApiKey}&addRecipeNutrition=true&size=636x393`;
+const SPOONACULAR_API_KEY = import.meta.env.VITE_SPOONACULAR_API_KEY;
+const ALBUM_ID = import.meta.env.VITE_IMGUR_ALBUM_ID;
+const SPOONACULAR_BASE_URL = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${SPOONACULAR_API_KEY}&addRecipeNutrition=true&size=636x393`;
 const spoonacularFetchConfig = {
   method: "GET",
   headers: {
@@ -12,8 +15,17 @@ const spoonacularFetchConfig = {
   },
 };
 
+enum FileType {
+  Jpeg = "image/jpeg",
+  Png = "image/png",
+  Gif = "image/gif",
+}
+
 function App() {
   const [query, setQuery] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const { register } = useForm();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -22,6 +34,12 @@ function App() {
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       getRecipes();
+    }
+  };
+
+  const handleUploadButtonClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
     }
   };
 
@@ -39,6 +57,53 @@ function App() {
     } catch (error) {
       console.error(`Error with fetching recipes with query ${query}`);
     }
+  };
+
+  const showError = (errorType: string) => {
+    console.log("error:", errorType);
+    // this.resetErrorMessages();
+    // form.errorContainer.classList.remove("d-none");
+    // form.errorContainer.classList.add("col-12", "mt-2w");
+    // form[errorType].classList.remove("d-none");
+    // form[errorType].classList.add("text-danger", "text-center");
+    // form.fileInputForm.value = "";
+    // this.disableInputs(false);
+  };
+
+  const fileValidation = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const file: File = files[0];
+
+      if (!file) {
+        showError("errorNoFile");
+        return;
+      }
+
+      if (!Object.values(FileType).includes(file.type as FileType)) {
+        showError("errorIncorrectFile");
+        return;
+      }
+
+      if (file.size > 10485760) {
+        // 10MB limit
+        showError("errorFileExceedsSize");
+        return;
+      }
+
+      // disableInputs(true);
+      // resetUIBeforeUpload();
+
+      setImageFile(file);
+      appendImgurFormData(file);
+    }
+  };
+
+  const appendImgurFormData = (file: File) => {
+    const formData = new FormData();
+    formData.append("image", file);
+    formData.append("album", ALBUM_ID);
+    formData.append("privacy", "public");
   };
 
   return (
@@ -59,12 +124,25 @@ function App() {
           Search Recipes
         </label>
         <div className="row flex">
+          <Button
+            onClick={handleUploadButtonClick}
+            className="rounded-br-none rounded-tr-none"
+          >
+            <Upload />
+          </Button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={fileValidation}
+          />
           <Input
             id="input"
-            placeholder="Drag an ingredient here or type to search"
+            placeholder="Search by entering your ingredient or upload an image"
             onChange={(event) => handleQueryChange(event)}
             onKeyDown={(event) => handleKeyDown(event)}
             className="rounded-br-none rounded-tr-none"
+            name=""
           />
           <Button
             onClick={() => getRecipes()}
