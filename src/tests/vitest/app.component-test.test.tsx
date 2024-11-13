@@ -16,7 +16,7 @@ test("calls fetch when Enter is pressed", async () => {
   render(<App />);
 
   const input = screen.getByPlaceholderText(
-    "Drag an ingredient here or type to search"
+    "Search by entering your ingredient or upload an image"
   );
   fireEvent.change(input, { target: { value: "pizza" } });
 
@@ -43,7 +43,7 @@ test("calls fetch when Submit button is clicked", async () => {
   render(<App />);
 
   const input = screen.getByPlaceholderText(
-    "Drag an ingredient here or type to search"
+    "Search by entering your ingredient or upload an image"
   );
   fireEvent.change(input, { target: { value: "pizza" } });
 
