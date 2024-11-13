@@ -55,13 +55,11 @@ function App() {
     let selectedFile: File | null = null;
 
     // Validate file input
-    const isValid = fileValidation(event, showError, (file) => {
-      setImageFile(file); // React status update
-      selectedFile = file; // Immediate access to file
-    });
-    if (isValid && selectedFile) {
+    const file = fileValidation(event, showError);
+    if (file) {
+      setImageFile(file); // Set state only if file is valid
       // Prepare form data for Imgur upload
-      const formData = appendImgurFormData(selectedFile); // Call the API utility function to handle form data and image upload
+      const formData = appendImgurFormData(file); // Call the API utility function to handle form data and image upload
 
       try {
         // Call the Imgur API
