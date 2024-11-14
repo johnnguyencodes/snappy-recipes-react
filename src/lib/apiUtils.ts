@@ -55,7 +55,7 @@ const refreshAccessToken = async (): Promise<string | null> => {
   }
 };
 
-// Appent form data for Imgur
+// Append form data for Imgur
 const appendImgurFormData = (file: File): FormData => {
   const formData = new FormData();
   formData.append("image", file);
@@ -66,6 +66,10 @@ const appendImgurFormData = (file: File): FormData => {
 
 //POST image to Imgur
 const postImage = async (formData: FormData, accessToken: string) => {
+  if (!formData || !accessToken) {
+    throw new Error("Missing formData or accessToken");
+  }
+
   try {
     const response = await fetch(IMGUR_BASE_URL, {
       // to see the uploaded image on the page, MAKE SURE to open html page using live server with the `use local ip` setting checked
