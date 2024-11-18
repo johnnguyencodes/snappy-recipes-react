@@ -16,4 +16,7 @@ declare global {
   var fetch: typeof fetch;
 }
 
+/// <reference types="playwright" />
+/// <reference types="vitest" />
+
 export {};

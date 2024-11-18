@@ -10,13 +10,17 @@ const IMGUR_BASE_URL = "https://api.imgur.com/3/image";
 const GOOGLE_BASE_URL = `https://vision.googleapis.com/v1/images:annotate?fields=responses&key=${GOOGLE_API_KEY}`;
 const SPOONACULAR_BASE_URL = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${SPOONACULAR_API_KEY}&addRecipeNutrition=true&size=636x393`;
 
+interface ImageSource {
+  imageUri: string | null;
+}
+
 const dataForImageRecognition = {
   requests: [
     {
       image: {
         source: {
-          imageUri: null,
-        },
+          imageUri: null, // initial value is null
+        } as ImageSource,
       },
       features: [
         {
@@ -119,14 +123,34 @@ const postImageUrlToGoogle = async (imageURL: string) => {
   }
 };
 
-const onImageRecognitionSuccess = (data) => {
+interface LabelAnnotation {
+  description: string;
+  score?: number;
+}
+
+interface ImageRecognitionResponse {
+  responses: {
+    labelAnnotations?: LabelAnnotation[];
+  }[];
+}
+
+// Will use the following function when I work on the UI of the app
+// @ts-ignore
+const onImageRecognitionSuccess = (data: ImageRecognitionResponse) => {
   const labelAnnotations = data.responses[0]?.labelAnnotations;
   // if (!labelAnnotations) {
   //   this.showRecognitionFailure();
   //   return;
   // }
 
+  if (!labelAnnotations || labelAnnotations.length === 0) {
+    console.error("No lable annotations found.");
+    return;
+  }
+
   const [firstAnnotation] = labelAnnotations;
+  // Score will be a variable I will use in the future, ignoring for now
+  // @ts-ignore
   const { description: imageTitle, score } = firstAnnotation;
 
   // Get recipes based on title
