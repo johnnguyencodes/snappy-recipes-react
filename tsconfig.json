@@ -6,21 +6,22 @@
   ],
   "compilerOptions": {
     "baseUrl": ".",
+    "composite": true,
     "lib": ["dom", "dom.iterable", "esnext"], // Required for DOM and modern JS features
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
-    "noEmit": true, // Disable emitting files
+    // "noEmit": true,
     "esModuleInterop": true, // Ensure compatibility with CommonJS modules
-    "module": "esnext",
-    "moduleResolution": "node",
+    "module": "node16",
+    "moduleResolution": "node16",
     "resolveJsonModule": true,
     "isolatedModules": true, // Ensures module-level isolation, useful for TypeScript + Babel
-    "jsx": "react", // Set to 'react' for JSX processing in React
+    "jsx": "react-jsx",
     "incremental": true, // Speed up subsequent builds
     "target": "ESNext",
     "typeRoots": ["./node_modules/@types", "./types"],
-    "types": ["node", "playwright", "vitest/global"], // Added Playwright typings
+    "types": ["node"], // Removed Playwright and Vitest typings
     "paths": {
       "@/*": ["./src/*"] // Keep your custom paths
     }

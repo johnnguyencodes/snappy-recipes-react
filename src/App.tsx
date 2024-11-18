@@ -36,7 +36,8 @@ function App() {
   };
 
   const handleQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
+    const target = event.target as HTMLInputElement;
+    setQuery(target.value);
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
