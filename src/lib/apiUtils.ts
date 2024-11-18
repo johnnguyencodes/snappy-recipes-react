@@ -104,6 +104,14 @@ const postImageUrlToGoogle = async (imageURL: string) => {
       throw new Error("Error with Google POST response");
     }
     const json = await response.json();
+
+    if (!json || typeof json !== "object" || !Array.isArray(json.responses)) {
+      console.warn(
+        "Recieved empty or malformed response from Google API:",
+        json
+      );
+      return {};
+    }
     return json;
   } catch (error) {
     console.error("Error with POSTing image label to Google:", error);
