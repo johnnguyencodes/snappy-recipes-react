@@ -1,5 +1,5 @@
 import { postImage } from "../../lib/apiUtils.ts";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 
 const IMGUR_BASE_URL = "https://api.imgur.com/3/image";
 

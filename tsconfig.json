@@ -20,7 +20,7 @@
     "incremental": true, // Speed up subsequent builds
     "target": "ESNext",
     "typeRoots": ["./node_modules/@types", "./types"],
-    "types": ["node", "playwright", "jest"], // Added Playwright typings
+    "types": ["node", "playwright", "jest", "vitest/global"], // Added Playwright typings
     "paths": {
       "@/*": ["./src/*"] // Keep your custom paths
     }
