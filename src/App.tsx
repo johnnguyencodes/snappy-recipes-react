@@ -1,13 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  ChangeEvent,
-  KeyboardEvent,
-} from "react";
-import { useForm } from "react-hook-form";
+import { useState, useEffect, useRef, ChangeEvent, KeyboardEvent } from "react";
+// import { useForm } from "react-hook-form";
 import { Settings, Upload } from "lucide-react";
 import { fileValidation, showError } from "./lib/formUtils";
 import {
@@ -20,8 +14,8 @@ import {
 
 function App() {
   const [query, setQuery] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const { register } = useForm();
+  const [_imageFile, setImageFile] = useState<File | null>(null);
+  // const { register } = useForm();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [imgurAccessToken, setImgurAccessToken] = useState("");
 
@@ -90,6 +84,7 @@ function App() {
         }
 
         const [firstAnnotation] = labelAnnotations;
+        // @ts-ignore
         const { description: imageTitle, score } = firstAnnotation;
         setQuery(imageTitle);
 

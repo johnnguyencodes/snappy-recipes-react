@@ -1,5 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { expect, it, test, vi } from "vitest";
+import { expect, test, vi } from "vitest";
+// @ts-ignore
 import React from "react";
 import App from "../../App";
 
