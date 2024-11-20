@@ -6,9 +6,21 @@ describe("fileValidation", () => {
     const mockEvent = { target: { files: null } } as any;
     const mockShowError = vi.fn();
     const mockSetImageFile = vi.fn();
-    const result = fileValidation(mockEvent, mockShowError, mockSetImageFile);
+    const mockSetErrorMessage = vi.fn();
+    const mockResetErrorMessage = vi.fn();
+    const result = fileValidation(
+      mockEvent,
+      mockShowError,
+      mockSetImageFile,
+      mockSetErrorMessage,
+      mockResetErrorMessage
+    );
     expect(result).toBe(false);
-    expect(mockShowError).toHaveBeenCalledWith("errorNoFile");
+    expect(mockShowError).toHaveBeenCalledWith(
+      "errorNoFile",
+      mockSetErrorMessage
+    );
+    expect(mockResetErrorMessage).not.toHaveBeenCalled();
     expect(mockSetImageFile).not.toHaveBeenCalled();
   });
 
@@ -16,9 +28,21 @@ describe("fileValidation", () => {
     const mockEvent = { target: { files: [{ size: 99999999999 }] } } as any;
     const mockShowError = vi.fn();
     const mockSetImageFile = vi.fn();
-    const result = fileValidation(mockEvent, mockShowError, mockSetImageFile);
+    const mockSetErrorMessage = vi.fn();
+    const mockResetErrorMessage = vi.fn();
+    const result = fileValidation(
+      mockEvent,
+      mockShowError,
+      mockSetImageFile,
+      mockSetErrorMessage,
+      mockResetErrorMessage
+    );
     expect(result).toBe(false);
-    expect(mockShowError).toHaveBeenCalledWith("errorFileExceedsSize");
+    expect(mockShowError).toHaveBeenCalledWith(
+      "errorFileExceedsSize",
+      mockSetErrorMessage
+    );
+    expect(mockResetErrorMessage).not.toHaveBeenCalled();
     expect(mockSetImageFile).not.toHaveBeenCalled();
   });
 
@@ -26,9 +50,21 @@ describe("fileValidation", () => {
     const mockEvent = { target: { files: [{ type: "text/plain" }] } } as any;
     const mockShowError = vi.fn();
     const mockSetImageFile = vi.fn();
-    const result = fileValidation(mockEvent, mockShowError, mockSetImageFile);
+    const mockSetErrorMessage = vi.fn();
+    const mockResetErrorMessage = vi.fn();
+    const result = fileValidation(
+      mockEvent,
+      mockShowError,
+      mockSetImageFile,
+      mockSetErrorMessage,
+      mockResetErrorMessage
+    );
     expect(result).toBe(false);
-    expect(mockShowError).toHaveBeenCalledWith("errorIncorrectFile");
+    expect(mockShowError).toHaveBeenCalledWith(
+      "errorIncorrectFile",
+      mockSetErrorMessage
+    );
+    expect(mockResetErrorMessage).not.toHaveBeenCalled();
     expect(mockSetImageFile).not.toHaveBeenCalled();
   });
 
@@ -38,9 +74,18 @@ describe("fileValidation", () => {
     } as any;
     const mockShowError = vi.fn();
     const mockSetImageFile = vi.fn();
-    const result = fileValidation(mockEvent, mockShowError, mockSetImageFile);
+    const mockSetErrorMessage = vi.fn();
+    const mockResetErrorMessage = vi.fn();
+    const result = fileValidation(
+      mockEvent,
+      mockShowError,
+      mockSetImageFile,
+      mockSetErrorMessage,
+      mockResetErrorMessage
+    );
     expect(result).toBe(true);
     expect(mockShowError).not.toHaveBeenCalled();
+    expect(mockResetErrorMessage).toHaveBeenCalledWith(mockSetErrorMessage);
     expect(mockSetImageFile).toHaveBeenCalledWith({
       type: "image/jpeg",
       size: 1,

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect, useRef, ChangeEvent, KeyboardEvent } from "react";
 import { Settings, Upload } from "lucide-react";
-import { fileValidation, showError } from "./lib/formUtils";
+import { fileValidation, showError, resetErrorMessage } from "./lib/formUtils";
 import {
   refreshAccessToken,
   appendImgurFormData,
@@ -56,7 +56,8 @@ function App() {
         setImageFile(file); // Update State
         selectedFile = file; // Immediate access to file
       },
-      setErrorMessage
+      setErrorMessage,
+      resetErrorMessage
     );
     if (isValid && selectedFile) {
       // Prepare form data for Imgur upload
@@ -153,6 +154,11 @@ function App() {
             Submit
           </Button>
         </div>
+        {errorMessage && (
+          <div className="error-message mb-4 rounded bg-red-100 p-2 text-red-600">
+            {errorMessage}
+          </div>
+        )}
       </div>
     </div>
   );

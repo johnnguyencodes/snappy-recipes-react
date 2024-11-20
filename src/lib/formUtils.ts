@@ -15,7 +15,8 @@ const fileValidation = (
     setErrorMessage: (message: string) => void
   ) => void,
   setImageFile: (file: File) => void,
-  setErrorMessage: (message: string) => void
+  setErrorMessage: (message: string) => void,
+  resetErrorMessage: (setErrorMessage: (message: string) => void) => void
 ): boolean => {
   const files = event.target.files;
   if (files && files.length > 0) {
@@ -43,6 +44,7 @@ const fileValidation = (
     }
 
     setImageFile(file);
+    resetErrorMessage(setErrorMessage);
     return true;
   }
   showError("errorNoFile", setErrorMessage);
@@ -64,10 +66,17 @@ const showError = (
     case "errorFileExceedsSize":
       message = "File size exceeds the allowed limit.";
       break;
+    case "noError":
+      message = "";
+      break;
     default:
       message = "An unknown error occurred.";
   }
   setErrorMessage(message);
 };
 
-export { fileValidation, showError, FileType };
+const resetErrorMessage = (setErrorMessage: (message: string) => void) => {
+  setErrorMessage("");
+};
+
+export { fileValidation, showError, resetErrorMessage, FileType };
