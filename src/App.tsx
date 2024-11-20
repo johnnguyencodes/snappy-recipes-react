@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect, useRef, ChangeEvent, KeyboardEvent } from "react";
-// import { useForm } from "react-hook-form";
 import { Settings, Upload } from "lucide-react";
 import { fileValidation, showError } from "./lib/formUtils";
 import {
@@ -15,9 +14,9 @@ import {
 function App() {
   const [query, setQuery] = useState("");
   const [_imageFile, setImageFile] = useState<File | null>(null);
-  // const { register } = useForm();
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [imgurAccessToken, setImgurAccessToken] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const fetchAccessToken = async () => {
@@ -50,10 +49,15 @@ function App() {
     let selectedFile: File | null = null;
 
     // Validate file input
-    const isValid = fileValidation(event, showError, (file) => {
-      setImageFile(file); // Update State
-      selectedFile = file; // Immediate access to file
-    });
+    const isValid = fileValidation(
+      event,
+      showError,
+      (file) => {
+        setImageFile(file); // Update State
+        selectedFile = file; // Immediate access to file
+      },
+      setErrorMessage
+    );
     if (isValid && selectedFile) {
       // Prepare form data for Imgur upload
       const formData = appendImgurFormData(selectedFile); // Call the API utility function to handle form data and image upload
