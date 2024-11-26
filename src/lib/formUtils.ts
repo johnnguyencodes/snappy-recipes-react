@@ -16,7 +16,7 @@ const fileValidation = (
   ) => void,
   setImageFile: (file: File) => void,
   setErrorMessage: (message: string) => void,
-  resetErrorMessage: (setErrorMessage: (message: string) => void) => void
+  clearErrorMessage: (setErrorMessage: (message: string) => void) => void
 ): boolean => {
   const files = event.target.files;
   if (files && files.length > 0) {
@@ -44,7 +44,7 @@ const fileValidation = (
     }
 
     setImageFile(file);
-    resetErrorMessage(setErrorMessage);
+    clearErrorMessage(setErrorMessage);
     return true;
   }
   showError("errorNoFile", setErrorMessage);
@@ -75,8 +75,8 @@ const showError = (
   setErrorMessage(message);
 };
 
-const resetErrorMessage = (setErrorMessage: (message: string) => void) => {
+const clearErrorMessage = (setErrorMessage: (message: string) => void) => {
   setErrorMessage("");
 };
 
-export { fileValidation, showError, resetErrorMessage, FileType };
+export { fileValidation, showError, clearErrorMessage, FileType };

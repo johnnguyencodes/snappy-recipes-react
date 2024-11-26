@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect, useRef, ChangeEvent, KeyboardEvent } from "react";
 import { Settings, Upload } from "lucide-react";
-import { fileValidation, showError, resetErrorMessage } from "./lib/formUtils";
+import { fileValidation, showError, clearErrorMessage } from "./lib/formUtils";
 import {
   refreshAccessToken,
   appendImgurFormData,
@@ -57,7 +57,7 @@ function App() {
         selectedFile = file; // Immediate access to file
       },
       setErrorMessage,
-      resetErrorMessage
+      clearErrorMessage
     );
     if (isValid && selectedFile) {
       // Prepare form data for Imgur upload
@@ -70,6 +70,7 @@ function App() {
           imgurJson = await postImage(formData, imgurAccessToken);
         } catch (error) {
           console.error("Error uploading image to Imgur:", error);
+          showError("");
           return;
         }
 
