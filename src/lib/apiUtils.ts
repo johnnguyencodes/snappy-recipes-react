@@ -32,7 +32,14 @@ const dataForImageRecognition = {
 };
 
 // refresh Imgur Access Token
-const refreshAccessToken = async (): Promise<string | null> => {
+const refreshAccessToken = async (
+  showError: (
+    errorType: string,
+    setErrorMessage: (message: string) => void,
+    query: string | null
+  ) => void,
+  setErrorMessage: (message: string) => void
+): Promise<string | null> => {
   try {
     const response = await fetch("https://api.imgur.com/oauth2/token", {
       method: "POST",
@@ -50,10 +57,12 @@ const refreshAccessToken = async (): Promise<string | null> => {
     if (response.ok) {
       return data.access_token;
     } else {
+      showError("errorRefreshToken", setErrorMessage, null);
       console.error("Error refreshing token:", data);
       return null;
     }
   } catch (error) {
+    showError("errorRefreshToken", setErrorMessage, null);
     console.error("Error refreshing token:", error);
     return null;
   }
@@ -69,9 +78,19 @@ const appendImgurFormData = (file: File): FormData => {
 };
 
 //POST image to Imgur
-const postImage = async (formData: FormData, accessToken: string) => {
+const postImage = async (
+  formData: FormData,
+  accessToken: string,
+  showError: (
+    errorType: string,
+    setErrorMessage: (message: string) => void,
+    query: string | null
+  ) => void,
+  setErrorMessage: (message: string) => void
+) => {
   if (!formData || !accessToken) {
-    throw new Error("Missing formData or accessToken");
+    showError("errorPostImageData", setErrorMessage, null);
+    throw new Error("Missing formData or accessToken for posting image");
   }
 
   try {
@@ -86,18 +105,28 @@ const postImage = async (formData: FormData, accessToken: string) => {
       },
     });
     if (!response.ok) {
+      showError("errorPostImageResponse", setErrorMessage, null);
       throw new Error(`Error with imgur POST response`);
     }
     const json = await response.json();
     return json;
   } catch (error) {
+    showError("errorPostImage", setErrorMessage, null);
     console.error(`Error with POSTing imgur file:`, error);
     throw error;
   }
 };
 
 //POST image URL to Google's Cloud Vision API
-const postImageUrlToGoogle = async (imageURL: string) => {
+const postImageUrlToGoogle = async (
+  imageURL: string,
+  showError: (
+    errorType: string,
+    setErrorMessage: (message: string) => void,
+    query: string | null
+  ) => void,
+  setErrorMessage: (message: string) => void
+) => {
   dataForImageRecognition.requests[0].image.source.imageUri = imageURL;
   try {
     const response = await fetch(GOOGLE_BASE_URL, {
@@ -105,11 +134,13 @@ const postImageUrlToGoogle = async (imageURL: string) => {
       body: JSON.stringify(dataForImageRecognition),
     });
     if (!response.ok) {
+      showError("errorGooglePostResponse", setErrorMessage, null);
       throw new Error("Error with Google POST response");
     }
     const json = await response.json();
 
     if (!json || typeof json !== "object" || !Array.isArray(json.responses)) {
+      showError("errorMalformedGoogleResponse", setErrorMessage, null);
       console.warn(
         "Recieved empty or malformed response from Google API:",
         json
@@ -118,7 +149,8 @@ const postImageUrlToGoogle = async (imageURL: string) => {
     }
     return json;
   } catch (error) {
-    console.error("Error with POSTing image label to Google:", error);
+    showError("errorPostImageUrlToGoogle", setErrorMessage, null);
+    console.error("Error with POSTing image URL to Google:", error);
     throw error;
   }
 };
@@ -136,7 +168,15 @@ interface ImageRecognitionResponse {
 
 // Will use the following function when I work on the UI of the app
 // @ts-ignore
-const onImageRecognitionSuccess = (data: ImageRecognitionResponse) => {
+const onImageRecognitionSuccess = (
+  data: ImageRecognitionResponse,
+  showError: (
+    errorType: string,
+    setErrorMessage: (message: string) => void,
+    query: string | null
+  ) => void,
+  setErrorMessage: (message: string) => void
+) => {
   const labelAnnotations = data.responses[0]?.labelAnnotations;
   // if (!labelAnnotations) {
   //   this.showRecognitionFailure();
@@ -144,7 +184,8 @@ const onImageRecognitionSuccess = (data: ImageRecognitionResponse) => {
   // }
 
   if (!labelAnnotations || labelAnnotations.length === 0) {
-    console.error("No lable annotations found.");
+    showError("errorNoLabelAnnotions", setErrorMessage, null);
+    console.error("No label annotations found.");
     return;
   }
 
@@ -154,7 +195,7 @@ const onImageRecognitionSuccess = (data: ImageRecognitionResponse) => {
   const { description: imageTitle, score } = firstAnnotation;
 
   // Get recipes based on title
-  getRecipes(imageTitle);
+  getRecipes(imageTitle, showError, setErrorMessage);
 };
 
 // const onImageRecognitionError = (error) => {
@@ -163,7 +204,15 @@ const onImageRecognitionSuccess = (data: ImageRecognitionResponse) => {
 // };
 
 // Fetch recipes from Spoonacular
-const getRecipes = async (query: string) => {
+const getRecipes = async (
+  query: string,
+  showError: (
+    errorType: string,
+    setErrorMessage: (message: string) => void,
+    query: string | null
+  ) => void,
+  setErrorMessage: (message: string) => void
+) => {
   try {
     const response = await fetch(
       `${SPOONACULAR_BASE_URL}&number=100&query=${query}`,
@@ -175,11 +224,13 @@ const getRecipes = async (query: string) => {
       }
     );
     if (!response.ok) {
+      showError("errorSpoonacularGetRequest", setErrorMessage, query);
       throw new Error(`Error with GET fetch request with query ${query}`);
     }
     const json = await response.json();
     return json;
   } catch (error) {
+    showError("errorSpoonacularGetRequest", setErrorMessage, query);
     console.error(`Error with fetching recipes with query ${query}`, error);
     throw error;
   }

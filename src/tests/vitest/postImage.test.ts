@@ -56,11 +56,11 @@ describe("postImage", () => {
   it("should handle missing formData or accessToken gracefully", async () => {
     await expect(
       postImage(null as unknown as FormData, "mocked_access_token")
-    ).rejects.toThrow("Missing formData or accessToken");
+    ).rejects.toThrow("Error refreshing Imgur accessToken");
 
     await expect(
       postImage(new FormData(), null as unknown as string)
-    ).rejects.toThrow("Missing formData or accessToken");
+    ).rejects.toThrow("Error refreshing Imgur accessToken");
   });
 
   it("should include correct headers and form data in the request", async () => {

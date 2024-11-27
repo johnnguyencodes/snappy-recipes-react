@@ -8,6 +8,9 @@ describe("refreshAccessToken", () => {
 
   it("should return the access token on a successful response", async () => {
     // Mock a successful fetch response
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
+
     global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: async () => ({ access_token: "mocked_access_token" }),

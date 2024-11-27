@@ -20,7 +20,7 @@ function App() {
 
   useEffect(() => {
     const fetchAccessToken = async () => {
-      const token = await refreshAccessToken();
+      const token = await refreshAccessToken(showError, setErrorMessage);
       if (token) {
         setImgurAccessToken(token);
       }
@@ -41,7 +41,7 @@ function App() {
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      getRecipes(query);
+      getRecipes(query, showError, setErrorMessage);
     }
   };
 
@@ -61,16 +61,20 @@ function App() {
     );
     if (isValid && selectedFile) {
       // Prepare form data for Imgur upload
-      const formData = appendImgurFormData(selectedFile); // Call the API utility function to handle form data and image upload
+      const formData = appendImgurFormData(selectedFile); // Call the utility function to handle form data and image upload
 
       try {
         // Call the Imgur API
         let imgurJson;
         try {
-          imgurJson = await postImage(formData, imgurAccessToken);
+          imgurJson = await postImage(
+            formData,
+            imgurAccessToken,
+            showError,
+            setErrorMessage
+          );
         } catch (error) {
           console.error("Error uploading image to Imgur:", error);
-          showError("");
           return;
         }
 
@@ -79,7 +83,11 @@ function App() {
         // Call Google Vision API
         let googleJson;
         try {
-          googleJson = await postImageUrlToGoogle(imageURL);
+          googleJson = await postImageUrlToGoogle(
+            imageURL,
+            showError,
+            setErrorMessage
+          );
         } catch (error) {
           console.error("Error fetching data from Google Vision API:", error);
           return;
@@ -87,6 +95,7 @@ function App() {
 
         const labelAnnotations = googleJson.responses[0]?.labelAnnotations;
         if (!labelAnnotations || labelAnnotations.length === 0) {
+          showError("errorNoLabelAnnotations", setErrorMessage, null);
           throw new Error("No label annotations found in Google API response");
         }
 
@@ -97,7 +106,11 @@ function App() {
 
         // Call Spoonacular API
         try {
-          const spoonacularJson = await getRecipes(imageTitle);
+          const spoonacularJson = await getRecipes(
+            imageTitle,
+            showError,
+            setErrorMessage
+          );
           console.log("Spoonacular API response:", spoonacularJson);
         } catch (error) {
           console.error("Error fetching data from Spoonacular API:", error);
@@ -149,7 +162,7 @@ function App() {
             name=""
           />
           <Button
-            onClick={() => getRecipes(query)}
+            onClick={() => getRecipes(query, showError, setErrorMessage)}
             className="rounded-bl-none rounded-tl-none"
           >
             Submit

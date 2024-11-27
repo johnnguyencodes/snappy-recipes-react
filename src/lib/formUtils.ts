@@ -12,7 +12,8 @@ const fileValidation = (
   event: ChangeEvent<HTMLInputElement>,
   showError: (
     errorType: string,
-    setErrorMessage: (message: string) => void
+    setErrorMessage: (message: string) => void,
+    query: string | null
   ) => void,
   setImageFile: (file: File) => void,
   setErrorMessage: (message: string) => void,
@@ -23,7 +24,7 @@ const fileValidation = (
     const file: File = files[0];
 
     if (!file) {
-      showError("errorNoFile", setErrorMessage);
+      showError("errorNoFile", setErrorMessage, null);
       return false;
     }
 
@@ -33,13 +34,13 @@ const fileValidation = (
 
     // Check for file size first
     if (file.size > MAX_FILE_SIZE) {
-      showError("errorFileExceedsSize", setErrorMessage);
+      showError("errorFileExceedsSize", setErrorMessage, null);
       return false;
     }
 
     // Check for file type second
     if (!Object.values(FileType).includes(file.type as FileType)) {
-      showError("errorIncorrectFile", setErrorMessage);
+      showError("errorIncorrectFile", setErrorMessage, null);
       return false;
     }
 
@@ -47,13 +48,14 @@ const fileValidation = (
     clearErrorMessage(setErrorMessage);
     return true;
   }
-  showError("errorNoFile", setErrorMessage);
+  showError("errorNoFile", setErrorMessage, null);
   return false;
 };
 
 const showError = (
   errorType: string,
-  setErrorMessage: (message: string) => void
+  setErrorMessage: (message: string) => void,
+  query: string | null
 ) => {
   let message = "";
   switch (errorType) {
@@ -65,6 +67,35 @@ const showError = (
       break;
     case "errorFileExceedsSize":
       message = "File size exceeds the allowed limit.";
+      break;
+    case "errorRefreshToken":
+      message = "Error refreshing Imgur accessToken.";
+      break;
+    case "errorPostImageData":
+      message = "Missing formData or accessToken for posting image";
+      break;
+    case "errorPostImageResponse":
+      message = "Error with POST image response.";
+      break;
+    case "errorPostImage":
+      message = "Error with posting image";
+      break;
+    case "errorGooglePostResponse":
+      message = "Error with Google POST response";
+      break;
+    case "errorMalformedGoogleResponse":
+      message = "Recieved empty or malformed response from Google API";
+      break;
+    case "errorPostImageUrlToGoogle":
+      message = "Error with POSTing image url to Google";
+      break;
+    case "errorNoLabelAnnotations":
+      message = "Error, no label annotations found";
+      break;
+    case "errorSpoonacularGetRequest":
+      message = query
+        ? `Error with Spoonacular GET fetch request with query ${query}`
+        : "Error with Spoonacular GET fetch request";
       break;
     case "noError":
       message = "";
