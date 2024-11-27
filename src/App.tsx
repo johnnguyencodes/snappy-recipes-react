@@ -1,8 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect, useRef, ChangeEvent, KeyboardEvent } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  ChangeEvent,
+  KeyboardEvent,
+  ChangeEventHandler,
+} from "react";
 import { Settings, Upload } from "lucide-react";
-import { fileValidation, showError, clearErrorMessage } from "./lib/formUtils";
+import {
+  fileValidation,
+  searchValidation,
+  showError,
+  clearErrorMessage,
+} from "./lib/formUtils";
 import {
   refreshAccessToken,
   appendImgurFormData,
@@ -41,7 +53,7 @@ function App() {
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      getRecipes(query, showError, setErrorMessage);
+      handleSearch(query);
     }
   };
 
@@ -123,6 +135,31 @@ function App() {
     }
   };
 
+  const handleSearch = async (query: string) => {
+    // Validate search input
+    const isValid = searchValidation(
+      query,
+      showError,
+      setErrorMessage,
+      clearErrorMessage
+    );
+    if (isValid) {
+      // Call Spoonacular API
+      try {
+        const spoonacularJson = await getRecipes(
+          query,
+          showError,
+          setErrorMessage
+        );
+        console.log("Spoonacular API response:", spoonacularJson);
+      } catch (error) {
+        console.error("Error fetching data from Spoonacular API:", error);
+      }
+    } else {
+      console.error("Not a valid search query");
+    }
+  };
+
   return (
     <div className="m-10">
       <header className="row mb-0 flex items-center justify-between">
@@ -162,7 +199,7 @@ function App() {
             name=""
           />
           <Button
-            onClick={() => getRecipes(query, showError, setErrorMessage)}
+            onClick={() => handleSearch(query)}
             className="rounded-bl-none rounded-tl-none"
           >
             Submit
