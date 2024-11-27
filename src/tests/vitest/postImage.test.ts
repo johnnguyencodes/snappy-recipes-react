@@ -7,13 +7,20 @@ describe("postImage", () => {
   it("should make a POST request to Imgur and return the response JSON on success", async () => {
     const mockFormData = new FormData();
     const mockAccessToken = "mocked_access_token";
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
 
     global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: async () => ({ data: { link: "https://mocked.url" } }),
     });
 
-    const response = await postImage(mockFormData, mockAccessToken);
+    const response = await postImage(
+      mockFormData,
+      mockAccessToken,
+      mockShowError,
+      mockSetErrorMessage
+    );
 
     expect(fetch).toHaveBeenCalledWith(IMGUR_BASE_URL, {
       method: "POST",
@@ -29,50 +36,84 @@ describe("postImage", () => {
   it("should throw an error if the response is not OK", async () => {
     const mockFormData = new FormData();
     const mockAccessToken = "mocked_access_token";
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
 
     global.fetch = vi.fn().mockResolvedValueOnce({
       ok: false,
       json: async () => ({ message: "Something went wrong test message" }),
     });
 
-    await expect(postImage(mockFormData, mockAccessToken)).rejects.toThrow(
-      "Error with imgur POST response"
-    );
+    await expect(
+      postImage(
+        mockFormData,
+        mockAccessToken,
+        mockShowError,
+        mockSetErrorMessage
+      )
+    ).rejects.toThrow("Error with imgur POST response");
   });
 
   it("should throw an error if the fetch call fails", async () => {
     const mockFormData = new FormData();
     const mockAccessToken = "mocked_access_token";
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
 
     global.fetch = vi
       .fn()
       .mockRejectedValueOnce(new Error("Error with POSTing imgur file"));
 
-    await expect(postImage(mockFormData, mockAccessToken)).rejects.toThrow(
-      "Error with POSTing imgur file"
-    );
+    await expect(
+      postImage(
+        mockFormData,
+        mockAccessToken,
+        mockShowError,
+        mockSetErrorMessage
+      )
+    ).rejects.toThrow("Error with POSTing imgur file");
   });
 
   it("should handle missing formData or accessToken gracefully", async () => {
-    await expect(
-      postImage(null as unknown as FormData, "mocked_access_token")
-    ).rejects.toThrow("Error refreshing Imgur accessToken");
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
 
     await expect(
-      postImage(new FormData(), null as unknown as string)
-    ).rejects.toThrow("Error refreshing Imgur accessToken");
+      postImage(
+        null as unknown as FormData,
+        "mocked_access_token",
+        mockShowError,
+        mockSetErrorMessage
+      )
+    ).rejects.toThrow("Missing formData or accessToken for posting image");
+
+    await expect(
+      postImage(
+        new FormData(),
+        null as unknown as string,
+        mockShowError,
+        mockSetErrorMessage
+      )
+    ).rejects.toThrow("Missing formData or accessToken for posting image");
   });
 
   it("should include correct headers and form data in the request", async () => {
     const mockFormData = new FormData();
     const mockAccessToken = "mocked_access_token";
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
 
     global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: async () => ({}),
     });
 
-    await postImage(mockFormData, mockAccessToken);
+    await postImage(
+      mockFormData,
+      mockAccessToken,
+      mockShowError,
+      mockSetErrorMessage
+    );
 
     expect(fetch).toHaveBeenCalledWith(IMGUR_BASE_URL, {
       method: "POST",
@@ -87,11 +128,20 @@ describe("postImage", () => {
   it("should log an error to the console when fetch fails", async () => {
     const mockFormData = new FormData();
     const mockAccessToken = "mocked_access_token";
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
     const consoleSpy = vi.spyOn(console, "error");
 
     global.fetch = vi.fn().mockRejectedValueOnce(new Error("Network Error"));
 
-    await expect(postImage(mockFormData, mockAccessToken)).rejects.toThrow();
+    await expect(
+      postImage(
+        mockFormData,
+        mockAccessToken,
+        mockShowError,
+        mockSetErrorMessage
+      )
+    ).rejects.toThrow();
 
     expect(consoleSpy).toHaveBeenCalledWith(
       "Error with POSTing imgur file:",
