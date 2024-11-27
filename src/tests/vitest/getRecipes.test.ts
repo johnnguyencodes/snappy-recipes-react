@@ -9,7 +9,14 @@ describe("getRecipes", () => {
       json: async () => mockResponse,
     });
 
-    const result = await getRecipes("pasta");
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
+
+    const result = await getRecipes(
+      "pasta",
+      mockShowError,
+      mockSetErrorMessage
+    );
     expect(fetch).toHaveBeenCalledWith(
       expect.stringContaining("spoonacular.com"),
       expect.objectContaining({
@@ -26,9 +33,12 @@ describe("getRecipes", () => {
       statusText: "Bad Request",
     });
 
-    await expect(getRecipes("pasta")).rejects.toThrow(
-      "Error with GET fetch request with query pasta"
-    );
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
+
+    await expect(
+      getRecipes("pasta", mockShowError, mockSetErrorMessage)
+    ).rejects.toThrow("Error with GET fetch request with query pasta");
   });
 
   it("should throw an error if there is a network error", async () => {
@@ -38,9 +48,12 @@ describe("getRecipes", () => {
         new Error("Error with fetching recipes with query pasta")
       );
 
-    await expect(getRecipes("pasta")).rejects.toThrow(
-      "Error with fetching recipes with query pasta"
-    );
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
+
+    await expect(
+      getRecipes("pasta", mockShowError, mockSetErrorMessage)
+    ).rejects.toThrow("Error with fetching recipes with query pasta");
   });
 
   it("should construct the URL with the correct query string", async () => {
@@ -49,7 +62,10 @@ describe("getRecipes", () => {
       json: async () => ({}),
     });
 
-    await getRecipes("pasta");
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
+
+    await getRecipes("pasta", mockShowError, mockSetErrorMessage);
     expect(fetch).toHaveBeenCalledWith(
       expect.stringContaining("&query=pasta"),
       expect.any(Object)
@@ -62,7 +78,10 @@ describe("getRecipes", () => {
       json: async () => ({}),
     });
 
-    await getRecipes("pasta");
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
+
+    await getRecipes("pasta", mockShowError, mockSetErrorMessage);
     expect(fetch).toHaveBeenCalledWith(
       expect.any(String),
       expect.objectContaining({
