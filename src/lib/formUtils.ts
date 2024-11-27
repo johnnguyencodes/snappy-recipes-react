@@ -52,6 +52,39 @@ const fileValidation = (
   return false;
 };
 
+const searchValidation = (
+  query: string,
+  showError: (
+    errorType: string,
+    setErrorMessage: (message: string) => void,
+    query: string | null
+  ) => void,
+  setErrorMessage: (message: string) => void,
+  clearErrorMessage: (setErrorMessage: (message: string) => void) => void
+): boolean => {
+  if (!query) {
+    clearErrorMessage(setErrorMessage);
+    return true;
+  }
+
+  if (query.length > 50) {
+    showError("errorSearchTooLong", setErrorMessage, null);
+    return false;
+  }
+
+  // Checking if the query includes numbers or special characters
+  if (
+    /\d/.test(query) ||
+    /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(query)
+  ) {
+    showError("errorSearchInvalidCharacters", setErrorMessage, null);
+    return false;
+  }
+
+  clearErrorMessage(setErrorMessage);
+  return true;
+};
+
 const showError = (
   errorType: string,
   setErrorMessage: (message: string) => void,
@@ -97,6 +130,13 @@ const showError = (
         ? `Error with Spoonacular GET fetch request with query ${query}`
         : "Error with Spoonacular GET fetch request";
       break;
+    case "errorSearchTooLong":
+      message = "Search queries should be less than 50 characters";
+      break;
+    case "errorSearchInvalidCharacters":
+      message =
+        "Search queries should not contain numbers or special characters";
+      break;
     case "noError":
       message = "";
       break;
@@ -110,4 +150,10 @@ const clearErrorMessage = (setErrorMessage: (message: string) => void) => {
   setErrorMessage("");
 };
 
-export { fileValidation, showError, clearErrorMessage, FileType };
+export {
+  fileValidation,
+  searchValidation,
+  showError,
+  clearErrorMessage,
+  FileType,
+};
