@@ -10,7 +10,14 @@ describe("postImageUrlToGoogle", () => {
       }),
     });
 
-    const result = await postImageUrlToGoogle("https://example.com/image.jpg");
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
+
+    const result = await postImageUrlToGoogle(
+      "https://example.com/image.jpg",
+      mockShowError,
+      mockSetErrorMessage
+    );
     expect(fetch).toHaveBeenCalledWith(
       expect.stringContaining("vision.googleapis.com"),
       {
@@ -46,8 +53,15 @@ describe("postImageUrlToGoogle", () => {
       json: async () => ({}),
     });
 
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
+
     await expect(
-      postImageUrlToGoogle("https://example.com/image.jpg")
+      postImageUrlToGoogle(
+        "https://example.com/image.jpg",
+        mockShowError,
+        mockSetErrorMessage
+      )
     ).rejects.toThrow("Error with Google POST response");
   });
 
@@ -58,8 +72,15 @@ describe("postImageUrlToGoogle", () => {
         new Error("Error with POSTing image label to Google")
       );
 
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
+
     await expect(
-      postImageUrlToGoogle("https://example.com/image.jpg")
+      postImageUrlToGoogle(
+        "https://example.com/image.jpg",
+        mockShowError,
+        mockSetErrorMessage
+      )
     ).rejects.toThrow("Error with POSTing image label to Google");
   });
 
@@ -69,8 +90,11 @@ describe("postImageUrlToGoogle", () => {
       json: async () => ({ responses: [] }),
     });
 
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
+
     const imageURL = "https://example.com/image.jpg";
-    await postImageUrlToGoogle(imageURL);
+    await postImageUrlToGoogle(imageURL, mockShowError, mockSetErrorMessage);
 
     // ignoring the error message since the test still passes successfully. The error is due to an external library mismatch
     // @ts-ignore
@@ -85,7 +109,14 @@ describe("postImageUrlToGoogle", () => {
       json: async () => ({}), // malformed response
     });
 
-    const result = await postImageUrlToGoogle("https://example.com/image.jpg");
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
+
+    const result = await postImageUrlToGoogle(
+      "https://example.com/image.jpg",
+      mockShowError,
+      mockSetErrorMessage
+    );
     expect(result).toEqual({});
   });
 
@@ -95,7 +126,14 @@ describe("postImageUrlToGoogle", () => {
       json: async () => ({}),
     });
 
-    await postImageUrlToGoogle("https://example.com/image.jpg");
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
+
+    await postImageUrlToGoogle(
+      "https://example.com/image.jpg",
+      mockShowError,
+      mockSetErrorMessage
+    );
 
     expect(fetch).toHaveBeenCalledWith(
       expect.stringContaining("vision.googleapis.com"),
