@@ -23,11 +23,6 @@ const fileValidation = (
   if (files && files.length > 0) {
     const file: File = files[0];
 
-    if (!file) {
-      showError("errorNoFile", setErrorMessage, null);
-      return false;
-    }
-
     // The order of validation checks matters to ensure correct and meaningful error handling.
     // Checking file size first ensures large files are always rejected before evaluating other conditions.
     // This prevents misleading errors (e.g., "incorrect file type" for oversized files) and provides a better user experience.
