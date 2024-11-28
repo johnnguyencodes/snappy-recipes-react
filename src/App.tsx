@@ -146,7 +146,6 @@ function App() {
 
   const handleSearch = async (query: string) => {
     setImageFile(null);
-    setQuery("");
     setErrorMessage("");
 
     // Validate search input
