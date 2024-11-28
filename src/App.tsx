@@ -20,6 +20,7 @@ function App() {
   const [query, setQuery] = useState("");
   const [_imageFile, setImageFile] = useState<File | null>(null);
   const [imgurAccessToken, setImgurAccessToken] = useState("");
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -52,7 +53,6 @@ function App() {
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     let selectedFile: File | null = null;
-
     // Validate file input
     const isValid = fileValidation(
       event,
@@ -65,6 +65,7 @@ function App() {
       clearErrorMessage
     );
     if (isValid && selectedFile) {
+      setStatusMessage("Analyzing image");
       // Prepare form data for Imgur upload
       const formData = appendImgurFormData(selectedFile); // Call the utility function to handle form data and image upload
 
@@ -111,12 +112,14 @@ function App() {
 
         // Call Spoonacular API
         try {
+          setStatusMessage(`Searching for recipes with ${query}`);
           const spoonacularJson = await getRecipes(
             imageTitle,
             showError,
             setErrorMessage
           );
           console.log("Spoonacular API response:", spoonacularJson);
+          setStatusMessage("");
         } catch (error) {
           console.error("Error fetching data from Spoonacular API:", error);
         }
@@ -139,11 +142,13 @@ function App() {
     if (isValid) {
       // Call Spoonacular API
       try {
+        setStatusMessage(`Searching for recipes with ${query}`);
         const spoonacularJson = await getRecipes(
           query,
           showError,
           setErrorMessage
         );
+        setStatusMessage("");
         console.log("Spoonacular API response:", spoonacularJson);
       } catch (error) {
         console.error("Error fetching data from Spoonacular API:", error);
@@ -157,6 +162,11 @@ function App() {
     <div className="m-10">
       <header className="row mb-0 flex items-center justify-between">
         <h1 className="mb-0 pb-0 text-2xl font-extrabold">Snappy Recipes</h1>
+        {statusMessage && (
+          <div className="error-message mb-4 rounded bg-green-100 p-2 text-green-600">
+            {statusMessage}
+          </div>
+        )}
         <div className="flex">
           <Button className="border border-black bg-white font-bold text-black">
             Show Favorites
