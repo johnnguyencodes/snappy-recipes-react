@@ -2,6 +2,7 @@ import { ChangeEvent } from "react";
 
 enum FileType {
   Jpeg = "image/jpeg",
+  Jpg = "image/jpg",
   Png = "image/png",
   Gif = "image/gif",
 }
@@ -91,7 +92,7 @@ const showError = (
       message = "No file selected. Please select a file.";
       break;
     case "errorIncorrectFile":
-      message = "Invalid file type. Please upload an image file.";
+      message = "Invalid file type. Please upload a jpg, gif, or png file.";
       break;
     case "errorFileExceedsSize":
       message = "File size exceeds the allowed limit.";
@@ -131,6 +132,9 @@ const showError = (
     case "errorSearchInvalidCharacters":
       message =
         "Search queries should not contain numbers or special characters";
+      break;
+    case "errorSameImage":
+      message = "The same image was selected. Please choose a different image.";
       break;
     case "noError":
       message = "";

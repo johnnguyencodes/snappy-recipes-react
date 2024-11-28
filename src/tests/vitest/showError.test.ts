@@ -14,7 +14,7 @@ describe("showError", () => {
     const mockSetErrorMessage = vi.fn();
     showError("errorIncorrectFile", mockSetErrorMessage, null);
     expect(mockSetErrorMessage).toHaveBeenCalledWith(
-      "Invalid file type. Please upload an image file."
+      "Invalid file type. Please upload a jpg, gif, or png file."
     );
   });
 
