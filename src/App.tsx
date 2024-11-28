@@ -24,6 +24,7 @@ function App() {
   const [_imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [query, setQuery] = useState("");
+  const [recipeArray, setRecipeArray] = useState<string[] | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -154,21 +155,7 @@ function App() {
           // @ts-ignore
           const { description: imageTitle, score } = firstAnnotation;
           setQuery(imageTitle);
-
-          // Call Spoonacular API
-          try {
-            setStatusMessage(`Searching for recipes with ${imageTitle}`);
-            const spoonacularJson = await getRecipes(
-              imageTitle,
-              showError,
-              setErrorMessage
-            );
-            console.log("Spoonacular API response:", spoonacularJson);
-            setStatusMessage("");
-          } catch (error) {
-            setStatusMessage("");
-            console.error("Error fetching data from Spoonacular API:", error);
-          }
+          callSpoonacularAPI();
         } catch (error) {
           setStatusMessage("");
           console.error("Unexpected error during API calls:", error);
@@ -206,23 +193,26 @@ function App() {
       clearErrorMessage
     );
     if (isValid) {
-      // Call Spoonacular API
-      try {
-        setStatusMessage(`Searching for recipes with ${query}`);
-        const spoonacularJson = await getRecipes(
-          query,
-          showError,
-          setErrorMessage
-        );
-        setStatusMessage("");
-        console.log("Spoonacular API response:", spoonacularJson);
-      } catch (error) {
-        setStatusMessage("");
-        console.error("Error fetching data from Spoonacular API:", error);
-      }
+      callSpoonacularAPI();
     } else {
       console.error("Not a valid search query");
       setStatusMessage("");
+    }
+  };
+
+  const callSpoonacularAPI = async () => {
+    try {
+      setStatusMessage(`Searching for recipes with ${query}`);
+      const spoonacularJson = await getRecipes(
+        query,
+        showError,
+        setErrorMessage
+      );
+      console.log("Spoonacular API response:", spoonacularJson);
+      setStatusMessage("");
+    } catch (error) {
+      setStatusMessage("");
+      console.error("Error fetching data from Spoonacular API:", error);
     }
   };
 

@@ -213,26 +213,34 @@ const getRecipes = async (
   ) => void,
   setErrorMessage: (message: string) => void
 ) => {
-  try {
-    const response = await fetch(
-      `${SPOONACULAR_BASE_URL}&number=100&query=${query}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    if (!response.ok) {
-      showError("errorSpoonacularGetRequest", setErrorMessage, query);
-      throw new Error(`Error with GET fetch request with query ${query}`);
+  if (process.env.NODE_ENV === "development") {
+    console.log("i am running in development");
+    const cachedData = localStorage.getItem("spoonacularCache");
+    if (cachedData) {
+      return JSON.parse(cachedData);
     }
-    const json = await response.json();
-    return json;
-  } catch (error) {
-    showError("errorSpoonacularGetRequest", setErrorMessage, query);
-    console.error(`Error with fetching recipes with query ${query}`, error);
-    throw error;
+  } else {
+    try {
+      const response = await fetch(
+        `${SPOONACULAR_BASE_URL}&number=100&query=${query}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        showError("errorSpoonacularGetRequest", setErrorMessage, query);
+        throw new Error(`Error with GET fetch request with query ${query}`);
+      }
+      const json = await response.json();
+      return json;
+    } catch (error) {
+      showError("errorSpoonacularGetRequest", setErrorMessage, query);
+      console.error(`Error with fetching recipes with query ${query}`, error);
+      throw error;
+    }
   }
 };
 
