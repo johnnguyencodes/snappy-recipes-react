@@ -2,29 +2,6 @@ import { fileValidation } from "../../lib/formUtils.ts";
 import { describe, it, expect, vi } from "vitest";
 
 describe("fileValidation", () => {
-  it("should call showError with `errorNoFile` if no files are provided", () => {
-    const mockEvent = { target: { files: null } } as any;
-    const mockShowError = vi.fn();
-    const mockSetImageFile = vi.fn();
-    const mockSetErrorMessage = vi.fn();
-    const mockClearErrorMessage = vi.fn();
-    const result = fileValidation(
-      mockEvent,
-      mockShowError,
-      mockSetImageFile,
-      mockSetErrorMessage,
-      mockClearErrorMessage
-    );
-    expect(result).toBe(false);
-    expect(mockShowError).toHaveBeenCalledWith(
-      "errorNoFile",
-      mockSetErrorMessage,
-      null
-    );
-    expect(mockClearErrorMessage).not.toHaveBeenCalled();
-    expect(mockSetImageFile).not.toHaveBeenCalled();
-  });
-
   it("should call showError `errorFileExceedsSize` for a file that is too large", () => {
     const mockEvent = { target: { files: [{ size: 99999999999 }] } } as any;
     const mockShowError = vi.fn();

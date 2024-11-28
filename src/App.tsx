@@ -23,6 +23,7 @@ function App() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const fetchAccessToken = async () => {
@@ -52,6 +53,13 @@ function App() {
   };
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    setImageFile(null);
+    setQuery("");
+    setErrorMessage("");
+    if (searchInputRef.current) {
+      searchInputRef.current.value = "";
+    }
+    document.getElementById;
     let selectedFile: File | null = null;
     // Validate file input
     const isValid = fileValidation(
@@ -81,6 +89,7 @@ function App() {
           );
         } catch (error) {
           console.error("Error uploading image to Imgur:", error);
+          setStatusMessage("");
           return;
         }
 
@@ -96,6 +105,7 @@ function App() {
           );
         } catch (error) {
           console.error("Error fetching data from Google Vision API:", error);
+          setStatusMessage("");
           return;
         }
 
@@ -112,7 +122,7 @@ function App() {
 
         // Call Spoonacular API
         try {
-          setStatusMessage(`Searching for recipes with ${query}`);
+          setStatusMessage(`Searching for recipes with ${imageTitle}`);
           const spoonacularJson = await getRecipes(
             imageTitle,
             showError,
@@ -121,17 +131,24 @@ function App() {
           console.log("Spoonacular API response:", spoonacularJson);
           setStatusMessage("");
         } catch (error) {
+          setStatusMessage("");
           console.error("Error fetching data from Spoonacular API:", error);
         }
       } catch (error) {
+        setStatusMessage("");
         console.error("Unexpected error during API calls:", error);
       }
     } else {
+      setStatusMessage("");
       console.error("No valid file selected");
     }
   };
 
   const handleSearch = async (query: string) => {
+    setImageFile(null);
+    setQuery("");
+    setErrorMessage("");
+
     // Validate search input
     const isValid = searchValidation(
       query,
@@ -151,10 +168,12 @@ function App() {
         setStatusMessage("");
         console.log("Spoonacular API response:", spoonacularJson);
       } catch (error) {
+        setStatusMessage("");
         console.error("Error fetching data from Spoonacular API:", error);
       }
     } else {
       console.error("Not a valid search query");
+      setStatusMessage("");
     }
   };
 
@@ -195,6 +214,7 @@ function App() {
           />
           <Input
             id="input"
+            ref={searchInputRef}
             placeholder="Search by entering your ingredient or upload an image"
             onChange={(event) => handleQueryChange(event)}
             onKeyDown={(event) => handleKeyDown(event)}
