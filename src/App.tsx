@@ -229,7 +229,22 @@ function App() {
 
   return (
     <div className="m-10">
-      <header className="row mb-0 flex items-center justify-between"></header>
+      <header className="row mb-0 flex items-center justify-between">
+        <h1 className="mb-0 pb-0 text-2xl font-extrabold">Snappy Recipes</h1>
+        {statusMessage && (
+          <div className="error-message mb-4 rounded bg-green-100 p-2 text-green-600">
+            {statusMessage}
+          </div>
+        )}
+        <div className="flex">
+          <Button className="border border-black bg-white font-bold text-black">
+            Show Favorites
+          </Button>
+          <Button className="ml-2 border border-black bg-white font-bold text-black">
+            <Settings className="h-4 w-4"></Settings>
+          </Button>
+        </div>
+      </header>
       <div className="mt-3">
         <label htmlFor="input" className="text-sm font-semibold">
           Search Recipes
