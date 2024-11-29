@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect, useRef, ChangeEvent, KeyboardEvent } from "react";
 import { Settings, Upload } from "lucide-react";
+import Recipes from "@/components/app/Recipes";
 import {
   fileValidation,
   searchValidation,
@@ -15,6 +16,7 @@ import {
   postImageUrlToGoogle,
   getRecipes,
 } from "./lib/apiUtils";
+import { IRecipe } from "../types/APIResponseTypes";
 
 function App() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -24,7 +26,7 @@ function App() {
   const [_imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [query, setQuery] = useState("");
-  const [recipeArray, setRecipeArray] = useState<string[] | null>(null);
+  const [recipeArray, setRecipeArray] = useState<IRecipe[] | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -46,6 +48,11 @@ function App() {
       }
     };
   }, [previewUrl]);
+
+  useEffect(() => {
+    // Get random recipes on page load
+    callSpoonacularAPI();
+  }, []);
 
   const handleUploadButtonClick = () => {
     if (fileInputRef.current) {
@@ -208,7 +215,9 @@ function App() {
         showError,
         setErrorMessage
       );
-      console.log("Spoonacular API response:", spoonacularJson);
+      if (spoonacularJson) {
+        setRecipeArray(spoonacularJson.results);
+      }
       setStatusMessage("");
     } catch (error) {
       setStatusMessage("");
@@ -218,22 +227,7 @@ function App() {
 
   return (
     <div className="m-10">
-      <header className="row mb-0 flex items-center justify-between">
-        <h1 className="mb-0 pb-0 text-2xl font-extrabold">Snappy Recipes</h1>
-        {statusMessage && (
-          <div className="error-message mb-4 rounded bg-green-100 p-2 text-green-600">
-            {statusMessage}
-          </div>
-        )}
-        <div className="flex">
-          <Button className="border border-black bg-white font-bold text-black">
-            Show Favorites
-          </Button>
-          <Button className="ml-2 border border-black bg-white font-bold text-black">
-            <Settings className="h-4 w-4"></Settings>
-          </Button>
-        </div>
-      </header>
+      <header className="row mb-0 flex items-center justify-between"></header>
       <div className="mt-3">
         <label htmlFor="input" className="text-sm font-semibold">
           Search Recipes
@@ -282,6 +276,7 @@ function App() {
             />
           </div>
         )}
+        <Recipes recipes={recipeArray} />
       </div>
     </div>
   );

@@ -214,7 +214,6 @@ const getRecipes = async (
   setErrorMessage: (message: string) => void
 ) => {
   if (process.env.NODE_ENV === "development") {
-    console.log("i am running in development");
     const cachedData = localStorage.getItem("spoonacularCache");
     if (cachedData) {
       return JSON.parse(cachedData);
