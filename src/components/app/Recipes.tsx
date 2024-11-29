@@ -3,7 +3,11 @@ import { IRecipe } from "../../../types/APIResponseTypes";
 import RecipeCard from "./RecipeCard";
 import { validateImageUrl } from "@/lib/appUtils";
 
-const Recipes: React.FC<{ recipes: IRecipe[] | null }> = ({ recipes }) => {
+const Recipes: React.FC<{
+  recipes: IRecipe[] | null;
+  showModal: boolean;
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ recipes, showModal, setShowModal }) => {
   const [validatedRecipes, setValidatedRecipes] = useState<IRecipe[] | null>(
     null
   );
@@ -45,6 +49,8 @@ const Recipes: React.FC<{ recipes: IRecipe[] | null }> = ({ recipes }) => {
           analyzedInstructions={recipe.analyzedInstructions}
           diets={recipe.diets}
           summary={recipe.summary}
+          showModal={showModal}
+          setShowModal={setShowModal}
         />
       ))}
     </div>

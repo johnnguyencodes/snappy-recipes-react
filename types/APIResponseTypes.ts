@@ -38,9 +38,22 @@ export interface IRecipe {
         amount: number;
         unit: string;
       }>;
-      equipment: Array<{ id: number; name: string }>;
+      equipment: Array<{
+        id: number;
+        name: string;
+      }>;
     }>;
   }>;
   diets: string[];
   summary: string;
+}
+
+export interface IRecipesProps extends IRecipe {
+  showModal: boolean;
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export interface IRecipeModalProps extends IRecipe {
+  showModal: boolean;
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
