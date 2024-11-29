@@ -49,8 +49,7 @@ export interface IRecipe {
 }
 
 export interface IRecipeCardProps extends IRecipe {
-  showModal: boolean;
-  setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
+  onCardClick: (recipe: IRecipe) => void;
 }
 
 export interface IRecipeModalProps {
