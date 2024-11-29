@@ -4,7 +4,7 @@ import {
   DialogContent,
   DialogTitle,
   DialogDescription,
-} from "../ui/shadcnDialog.tsx";
+} from "../ui/dialog.tsx";
 import { useEffect, useRef, MutableRefObject } from "react";
 import { IModalProps } from "types/APIResponseTypes";
 import { Button } from "../ui/button";
