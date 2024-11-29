@@ -8,9 +8,7 @@ import {
   CardFooter,
   CardTitle,
 } from "@/components/ui/card";
-import { lazy } from "react";
-
-const Modal = lazy(() => import("./Modal"));
+import Modal from "./Modal";
 
 const RecipeCard: React.FC<IRecipeModalProps> = ({
   id,
