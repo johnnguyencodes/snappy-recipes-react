@@ -1,4 +1,4 @@
-import { IRecipe } from "../../../types/APIResponseTypes";
+import { IRecipeCardProps } from "../../../types/APIResponseTypes";
 import {
   Card,
   CardContent,
@@ -8,26 +8,42 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-const RecipeCard = (props: IRecipe) => {
-  const {
-    id,
-    image,
-    title,
-    readyInMinutes,
-    servings,
-    nutrition,
-    // sourceUrl,
-    // analyzedInstructions,
-    diets,
-    // summary,
-  } = props;
+const RecipeCard: React.FC<IRecipeCardProps> = ({
+  id,
+  image,
+  title,
+  readyInMinutes,
+  servings,
+  nutrition,
+  sourceUrl,
+  analyzedInstructions,
+  diets,
+  summary,
+  onCardClick,
+}) => {
   const caloriesAmount = Math.round(nutrition.nutrients[0].amount);
   const proteinAmount = Math.round(nutrition.nutrients[8].amount);
   const fatAmount = Math.round(nutrition.nutrients[1].amount);
   const carbsAmount = Math.round(nutrition.nutrients[3].amount);
 
   return (
-    <Card id={id.toString()} key={id.toString()}>
+    <Card
+      id={id.toString()}
+      onClick={() =>
+        onCardClick({
+          id,
+          image,
+          title,
+          readyInMinutes,
+          servings,
+          nutrition,
+          sourceUrl,
+          analyzedInstructions,
+          diets,
+          summary,
+        })
+      }
+    >
       <CardHeader className="image-container">
         <img
           src={image}

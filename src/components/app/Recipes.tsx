@@ -1,12 +1,17 @@
 import { useState, useEffect } from "react";
 import { IRecipe } from "../../../types/APIResponseTypes";
 import RecipeCard from "./RecipeCard";
+import Modal from "./Modal";
 import { validateImageUrl } from "@/lib/appUtils";
+import { Button } from "../ui/button";
 
-const Recipes: React.FC<{ recipes: IRecipe[] | null }> = ({ recipes }) => {
+const Recipes: React.FC<{
+  recipes: IRecipe[] | null;
+}> = ({ recipes }) => {
   const [validatedRecipes, setValidatedRecipes] = useState<IRecipe[] | null>(
     null
   );
+  const [selectedRecipe, setSelectedRecipe] = useState<IRecipe | null>(null);
 
   useEffect(() => {
     const validateRecipes = async () => {
@@ -23,6 +28,14 @@ const Recipes: React.FC<{ recipes: IRecipe[] | null }> = ({ recipes }) => {
     };
     validateRecipes();
   }, [recipes]);
+
+  const handleCardClick = (recipe: IRecipe) => {
+    setSelectedRecipe(recipe);
+  };
+
+  const closeModal = () => {
+    setSelectedRecipe(null);
+  };
 
   if (!validatedRecipes || validatedRecipes.length === 0) {
     // todo: if searching, don't show anything
@@ -45,8 +58,17 @@ const Recipes: React.FC<{ recipes: IRecipe[] | null }> = ({ recipes }) => {
           analyzedInstructions={recipe.analyzedInstructions}
           diets={recipe.diets}
           summary={recipe.summary}
+          onCardClick={() => handleCardClick(recipe)}
         />
       ))}
+      {selectedRecipe && (
+        <Modal>
+          <div>
+            <h3>{selectedRecipe.title}</h3>
+            <Button onClick={closeModal}>Close</Button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };
