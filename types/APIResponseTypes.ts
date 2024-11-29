@@ -1,3 +1,5 @@
+import { ReactElement } from "react";
+
 export interface IRecipe {
   id: number;
   image: string;
@@ -72,4 +74,12 @@ export interface IRecipeModalProps {
       }>;
     }>;
   }>;
+}
+
+export interface IModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title?: string;
+  description?: string;
+  children: ReactElement;
 }

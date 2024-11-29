@@ -62,10 +62,26 @@ const Recipes: React.FC<{
         />
       ))}
       {selectedRecipe && (
-        <Modal>
+        <Modal
+          isOpen={!!selectedRecipe}
+          onClose={closeModal}
+          title={selectedRecipe.title}
+          description={`Ready in ${selectedRecipe.readyInMinutes} minutes. Serves ${selectedRecipe.servings}`}
+        >
           <div>
-            <h3>{selectedRecipe.title}</h3>
-            <Button onClick={closeModal}>Close</Button>
+            <p>
+              <strong>Nutrition:</strong>
+            </p>
+            <ul>
+              {selectedRecipe.nutrition.nutrients.map((nutrient) => (
+                <li key={nutrient.name}>
+                  {nutrient.name}: {nutrient.amount} {nutrient.unit}
+                </li>
+              ))}
+            </ul>
+            <Button onClick={closeModal} className="mt-4">
+              Close
+            </Button>
           </div>
         </Modal>
       )}
