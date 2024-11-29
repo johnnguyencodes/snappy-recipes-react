@@ -114,6 +114,7 @@ function App() {
         clearErrorMessage
       );
       if (isValid && selectedFile) {
+        setRecipeArray(null);
         setStatusMessage("Analyzing image");
         // Prepare form data for Imgur upload
         const formData = appendImgurFormData(selectedFile); // Call the utility function to handle form data and image upload
@@ -183,6 +184,7 @@ function App() {
   const handleSearch = async (query: string) => {
     setImageFile(null);
     setErrorMessage("");
+    setRecipeArray(null);
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl); // Free memory by revoking the URL
       setPreviewUrl(null);
