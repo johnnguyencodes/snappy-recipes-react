@@ -27,7 +27,6 @@ function App() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [recipeArray, setRecipeArray] = useState<IRecipe[] | null>(null);
-  const [showModal, setShowModal] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
