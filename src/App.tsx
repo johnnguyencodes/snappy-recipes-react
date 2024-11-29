@@ -294,11 +294,7 @@ function App() {
             />
           </div>
         )}
-        <Recipes
-          recipes={recipeArray}
-          setShowModal={setShowModal}
-          showModal={showModal}
-        />
+        <Recipes recipes={recipeArray} />
       </div>
     </div>
   );
