@@ -26,6 +26,12 @@
       "@/*": ["./src/*"] // Keep your custom paths
     }
   },
-  "include": ["**/*.ts", "**/*.tsx", "src/tests/**/*.ts", "src/global.d.ts"],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "src/tests/**/*.ts",
+    "src/global.d.ts",
+    "types"
+  ],
   "exclude": ["node_modules"]
 }
