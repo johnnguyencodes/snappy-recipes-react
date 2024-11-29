@@ -1,4 +1,4 @@
-import { IRecipeModalProps } from "../../../types/APIResponseTypes";
+import { IRecipeCardProps } from "../../../types/APIResponseTypes";
 import {
   Card,
   CardContent,
@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import Modal from "./Modal";
 
-const RecipeCard: React.FC<IRecipeModalProps> = ({
+const RecipeCard: React.FC<IRecipeCardProps> = ({
   id,
   image,
   title,

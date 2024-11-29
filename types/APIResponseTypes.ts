@@ -48,12 +48,29 @@ export interface IRecipe {
   summary: string;
 }
 
-export interface IRecipesProps extends IRecipe {
+export interface IRecipeCardProps extends IRecipe {
   showModal: boolean;
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export interface IRecipeModalProps extends IRecipe {
-  showModal: boolean;
-  setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
+export interface IRecipeModalProps {
+  image: string;
+  summary: string;
+  analyzedInstructions: Array<{
+    name: string;
+    steps: Array<{
+      number: number;
+      step: string;
+      ingredients: Array<{
+        id: number;
+        name: string;
+        amount: number;
+        unit: string;
+      }>;
+      equipment: Array<{
+        id: number;
+        name: string;
+      }>;
+    }>;
+  }>;
 }
