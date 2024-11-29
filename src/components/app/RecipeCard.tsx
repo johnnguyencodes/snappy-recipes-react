@@ -1,4 +1,3 @@
-import { IRecipe } from "../../../types/APIResponseTypes";
 import { IRecipeModalProps } from "../../../types/APIResponseTypes";
 import {
   Card,
