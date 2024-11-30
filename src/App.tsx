@@ -229,7 +229,11 @@ function App() {
     }
   };
 
-  const closeModal = () => {
+  const handleSettingsClick = () => {
+    setIsSettingsOpen(true);
+  };
+
+  const closeSettingsModal = () => {
     setIsSettingsOpen(false);
   };
 
@@ -246,7 +250,10 @@ function App() {
           <Button className="border border-black bg-white font-bold text-black">
             Show Favorites
           </Button>
-          <Button className="ml-2 border border-black bg-white font-bold text-black">
+          <Button
+            onClick={handleSettingsClick}
+            className="ml-2 border border-black bg-white font-bold text-black"
+          >
             <Settings className="h-4 w-4"></Settings>
           </Button>
         </div>
@@ -304,7 +311,7 @@ function App() {
       {isSettingsOpen && (
         <Modal
           isOpen={isSettingsOpen}
-          onClose={closeModal}
+          onClose={closeSettingsModal}
           title="Settings"
           description="Modify your search."
         >
