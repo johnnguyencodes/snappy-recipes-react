@@ -94,7 +94,7 @@ export enum FoodIntolerance {
   Dairy = "dairy",
   Egg = "egg",
   Gluten = "gluten",
-  Peanut = "Peanut",
+  Peanut = "peanut",
   Seafood = "seafood",
   Sesame = "sesame",
   Shellfish = "shellfish",

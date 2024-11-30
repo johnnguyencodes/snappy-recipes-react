@@ -37,6 +37,12 @@ function App() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [restrictionsArray, setRestrictionsArray] = useState<string[] | null>(
+    null
+  );
+  const [intolerancesArray, setIntolerancesArray] = useState<string[] | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchAccessToken = async () => {
@@ -218,10 +224,14 @@ function App() {
   };
 
   const callSpoonacularAPI = async () => {
+    const restrictionsString = (restrictionsArray ?? []).toString();
+    const intolerancesString = (intolerancesArray ?? []).toString();
     try {
       setStatusMessage(`Searching for recipes with ${query}`);
       const spoonacularJson = await getRecipes(
         query,
+        restrictionsString,
+        intolerancesString,
         showError,
         setErrorMessage
       );
@@ -241,6 +251,34 @@ function App() {
 
   const closeSettingsModal = () => {
     setIsSettingsOpen(false);
+  };
+
+  const handleRestrictionClick = (restriction: string) => {
+    const tempArray = restrictionsArray || [];
+    const index = tempArray.indexOf(restriction);
+    if (index > -1) {
+      tempArray.splice(index, 1);
+      setRestrictionsArray(tempArray);
+      console.log("slice restriction:", restriction);
+    } else {
+      tempArray.push(restriction);
+      setRestrictionsArray(tempArray);
+      console.log("push restriction:", restriction);
+    }
+  };
+
+  const handleIntoleranceClick = (intolerance: string) => {
+    const tempArray = intolerancesArray || [];
+    const index = tempArray.indexOf(intolerance);
+    if (index > -1) {
+      tempArray.splice(index, 1);
+      setIntolerancesArray(tempArray);
+      console.log("slice intolerance:", intolerance);
+    } else {
+      tempArray.push(intolerance);
+      setIntolerancesArray(tempArray);
+      console.log("push intolerance:", intolerance);
+    }
   };
 
   return (
@@ -333,6 +371,7 @@ function App() {
                         name="restriction"
                         type="checkbox"
                         aria-describedby={restriction}
+                        onChange={() => handleRestrictionClick(restriction)}
                         className="col-start-1 row-start-1 appearance-none rounded border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto"
                       />
                       <svg
@@ -379,6 +418,7 @@ function App() {
                         name="intolerance"
                         type="checkbox"
                         aria-describedby={intolerance}
+                        onChange={() => handleIntoleranceClick(intolerance)}
                         className="col-start-1 row-start-1 appearance-none rounded border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto"
                       />
                       <svg

@@ -11,9 +11,12 @@ describe("getRecipes", () => {
 
     const mockShowError = vi.fn();
     const mockSetErrorMessage = vi.fn();
-
+    const intolerancesString = "lacto-vegetarian";
+    const restrictionsString = "egg,peanut";
     const result = await getRecipes(
       "pasta",
+      intolerancesString,
+      restrictionsString,
       mockShowError,
       mockSetErrorMessage
     );
@@ -35,9 +38,17 @@ describe("getRecipes", () => {
 
     const mockShowError = vi.fn();
     const mockSetErrorMessage = vi.fn();
+    const intolerancesString = "lacto-vegetarian";
+    const restrictionsString = "egg,peanut";
 
     await expect(
-      getRecipes("pasta", mockShowError, mockSetErrorMessage)
+      getRecipes(
+        "pasta",
+        intolerancesString,
+        restrictionsString,
+        mockShowError,
+        mockSetErrorMessage
+      )
     ).rejects.toThrow("Error with GET fetch request with query pasta");
   });
 
@@ -50,9 +61,17 @@ describe("getRecipes", () => {
 
     const mockShowError = vi.fn();
     const mockSetErrorMessage = vi.fn();
+    const intolerancesString = "lacto-vegetarian";
+    const restrictionsString = "egg,peanut";
 
     await expect(
-      getRecipes("pasta", mockShowError, mockSetErrorMessage)
+      getRecipes(
+        "pasta",
+        intolerancesString,
+        restrictionsString,
+        mockShowError,
+        mockSetErrorMessage
+      )
     ).rejects.toThrow("Error with fetching recipes with query pasta");
   });
 
@@ -64,8 +83,16 @@ describe("getRecipes", () => {
 
     const mockShowError = vi.fn();
     const mockSetErrorMessage = vi.fn();
+    const intolerancesString = "lacto-vegetarian";
+    const restrictionsString = "egg,peanut";
 
-    await getRecipes("pasta", mockShowError, mockSetErrorMessage);
+    await getRecipes(
+      "pasta",
+      intolerancesString,
+      restrictionsString,
+      mockShowError,
+      mockSetErrorMessage
+    );
     expect(fetch).toHaveBeenCalledWith(
       expect.stringContaining("&query=pasta"),
       expect.any(Object)
@@ -80,8 +107,16 @@ describe("getRecipes", () => {
 
     const mockShowError = vi.fn();
     const mockSetErrorMessage = vi.fn();
+    const intolerancesString = "lacto-vegetarian";
+    const restrictionsString = "egg,peanut";
 
-    await getRecipes("pasta", mockShowError, mockSetErrorMessage);
+    await getRecipes(
+      "pasta",
+      intolerancesString,
+      restrictionsString,
+      mockShowError,
+      mockSetErrorMessage
+    );
     expect(fetch).toHaveBeenCalledWith(
       expect.any(String),
       expect.objectContaining({
