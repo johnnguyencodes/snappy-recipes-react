@@ -16,7 +16,6 @@ const RecipeCard: React.FC<IRecipeCardProps> = ({
   servings,
   nutrition,
   sourceUrl,
-  analyzedInstructions,
   diets,
   summary,
   onCardClick,
@@ -38,7 +37,6 @@ const RecipeCard: React.FC<IRecipeCardProps> = ({
           servings,
           nutrition,
           sourceUrl,
-          analyzedInstructions,
           diets,
           summary,
         })

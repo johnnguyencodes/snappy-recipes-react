@@ -13,51 +13,14 @@ export interface IRecipe {
       unit: string;
       percentOfDailyNeeds: number;
     }>;
-    properties?: Array<{
-      name: string;
-      amount: number;
-      unit: string;
-    }>;
-    caloricBreakdown?: {
-      percentProtein: number;
-      percentFat: number;
-      percentCarbs: number;
-    };
-    weightPerServing?: {
-      amount: number;
-      unit: string;
-    };
     ingredients: {
       id: number;
       name: string;
       amount: number;
       unit: string;
-      nutrients: {
-        name: string;
-        amount: number;
-        unit: string;
-        percentOfDailyNeeds?: number;
-      }[];
     }[];
   };
   sourceUrl: string;
-  analyzedInstructions: Array<{
-    name: string;
-    steps: Array<{
-      number: number;
-      step: string;
-      ingredients: Array<{
-        id: number;
-        name: string;
-        amount: number;
-        unit: string;
-      }>;
-      equipment: Array<{
-        id: number;
-        name: string;
-      }>;
-    }>;
-  }>;
   diets: string[];
   summary: string;
 }

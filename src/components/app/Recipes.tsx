@@ -61,7 +61,6 @@ const Recipes: React.FC<{
           servings={recipe.servings}
           nutrition={recipe.nutrition}
           sourceUrl={recipe.sourceUrl}
-          analyzedInstructions={recipe.analyzedInstructions}
           diets={recipe.diets}
           summary={recipe.summary}
           onCardClick={() => handleCardClick(recipe)}
