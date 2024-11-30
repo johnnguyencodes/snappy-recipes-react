@@ -7,7 +7,6 @@ import {
 } from "../ui/dialog.tsx";
 import { useEffect, useRef, MutableRefObject } from "react";
 import { IModalProps } from "types/APIResponseTypes";
-import { Button } from "../ui/button";
 
 const Modal: React.FC<IModalProps> = ({
   isOpen,
