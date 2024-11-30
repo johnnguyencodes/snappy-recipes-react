@@ -88,7 +88,7 @@ const Recipes: React.FC<{
                 rel="noopener noreferrer"
               >
                 <span>Recipe Page</span>
-                // <ExternalLink />
+                <ExternalLink />
               </a>
             </Button>
             <p>
