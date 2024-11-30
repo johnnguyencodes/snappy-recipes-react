@@ -194,8 +194,8 @@ const onImageRecognitionSuccess = (
   // @ts-ignore
   const { description: imageTitle, score } = firstAnnotation;
 
-  // Get recipes based on title
-  getRecipes(imageTitle, showError, setErrorMessage);
+  // // Get recipes based on title
+  // getRecipes(imageTitle, showError, setErrorMessage);
 };
 
 // const onImageRecognitionError = (error) => {
@@ -206,6 +206,8 @@ const onImageRecognitionSuccess = (
 // Fetch recipes from Spoonacular
 const getRecipes = async (
   query: string,
+  intolerances: string,
+  restrictions: string,
   showError: (
     errorType: string,
     setErrorMessage: (message: string) => void,
@@ -221,7 +223,7 @@ const getRecipes = async (
   } else {
     try {
       const response = await fetch(
-        `${SPOONACULAR_BASE_URL}&number=100&query=${query}`,
+        `${SPOONACULAR_BASE_URL}&number=100&query=${query}&intolerances=${intolerances}&diet=${restrictions}`,
         {
           method: "GET",
           headers: {

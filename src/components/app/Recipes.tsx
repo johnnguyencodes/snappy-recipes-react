@@ -39,7 +39,7 @@ const Recipes: React.FC<{
     setSelectedRecipe(recipe);
   };
 
-  const closeModal = () => {
+  const closeRecipeModal = () => {
     setSelectedRecipe(null);
   };
 
@@ -70,12 +70,16 @@ const Recipes: React.FC<{
       {selectedRecipe && (
         <Modal
           isOpen={!!selectedRecipe}
-          onClose={closeModal}
+          onClose={closeRecipeModal}
           title={selectedRecipe.title}
-          image={selectedRecipe.image}
           description={`Ready in ${selectedRecipe.readyInMinutes} minutes. Serves ${selectedRecipe.servings}`}
         >
           <div>
+            <img
+              className="w-100 mx-auto mb-4"
+              src={selectedRecipe.image}
+              alt={selectedRecipe.title}
+            />
             <Button className="mb-4">
               <a
                 href={selectedRecipe.sourceUrl}
@@ -84,7 +88,7 @@ const Recipes: React.FC<{
                 rel="noopener noreferrer"
               >
                 <span>Recipe Page</span>
-                <ExternalLink />
+                // <ExternalLink />
               </a>
             </Button>
             <p>
@@ -106,7 +110,7 @@ const Recipes: React.FC<{
                 ))}
               </ul>
             </div>
-            <Button onClick={closeModal} className="mt-4">
+            <Button onClick={closeRecipeModal} className="mt-4">
               Close
             </Button>
           </div>

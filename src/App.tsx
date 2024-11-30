@@ -16,7 +16,14 @@ import {
   postImageUrlToGoogle,
   getRecipes,
 } from "./lib/apiUtils";
-import { IRecipe } from "../types/APIResponseTypes";
+import {
+  IRecipe,
+  DietaryRestriction,
+  DietaryRestrictionLabels,
+  FoodIntolerance,
+  FoodIntoleranceLabels,
+} from "../types/APIResponseTypes";
+import Modal from "./components/app/Modal";
 
 function App() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -29,6 +36,13 @@ function App() {
   const [recipeArray, setRecipeArray] = useState<IRecipe[] | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [restrictionsArray, setRestrictionsArray] = useState<string[] | null>(
+    null
+  );
+  const [intolerancesArray, setIntolerancesArray] = useState<string[] | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchAccessToken = async () => {
@@ -210,10 +224,14 @@ function App() {
   };
 
   const callSpoonacularAPI = async () => {
+    const restrictionsString = (restrictionsArray ?? []).toString();
+    const intolerancesString = (intolerancesArray ?? []).toString();
     try {
       setStatusMessage(`Searching for recipes with ${query}`);
       const spoonacularJson = await getRecipes(
         query,
+        restrictionsString,
+        intolerancesString,
         showError,
         setErrorMessage
       );
@@ -224,6 +242,42 @@ function App() {
     } catch (error) {
       setStatusMessage("");
       console.error("Error fetching data from Spoonacular API:", error);
+    }
+  };
+
+  const handleSettingsClick = () => {
+    setIsSettingsOpen(true);
+  };
+
+  const closeSettingsModal = () => {
+    setIsSettingsOpen(false);
+  };
+
+  const handleRestrictionClick = (restriction: string) => {
+    const tempArray = restrictionsArray || [];
+    const index = tempArray.indexOf(restriction);
+    if (index > -1) {
+      tempArray.splice(index, 1);
+      setRestrictionsArray(tempArray);
+      console.log("slice restriction:", restriction);
+    } else {
+      tempArray.push(restriction);
+      setRestrictionsArray(tempArray);
+      console.log("push restriction:", restriction);
+    }
+  };
+
+  const handleIntoleranceClick = (intolerance: string) => {
+    const tempArray = intolerancesArray || [];
+    const index = tempArray.indexOf(intolerance);
+    if (index > -1) {
+      tempArray.splice(index, 1);
+      setIntolerancesArray(tempArray);
+      console.log("slice intolerance:", intolerance);
+    } else {
+      tempArray.push(intolerance);
+      setIntolerancesArray(tempArray);
+      console.log("push intolerance:", intolerance);
     }
   };
 
@@ -240,7 +294,10 @@ function App() {
           <Button className="border border-black bg-white font-bold text-black">
             Show Favorites
           </Button>
-          <Button className="ml-2 border border-black bg-white font-bold text-black">
+          <Button
+            onClick={handleSettingsClick}
+            className="ml-2 border border-black bg-white font-bold text-black"
+          >
             <Settings className="h-4 w-4"></Settings>
           </Button>
         </div>
@@ -295,6 +352,111 @@ function App() {
         )}
         <Recipes recipes={recipeArray} />
       </div>
+      {isSettingsOpen && (
+        <Modal
+          isOpen={isSettingsOpen}
+          onClose={closeSettingsModal}
+          title="Settings"
+          description="Modify your recipe search by selecting the options below."
+        >
+          <div>
+            <h3>Select Dietary Restrictions</h3>
+            {Object.values(DietaryRestriction).map((restriction) => (
+              <div className="space-y-5">
+                <div className="flex gap-3">
+                  <div className="flex h-6 shrink-0 items-center">
+                    <div className="group grid size-4 grid-cols-1">
+                      <input
+                        id={restriction}
+                        name="restriction"
+                        type="checkbox"
+                        aria-describedby={restriction}
+                        onChange={() => handleRestrictionClick(restriction)}
+                        className="col-start-1 row-start-1 appearance-none rounded border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto"
+                      />
+                      <svg
+                        fill="none"
+                        viewBox="0 0 14 14"
+                        className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25"
+                      >
+                        <path
+                          d="M3 8L6 11L11 3.5"
+                          strokeWidth={2}
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="opacity-0 group-has-[:checked]:opacity-100"
+                        />
+                        <path
+                          d="M3 7H11"
+                          strokeWidth={2}
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="opacity-0 group-has-[:indeterminate]:opacity-100"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="text-sm/6">
+                    <label
+                      htmlFor={restriction}
+                      className="font-medium text-gray-900"
+                    >
+                      {DietaryRestrictionLabels[restriction]}
+                    </label>{" "}
+                  </div>
+                </div>
+              </div>
+            ))}
+            <h3>Select Food Intolerances</h3>
+            {Object.values(FoodIntolerance).map((intolerance) => (
+              <div className="space-y-5">
+                <div className="flex gap-3">
+                  <div className="flex h-6 shrink-0 items-center">
+                    <div className="group grid size-4 grid-cols-1">
+                      <input
+                        id={intolerance}
+                        name="intolerance"
+                        type="checkbox"
+                        aria-describedby={intolerance}
+                        onChange={() => handleIntoleranceClick(intolerance)}
+                        className="col-start-1 row-start-1 appearance-none rounded border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto"
+                      />
+                      <svg
+                        fill="none"
+                        viewBox="0 0 14 14"
+                        className="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-[:disabled]:stroke-gray-950/25"
+                      >
+                        <path
+                          d="M3 8L6 11L11 3.5"
+                          strokeWidth={2}
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="opacity-0 group-has-[:checked]:opacity-100"
+                        />
+                        <path
+                          d="M3 7H11"
+                          strokeWidth={2}
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="opacity-0 group-has-[:indeterminate]:opacity-100"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="text-sm/6">
+                    <label
+                      htmlFor={intolerance}
+                      className="font-medium text-gray-900"
+                    >
+                      {FoodIntoleranceLabels[intolerance]}
+                    </label>{" "}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

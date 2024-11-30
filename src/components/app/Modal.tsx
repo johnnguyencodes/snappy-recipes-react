@@ -12,7 +12,6 @@ const Modal: React.FC<IModalProps> = ({
   isOpen,
   onClose,
   title,
-  image,
   description,
   children,
 }) => {
@@ -50,7 +49,6 @@ const Modal: React.FC<IModalProps> = ({
             className="mx-auto text-center text-lg font-bold"
           >
             {title}
-            <img className="w-100 mx-auto" src={image} alt={title} />
           </DialogTitle>
         )}
         {description && (
