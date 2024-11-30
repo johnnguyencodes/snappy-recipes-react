@@ -1,3 +1,5 @@
+import { ReactElement } from "react";
+
 export interface IRecipe {
   id: number;
   image: string;
@@ -25,6 +27,18 @@ export interface IRecipe {
       amount: number;
       unit: string;
     };
+    ingredients: {
+      id: number;
+      name: string;
+      amount: number;
+      unit: string;
+      nutrients: {
+        name: string;
+        amount: number;
+        unit: string;
+        percentOfDailyNeeds?: number;
+      }[];
+    }[];
   };
   sourceUrl: string;
   analyzedInstructions: Array<{
@@ -72,4 +86,13 @@ export interface IRecipeModalProps {
       }>;
     }>;
   }>;
+}
+
+export interface IModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title?: string;
+  description?: string;
+  image?: string;
+  children: ReactElement;
 }

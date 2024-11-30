@@ -1,76 +1,69 @@
-import { useEffect, useRef, MutableRefObject, ReactElement } from "react";
-import { createPortal } from "react-dom";
+import {
+  Dialog,
+  DialogOverlay,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "../ui/dialog.tsx";
+import { useEffect, useRef, MutableRefObject } from "react";
+import { IModalProps } from "types/APIResponseTypes";
 
-interface ModalProps {
-  children: ReactElement;
-  onClose?: () => void;
-}
-
-const Modal = ({ children, onClose }: ModalProps) => {
+const Modal: React.FC<IModalProps> = ({
+  isOpen,
+  onClose,
+  title,
+  image,
+  description,
+  children,
+}) => {
   // Using `useRef` to keep track of the `div` we create for the modal. It will only create this element once and it ensures we get the same `div` an every re-render
   const modalRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
 
-  // Instead of calling `document.createElement("div")` on every render, you can check if the `elRef.current` already exists.
-  // If it does, you reuse the same DOM element. If it doesn’t, you create it once and assign it to `elRef.current`.
-  // This ensures that the `div` is only created the first time it’s needed and not on every render.
-  if (!modalRef.current) {
-    modalRef.current = document.createElement("div");
-  }
-
+  // Ensure the Escape key closes the modal
   useEffect(() => {
-    const modalRoot = document.getElementById("modal");
-    if (!modalRoot || !modalRef.current) {
-      console.warn("Modal root element is not found.");
-      return;
-    }
-    modalRoot.appendChild(modalRef.current);
-
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" && onClose) {
         onClose();
       }
     };
 
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      if (modalRef.current) {
-        modalRoot.removeChild(modalRef.current);
-      }
-    };
-  }, [onClose]);
-
-  useEffect(() => {
-    const previouslyFocusedElement = document.activeElement as HTMLElement;
-    if (modalRef.current) {
-      modalRef.current.focus();
+    if (isOpen) {
+      document.addEventListener("keydown", handleKeyDown);
     }
 
     return () => {
-      if (previouslyFocusedElement) {
-        previouslyFocusedElement.focus();
-      }
+      document.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [isOpen, onClose]);
 
-  return createPortal(
-    <div
-      className="modal-container"
-      role="dialog"
-      aria-modal="true"
-      onClick={onClose}
-      aria-labelledby="modal-title"
-      aria-describedby="modal-description"
-      tabIndex={-1}
-    >
-      <div
-        className="modal-content"
-        onClick={(event) => event.stopPropagation()}
+  return (
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogOverlay className="fixed inset-0 bg-black/60 opacity-100" />
+      <DialogContent
+        ref={modalRef}
+        className="fixed left-1/2 top-1/2 z-50 max-h-[80%] max-w-lg -translate-x-1/2 -translate-y-1/2 transform overflow-auto rounded-md bg-white p-6 opacity-100 shadow-lg"
+        id="modal-content"
       >
-        {children}
-      </div>
-    </div>,
-    modalRef.current
+        {title && (
+          <DialogTitle
+            id="modal-title"
+            className="mx-auto text-center text-lg font-bold"
+          >
+            {title}
+            <img className="w-100 mx-auto" src={image} alt={title} />
+          </DialogTitle>
+        )}
+        {description && (
+          <DialogDescription
+            id="modal-description"
+            className="mx-auto text-sm text-muted-foreground"
+          >
+            {description}
+          </DialogDescription>
+        )}
+        <div>{children}</div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
