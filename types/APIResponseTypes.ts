@@ -66,33 +66,10 @@ export interface IRecipeCardProps extends IRecipe {
   onCardClick: (recipe: IRecipe) => void;
 }
 
-export interface IRecipeModalProps {
-  image: string;
-  summary: string;
-  analyzedInstructions: Array<{
-    name: string;
-    steps: Array<{
-      number: number;
-      step: string;
-      ingredients: Array<{
-        id: number;
-        name: string;
-        amount: number;
-        unit: string;
-      }>;
-      equipment: Array<{
-        id: number;
-        name: string;
-      }>;
-    }>;
-  }>;
-}
-
 export interface IModalProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
   description?: string;
-  image?: string;
   children: ReactElement;
 }

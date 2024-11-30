@@ -17,6 +17,7 @@ import {
   getRecipes,
 } from "./lib/apiUtils";
 import { IRecipe } from "../types/APIResponseTypes";
+import Modal from "./components/app/Modal";
 
 function App() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -29,6 +30,7 @@ function App() {
   const [recipeArray, setRecipeArray] = useState<IRecipe[] | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   useEffect(() => {
     const fetchAccessToken = async () => {
@@ -227,6 +229,10 @@ function App() {
     }
   };
 
+  const closeModal = () => {
+    setIsSettingsOpen(false);
+  };
+
   return (
     <div className="m-10">
       <header className="row mb-0 flex items-center justify-between">
@@ -295,6 +301,16 @@ function App() {
         )}
         <Recipes recipes={recipeArray} />
       </div>
+      {isSettingsOpen && (
+        <Modal
+          isOpen={isSettingsOpen}
+          onClose={closeModal}
+          title="Settings"
+          description="Modify your search."
+        >
+          <div></div>
+        </Modal>
+      )}
     </div>
   );
 }
