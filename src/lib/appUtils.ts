@@ -7,4 +7,13 @@ const validateImageUrl = (url: string, fallback: string): Promise<string> => {
   });
 };
 
-export { validateImageUrl };
+const saveToLocalStorage = (key: string, value: any) => {
+  localStorage.setItem(key, JSON.stringify(value));
+};
+
+const loadFromLocalStorage = (key: string) => {
+  const storedValue = localStorage.getItem(key);
+  return storedValue ? JSON.parse(storedValue) : null;
+};
+
+export { validateImageUrl, saveToLocalStorage, loadFromLocalStorage };

@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { useState, useEffect, useRef, ChangeEvent, KeyboardEvent } from "react";
 import { Settings, Upload } from "lucide-react";
 import Recipes from "@/components/app/Recipes";
+import { saveToLocalStorage, loadFromLocalStorage } from "@/lib/appUtils";
 import {
   fileValidation,
   searchValidation,
@@ -38,10 +39,10 @@ function App() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [restrictionsArray, setRestrictionsArray] = useState<string[] | null>(
-    null
+    loadFromLocalStorage("restrictionsArray") || []
   );
   const [intolerancesArray, setIntolerancesArray] = useState<string[] | null>(
-    null
+    loadFromLocalStorage("intolerancesArray") || []
   );
 
   useEffect(() => {
@@ -254,31 +255,27 @@ function App() {
   };
 
   const handleRestrictionClick = (restriction: string) => {
-    const tempArray = restrictionsArray || [];
+    const tempArray = [...(restrictionsArray || [])];
     const index = tempArray.indexOf(restriction);
     if (index > -1) {
       tempArray.splice(index, 1);
-      setRestrictionsArray(tempArray);
-      console.log("slice restriction:", restriction);
     } else {
       tempArray.push(restriction);
-      setRestrictionsArray(tempArray);
-      console.log("push restriction:", restriction);
     }
+    setRestrictionsArray(tempArray);
+    saveToLocalStorage("restrictionsArray", tempArray);
   };
 
   const handleIntoleranceClick = (intolerance: string) => {
-    const tempArray = intolerancesArray || [];
+    const tempArray = [...(intolerancesArray || [])];
     const index = tempArray.indexOf(intolerance);
     if (index > -1) {
       tempArray.splice(index, 1);
-      setIntolerancesArray(tempArray);
-      console.log("slice intolerance:", intolerance);
     } else {
       tempArray.push(intolerance);
-      setIntolerancesArray(tempArray);
-      console.log("push intolerance:", intolerance);
     }
+    setIntolerancesArray(tempArray);
+    saveToLocalStorage("intolerancesArray", tempArray);
   };
 
   return (
