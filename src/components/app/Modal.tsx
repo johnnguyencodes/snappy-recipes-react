@@ -13,6 +13,7 @@ const Modal: React.FC<IModalProps> = ({
   isOpen,
   onClose,
   title,
+  image,
   description,
   children,
 }) => {
@@ -41,30 +42,27 @@ const Modal: React.FC<IModalProps> = ({
       <DialogOverlay className="fixed inset-0 bg-black/60 opacity-100" />
       <DialogContent
         ref={modalRef}
-        className="fixed left-1/2 top-1/2 z-50 max-w-lg -translate-x-1/2 -translate-y-1/2 transform rounded-md bg-white p-6 opacity-100 shadow-lg"
+        className="fixed left-1/2 top-1/2 z-50 max-h-[80%] max-w-lg -translate-x-1/2 -translate-y-1/2 transform overflow-auto rounded-md bg-white p-6 opacity-100 shadow-lg"
         id="modal-content"
       >
         {title && (
-          <DialogTitle id="modal-title" className="text-lg font-bold">
+          <DialogTitle
+            id="modal-title"
+            className="mx-auto text-center text-lg font-bold"
+          >
             {title}
+            <img className="w-100 mx-auto" src={image} alt={title} />
           </DialogTitle>
         )}
         {description && (
           <DialogDescription
             id="modal-description"
-            className="text-sm text-muted-foreground"
+            className="mx-auto text-sm text-muted-foreground"
           >
             {description}
           </DialogDescription>
         )}
         <div>{children}</div>
-        <Button
-          onClick={onClose}
-          className="absolute right-3 top-3 rounded-full p-2 text-muted-foreground hover:bg-muted-foreground/20"
-          aria-label="Close"
-        >
-          x
-        </Button>
       </DialogContent>
     </Dialog>
   );

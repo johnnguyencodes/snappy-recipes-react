@@ -4,6 +4,12 @@ import RecipeCard from "./RecipeCard";
 import Modal from "./Modal";
 import { validateImageUrl } from "@/lib/appUtils";
 import { Button } from "../ui/button";
+import { ExternalLink } from "lucide-react";
+import DOMPurify from "dompurify";
+
+const createMarkup = (html: string) => {
+  return { __html: DOMPurify.sanitize(html) };
+};
 
 const Recipes: React.FC<{
   recipes: IRecipe[] | null;
@@ -66,19 +72,40 @@ const Recipes: React.FC<{
           isOpen={!!selectedRecipe}
           onClose={closeModal}
           title={selectedRecipe.title}
+          image={selectedRecipe.image}
           description={`Ready in ${selectedRecipe.readyInMinutes} minutes. Serves ${selectedRecipe.servings}`}
         >
           <div>
+            <Button className="mb-4">
+              <a
+                href={selectedRecipe.sourceUrl}
+                className="flex items-center space-x-1"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span>Recipe Page</span>
+                <ExternalLink />
+              </a>
+            </Button>
             <p>
-              <strong>Nutrition:</strong>
+              <strong>Summary:</strong>
             </p>
-            <ul>
-              {selectedRecipe.nutrition.nutrients.map((nutrient) => (
-                <li key={nutrient.name}>
-                  {nutrient.name}: {nutrient.amount} {nutrient.unit}
-                </li>
-              ))}
-            </ul>
+            <p
+              className="mb-4"
+              dangerouslySetInnerHTML={createMarkup(selectedRecipe.summary)}
+            ></p>
+            <div>
+              <p>
+                <strong>Ingredients</strong>
+              </p>
+              <ul className="mb-1">
+                {selectedRecipe.nutrition.ingredients.map((ingredient) => (
+                  <li key={ingredient.id}>
+                    {ingredient.amount} {ingredient.unit} {ingredient.name}
+                  </li>
+                ))}
+              </ul>
+            </div>
             <Button onClick={closeModal} className="mt-4">
               Close
             </Button>

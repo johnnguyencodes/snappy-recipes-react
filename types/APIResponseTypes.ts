@@ -27,6 +27,18 @@ export interface IRecipe {
       amount: number;
       unit: string;
     };
+    ingredients: {
+      id: number;
+      name: string;
+      amount: number;
+      unit: string;
+      nutrients: {
+        name: string;
+        amount: number;
+        unit: string;
+        percentOfDailyNeeds?: number;
+      }[];
+    }[];
   };
   sourceUrl: string;
   analyzedInstructions: Array<{
@@ -81,5 +93,6 @@ export interface IModalProps {
   onClose: () => void;
   title?: string;
   description?: string;
+  image?: string;
   children: ReactElement;
 }
