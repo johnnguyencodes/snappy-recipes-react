@@ -7,8 +7,10 @@ import {
   CardFooter,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "../ui/button";
 
 const RecipeCard: React.FC<IRecipeCardProps> = ({
+  recipe,
   id,
   image,
   title,
@@ -19,6 +21,8 @@ const RecipeCard: React.FC<IRecipeCardProps> = ({
   diets,
   summary,
   onCardClick,
+  favoritesArray,
+  toggleFavorite,
 }) => {
   const caloriesAmount = Math.round(nutrition.nutrients[0].amount);
   const proteinAmount = Math.round(nutrition.nutrients[8].amount);
@@ -64,6 +68,16 @@ const RecipeCard: React.FC<IRecipeCardProps> = ({
         <p>{carbsAmount}g carbs</p>
         <p>{fatAmount}g total fat</p>
         <p>{proteinAmount}g protein</p>
+        <Button
+          onClick={(event) => {
+            event.stopPropagation();
+            toggleFavorite(recipe);
+          }}
+        >
+          {favoritesArray.some((favorite) => favorite.id === id)
+            ? "Unfavorite"
+            : "Favorite"}
+        </Button>
       </CardContent>
       <CardFooter></CardFooter>
     </Card>

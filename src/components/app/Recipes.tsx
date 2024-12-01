@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { IRecipe } from "../../../types/APIResponseTypes";
+import { IRecipe, IRecipesProps } from "../../../types/APIResponseTypes";
 import RecipeCard from "./RecipeCard";
 import Modal from "./Modal";
 import { validateImageUrl } from "@/lib/appUtils";
@@ -11,9 +11,11 @@ const createMarkup = (html: string) => {
   return { __html: DOMPurify.sanitize(html) };
 };
 
-const Recipes: React.FC<{
-  recipes: IRecipe[] | null;
-}> = ({ recipes }) => {
+const Recipes: React.FC<IRecipesProps> = ({
+  recipes,
+  favoritesArray,
+  toggleFavorite,
+}) => {
   const [validatedRecipes, setValidatedRecipes] = useState<IRecipe[] | null>(
     null
   );
@@ -53,6 +55,7 @@ const Recipes: React.FC<{
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {validatedRecipes.map((recipe) => (
         <RecipeCard
+          recipe={recipe}
           id={recipe.id}
           key={recipe.id}
           image={recipe.image}
@@ -64,6 +67,8 @@ const Recipes: React.FC<{
           diets={recipe.diets}
           summary={recipe.summary}
           onCardClick={() => handleCardClick(recipe)}
+          favoritesArray={favoritesArray}
+          toggleFavorite={toggleFavorite}
         />
       ))}
       {selectedRecipe && (
