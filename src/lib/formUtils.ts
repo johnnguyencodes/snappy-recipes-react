@@ -155,4 +155,5 @@ export {
   showError,
   clearErrorMessage,
   FileType,
+  MAX_FILE_SIZE,
 };
