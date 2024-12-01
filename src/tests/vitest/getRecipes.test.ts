@@ -126,4 +126,58 @@ describe("getRecipes", () => {
       })
     );
   });
+
+  it("should handle empty intolerances and restrictions gracefully", async () => {
+    global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({}),
+    });
+
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
+
+    await getRecipes("pasta", "", "", mockShowError, mockSetErrorMessage);
+
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining("&query=pasta&intolerances=&diet="),
+      expect.any(Object)
+    );
+  });
+
+  it("should throw an error if the API response contains invalid JSON", async () => {
+    global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => {
+        throw new SyntaxError("Unexpected token < in JSON");
+      },
+    });
+
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
+
+    await expect(
+      getRecipes("pasta", "", "", mockShowError, mockSetErrorMessage)
+    ).rejects.toThrow("Malformed JSON response");
+
+    expect(mockShowError).toHaveBeenCalledWith(
+      "errorSpoonacularGetRequest",
+      mockSetErrorMessage,
+      "pasta"
+    );
+  });
+
+  it("should throw an error if the headers are missing or malformed", async () => {
+    global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: false,
+      status: 400,
+      json: async () => ({}),
+    });
+
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
+
+    await expect(
+      getRecipes("pasta", "", "", mockShowError, mockSetErrorMessage)
+    ).rejects.toThrow("Error with GET fetch request with query pasta");
+  });
 });

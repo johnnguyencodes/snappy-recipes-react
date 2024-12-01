@@ -244,7 +244,14 @@ const getRecipes = async (
         showError("errorSpoonacularGetRequest", setErrorMessage, query);
         throw new Error(`Error with GET fetch request with query ${query}`);
       }
-      const json = await response.json();
+      // Validate and catch JSON parsing errors
+      let json;
+      try {
+        json = await response.json();
+      } catch (error) {
+        showError("errorMalformedSpoonacularResponse", setErrorMessage, query);
+        throw new Error("Malformed JSON response");
+      }
       return json;
     } catch (error) {
       showError("errorSpoonacularGetRequest", setErrorMessage, query);
