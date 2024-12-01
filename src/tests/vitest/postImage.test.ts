@@ -1,7 +1,11 @@
 import { postImage } from "../../lib/apiUtils.ts";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 
 const IMGUR_BASE_URL = "https://api.imgur.com/3/image";
+
+afterEach(() => {
+  vi.resetAllMocks();
+});
 
 describe("postImage", () => {
   it("should make a POST request to Imgur and return the response JSON on success", async () => {
@@ -52,6 +56,12 @@ describe("postImage", () => {
         mockSetErrorMessage
       )
     ).rejects.toThrow("Error with imgur POST response");
+
+    expect(mockShowError).toHaveBeenCalledWith(
+      "errorPostImageResponse",
+      mockSetErrorMessage,
+      null
+    );
   });
 
   it("should throw an error if the fetch call fails", async () => {
@@ -95,9 +105,15 @@ describe("postImage", () => {
         mockSetErrorMessage
       )
     ).rejects.toThrow("Missing formData or accessToken for posting image");
+
+    expect(mockShowError).toHaveBeenCalledWith(
+      "errorPostImageData",
+      mockSetErrorMessage,
+      null
+    );
   });
 
-  it("should include correct headers and form data in the request", async () => {
+  it("should include correct headers and even if the formData is empty", async () => {
     const mockFormData = new FormData();
     const mockAccessToken = "mocked_access_token";
     const mockShowError = vi.fn();
@@ -132,7 +148,9 @@ describe("postImage", () => {
     const mockSetErrorMessage = vi.fn();
     const consoleSpy = vi.spyOn(console, "error");
 
-    global.fetch = vi.fn().mockRejectedValueOnce(new Error("Network Error"));
+    global.fetch = vi
+      .fn()
+      .mockRejectedValueOnce(new Error("Unexpected Network Error"));
 
     await expect(
       postImage(
@@ -141,7 +159,13 @@ describe("postImage", () => {
         mockShowError,
         mockSetErrorMessage
       )
-    ).rejects.toThrow();
+    ).rejects.toThrow("Unexpected Network Error");
+
+    expect(mockShowError).toHaveBeenCalledWith(
+      "errorPostImage",
+      mockSetErrorMessage,
+      null
+    );
 
     expect(consoleSpy).toHaveBeenCalledWith(
       "Error with POSTing imgur file:",
