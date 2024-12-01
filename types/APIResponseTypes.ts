@@ -25,8 +25,40 @@ export interface IRecipe {
   summary: string;
 }
 
-export interface IRecipeCardProps extends IRecipe {
+export interface IRecipesProps {
+  recipes: IRecipe[] | null;
+  favoritesArray: IRecipe[];
+  toggleFavorite: (recipe: IRecipe) => void;
+}
+
+export interface IRecipeCardProps {
+  recipe: IRecipe;
+  id: number;
+  // key: number;
+  image: string;
+  title: string;
+  readyInMinutes: number;
+  servings: number;
+  nutrition: {
+    nutrients: Array<{
+      name: string;
+      amount: number;
+      unit: string;
+      percentOfDailyNeeds: number;
+    }>;
+    ingredients: {
+      id: number;
+      name: string;
+      amount: number;
+      unit: string;
+    }[];
+  };
+  sourceUrl: string;
+  diets: string[];
+  summary: string;
   onCardClick: (recipe: IRecipe) => void;
+  favoritesArray: IRecipe[];
+  toggleFavorite: (recipe: IRecipe) => void;
 }
 
 export interface IModalProps {

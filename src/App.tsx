@@ -27,23 +27,28 @@ import {
 import Modal from "./components/app/Modal";
 
 function App() {
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const searchInputRef = useRef<HTMLInputElement | null>(null);
   const [imgurAccessToken, setImgurAccessToken] = useState("");
-  const [previousFile, setPreviousFile] = useState<File | null>(null);
-  const [_imageFile, setImageFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [query, setQuery] = useState("");
-  const [recipeArray, setRecipeArray] = useState<IRecipe[] | null>(null);
-  const [statusMessage, setStatusMessage] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [restrictionsArray, setRestrictionsArray] = useState<string[] | null>(
     loadFromLocalStorage("restrictionsArray") || []
   );
   const [intolerancesArray, setIntolerancesArray] = useState<string[] | null>(
     loadFromLocalStorage("intolerancesArray") || []
   );
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [previousFile, setPreviousFile] = useState<File | null>(null);
+  const [_imageFile, setImageFile] = useState<File | null>(null);
+  const [query, setQuery] = useState("");
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [recipeArray, setRecipeArray] = useState<IRecipe[] | null>(null);
+  const [favoritesArray, setFavoritesArray] = useState<IRecipe[]>(
+    loadFromLocalStorage("favoritesArray") || []
+  );
+  const [selectedImagePreviewUrl, setSelectedImagePreviewUrl] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
     const fetchAccessToken = async () => {
@@ -58,11 +63,11 @@ function App() {
   useEffect(() => {
     // Cleanup the preview URL when the component unmounts or the file changes
     return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl); // Free memory by revoking the URL
+      if (selectedImagePreviewUrl) {
+        URL.revokeObjectURL(selectedImagePreviewUrl); // Free memory by revoking the URL
       }
     };
-  }, [previewUrl]);
+  }, [selectedImagePreviewUrl]);
 
   useEffect(() => {
     // Get random recipes on page load
@@ -122,7 +127,7 @@ function App() {
         showError,
         (currentFile) => {
           setImageFile(currentFile); // Update State
-          setPreviewUrl(URL.createObjectURL(currentFile)); // Create a temporary URL for preview
+          setSelectedImagePreviewUrl(URL.createObjectURL(currentFile)); // Create a temporary URL for preview
           selectedFile = currentFile; // Immediate access to file
         },
         setErrorMessage,
@@ -185,7 +190,7 @@ function App() {
         }
       } else {
         setStatusMessage("");
-        setPreviewUrl(null); // Clear preview if validation fails
+        setSelectedImagePreviewUrl(null); // Clear preview if validation fails
         console.error("No valid file selected");
       }
     }
@@ -200,9 +205,9 @@ function App() {
     setImageFile(null);
     setErrorMessage("");
     setRecipeArray(null);
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl); // Free memory by revoking the URL
-      setPreviewUrl(null);
+    if (selectedImagePreviewUrl) {
+      URL.revokeObjectURL(selectedImagePreviewUrl); // Free memory by revoking the URL
+      setSelectedImagePreviewUrl(null);
     }
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -278,6 +283,25 @@ function App() {
     saveToLocalStorage("intolerancesArray", tempArray);
   };
 
+  const toggleFavorite = (recipe: IRecipe) => {
+    const isAlreadyFavorite = favoritesArray.some(
+      (favorite) => favorite.id === recipe.id
+    );
+
+    let updatedFavorites;
+    if (isAlreadyFavorite) {
+      // Remove from favorites
+      updatedFavorites = favoritesArray.filter(
+        (favorite) => favorite.id !== recipe.id
+      );
+    } else {
+      // Add to favorites
+      updatedFavorites = [...favoritesArray, recipe];
+    }
+    setFavoritesArray(updatedFavorites);
+    saveToLocalStorage("favoritesArray", updatedFavorites);
+  };
+
   return (
     <div className="m-10">
       <header className="row mb-0 flex items-center justify-between">
@@ -337,17 +361,21 @@ function App() {
             {errorMessage}
           </div>
         )}
-        {previewUrl && (
+        {selectedImagePreviewUrl && (
           <div>
             <img
-              src={previewUrl}
+              src={selectedImagePreviewUrl}
               alt="Selected image preview"
               width="200px"
               height="100%"
             />
           </div>
         )}
-        <Recipes recipes={recipeArray} />
+        <Recipes
+          favoritesArray={favoritesArray}
+          toggleFavorite={toggleFavorite}
+          recipes={recipeArray}
+        />
       </div>
       {isSettingsOpen && (
         <Modal
