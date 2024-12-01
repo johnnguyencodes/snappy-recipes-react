@@ -1,5 +1,5 @@
 import { getRecipes } from "../../lib/apiUtils.ts";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 describe("getRecipes", () => {
   it("should make a GET request to the Spoonacular API and return the data on success", async () => {
@@ -179,5 +179,119 @@ describe("getRecipes", () => {
     await expect(
       getRecipes("pasta", "", "", mockShowError, mockSetErrorMessage)
     ).rejects.toThrow("Error with GET fetch request with query pasta");
+  });
+});
+
+describe("getRecipes (development mode)", () => {
+  beforeEach(() => {
+    process.env.NODE_ENV = "development";
+    vi.resetAllMocks();
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks(); // Restore original mocks after each test
+  });
+
+  it("should return cached data from localStorage if available", async () => {
+    const cachedData = { recipes: ["Cached Recipe1", "Cached Recipe2"] };
+    localStorage.setItem("spoonacularCache", JSON.stringify(cachedData));
+
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
+
+    const result = await getRecipes(
+      "pasta",
+      "",
+      "",
+      mockShowError,
+      mockSetErrorMessage
+    );
+
+    expect(result).toEqual(cachedData);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("should call the API if localStorage cache is empty", async () => {
+    const apiResponse = { recipes: ["API Recipe1", "API Recipe2"] };
+    global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => apiResponse,
+    });
+
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
+    const result = await getRecipes(
+      "pasta",
+      "",
+      "",
+      mockShowError,
+      mockSetErrorMessage
+    );
+
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining("&query=pasta"),
+      expect.any(Object)
+    );
+    expect(result).toEqual(apiResponse);
+  });
+
+  it("should save new API data to localStorage when fetched", async () => {
+    const apiResponse = { recipes: ["API Recipe1", "API Recipe2"] };
+    global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => apiResponse,
+    });
+
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
+
+    await getRecipes("pasta", "", "", mockShowError, mockSetErrorMessage);
+
+    const cachedData = JSON.parse(
+      localStorage.getItem("spoonacularCache") || "{}"
+    );
+
+    expect(cachedData).toEqual(apiResponse);
+  });
+
+  it("should throw an error if localStorage data is invalid JSON", async () => {
+    localStorage.setItem("spoonacularCache", "INVALID_JSON");
+
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
+
+    await expect(
+      getRecipes("pasta", "", "", mockShowError, mockSetErrorMessage)
+    ).rejects.toThrow(SyntaxError);
+
+    expect(mockShowError).not.toHaveBeenCalled();
+  });
+
+  it("should skip localStorage and call the API in non-development mode", async () => {
+    process.env.NODE_ENV = "production";
+    const apiResponse = { recipes: ["API Recipe1", "API Recipe2"] };
+
+    global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => apiResponse,
+    });
+
+    const mockShowError = vi.fn();
+    const mockSetErrorMessage = vi.fn();
+
+    const result = await getRecipes(
+      "pasta",
+      "",
+      "",
+      mockShowError,
+      mockSetErrorMessage
+    );
+
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining("&query=pasta"),
+      expect.any(Object)
+    );
+    expect(result).toEqual(apiResponse);
   });
 });
