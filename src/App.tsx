@@ -155,7 +155,7 @@ function App() {
             return;
           }
 
-          const imageURL = "";
+          const imageURL = imgurJson.data.link;
 
           // Call Google Vision API
           let googleJson;
