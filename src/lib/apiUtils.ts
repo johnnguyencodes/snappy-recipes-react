@@ -14,12 +14,12 @@ interface ImageSource {
   imageUri: string | null;
 }
 
-const dataForImageRecognition = {
+const googleData = {
   requests: [
     {
       image: {
         source: {
-          imageUri: null, // initial value is null
+          imageUri: null,
         } as ImageSource,
       },
       features: [
@@ -127,11 +127,11 @@ const postImageUrlToGoogle = async (
   ) => void,
   setErrorMessage: (message: string) => void
 ) => {
-  dataForImageRecognition.requests[0].image.source.imageUri = imageURL;
+  googleData.requests[0].image.source.imageUri = imageURL;
   try {
     const response = await fetch(GOOGLE_BASE_URL, {
       method: "POST",
-      body: JSON.stringify(dataForImageRecognition),
+      body: JSON.stringify(googleData),
     });
     if (!response.ok) {
       showError("errorGooglePostResponse", setErrorMessage, null);
