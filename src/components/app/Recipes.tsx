@@ -114,6 +114,18 @@ const Recipes: React.FC<IRecipesProps> = ({
                 ))}
               </ul>
             </div>
+            <Button
+              onClick={(event) => {
+                event.stopPropagation();
+                toggleFavorite(selectedRecipe);
+              }}
+            >
+              {favoritesArray.some(
+                (favorite) => favorite.id === selectedRecipe.id
+              )
+                ? "Unfavorite"
+                : "Favorite"}
+            </Button>
             <Button onClick={closeRecipeModal} className="mt-4">
               Close
             </Button>
