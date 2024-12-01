@@ -229,35 +229,40 @@ const getRecipes = async (
     if (cachedData) {
       return JSON.parse(cachedData);
     }
-  } else {
-    try {
-      const response = await fetch(
-        `${SPOONACULAR_BASE_URL}&number=100&query=${query}&intolerances=${intolerances}&diet=${restrictions}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        showError("errorSpoonacularGetRequest", setErrorMessage, query);
-        throw new Error(`Error with GET fetch request with query ${query}`);
+  }
+  try {
+    const response = await fetch(
+      `${SPOONACULAR_BASE_URL}&number=100&query=${query}&intolerances=${intolerances}&diet=${restrictions}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
-      // Validate and catch JSON parsing errors
-      let json;
-      try {
-        json = await response.json();
-      } catch (error) {
-        showError("errorMalformedSpoonacularResponse", setErrorMessage, query);
-        throw new Error("Malformed JSON response");
-      }
-      return json;
-    } catch (error) {
+    );
+    if (!response.ok) {
       showError("errorSpoonacularGetRequest", setErrorMessage, query);
-      console.error(`Error with fetching recipes with query ${query}`, error);
-      throw error;
+      throw new Error(`Error with GET fetch request with query ${query}`);
     }
+    // Validate and catch JSON parsing errors
+    let json;
+    try {
+      json = await response.json();
+    } catch (error) {
+      showError("errorMalformedSpoonacularResponse", setErrorMessage, query);
+      throw new Error("Malformed JSON response");
+    }
+
+    // Save the data to localStorage in development mode
+    if (process.env.NODE_ENV === "development") {
+      localStorage.setItem("spoonacularCache", JSON.stringify(json));
+    }
+
+    return json;
+  } catch (error) {
+    showError("errorSpoonacularGetRequest", setErrorMessage, query);
+    console.error(`Error with fetching recipes with query ${query}`, error);
+    throw error;
   }
 };
 
