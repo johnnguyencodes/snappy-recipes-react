@@ -127,7 +127,16 @@ const postImageUrlToGoogle = async (
   ) => void,
   setErrorMessage: (message: string) => void
 ) => {
+  try {
+    // Validate image url
+    new URL(imageURL);
+  } catch {
+    showError("errorPostUrlToGoogle", setErrorMessage, null);
+    throw new Error("Error with POSTing image URL to Google");
+  }
+
   googleData.requests[0].image.source.imageUri = imageURL;
+
   try {
     const response = await fetch(GOOGLE_BASE_URL, {
       method: "POST",

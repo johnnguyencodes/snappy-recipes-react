@@ -3,11 +3,10 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 
 const IMGUR_BASE_URL = "https://api.imgur.com/3/image";
 
-afterEach(() => {
-  vi.resetAllMocks();
-});
-
 describe("postImage", () => {
+  afterEach(() => {
+    vi.resetAllMocks();
+  });
   it("should make a POST request to Imgur and return the response JSON on success", async () => {
     const mockFormData = new FormData();
     const mockAccessToken = "mocked_access_token";
