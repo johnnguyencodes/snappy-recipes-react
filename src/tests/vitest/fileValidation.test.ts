@@ -1,22 +1,9 @@
 import { fileValidation, MAX_FILE_SIZE } from "../../lib/formUtils.ts";
 import { describe, it, expect, vi } from "vitest";
 
-function createMockFileList(files) {
-  const fileList = {
-    length: files.length,
-    item(index) {
-      return files[index];
-    },
-    ...files,
-  };
-  return fileList;
-}
-
 describe("fileValidation", () => {
   it("should call showError `errorFileExceedsSize` for a file that is too large", () => {
-    const mockEvent = {
-      target: { files: createMockFileList([{ size: 99999999999 }]) },
-    } as any;
+    const mockEvent = { target: { files: [{ size: 99999999999 }] } } as any;
     const mockShowError = vi.fn();
     const mockSetImageFile = vi.fn();
     const mockSetErrorMessage = vi.fn();
