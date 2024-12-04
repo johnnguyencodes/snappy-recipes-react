@@ -38,7 +38,7 @@ function App() {
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [previousFile, setPreviousFile] = useState<File | null>(null);
-  const [_imageFile, setImageFile] = useState<File | null>(null);
+  const [, setImageFile] = useState<File | null>(null);
   const [query, setQuery] = useState("");
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -72,6 +72,7 @@ function App() {
   useEffect(() => {
     // Get random recipes on page load
     callSpoonacularAPI();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleUploadButtonClick = () => {
@@ -180,8 +181,8 @@ function App() {
           }
 
           const [firstAnnotation] = labelAnnotations;
-          // @ts-expect-error score will be used later, but it is kept here as a reminder
-          const { description: imageTitle, score } = firstAnnotation;
+          // eslint-disable-next-line
+          const { description: imageTitle, score: _score } = firstAnnotation;
           setQuery(imageTitle);
           callSpoonacularAPI();
         } catch (error) {
@@ -387,7 +388,7 @@ function App() {
           <div>
             <h3>Select Dietary Restrictions</h3>
             {Object.values(DietaryRestriction).map((restriction) => (
-              <div className="space-y-5">
+              <div className="space-y-5" key={restriction}>
                 <div className="flex gap-3">
                   <div className="flex h-6 shrink-0 items-center">
                     <div className="group grid size-4 grid-cols-1">
@@ -437,7 +438,7 @@ function App() {
             ))}
             <h3>Select Food Intolerances</h3>
             {Object.values(FoodIntolerance).map((intolerance) => (
-              <div className="space-y-5">
+              <div className="space-y-5" key={intolerance}>
                 <div className="flex gap-3">
                   <div className="flex h-6 shrink-0 items-center">
                     <div className="group grid size-4 grid-cols-1">
