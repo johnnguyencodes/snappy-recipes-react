@@ -1,4 +1,4 @@
-import { IRecipeCardProps } from "../../../types/APIResponseTypes";
+import { IRecipeCardProps } from "../../../types/AppTypes";
 import {
   Card,
   CardContent,
