@@ -69,10 +69,7 @@ const searchValidation = (
   }
 
   // Checking if the query includes numbers or special characters
-  if (
-    /\d/.test(query) ||
-    /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(query)
-  ) {
+  if (/\d/.test(query) || /[`!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/.test(query)) {
     showError("errorSearchInvalidCharacters", setErrorMessage, null);
     return false;
   }

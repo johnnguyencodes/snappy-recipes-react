@@ -164,48 +164,46 @@ const postImageUrlToGoogle = async (
   }
 };
 
-interface LabelAnnotation {
-  description: string;
-  score?: number;
-}
+// interface LabelAnnotation {
+//   description: string;
+//   score?: number;
+// }
 
-interface ImageRecognitionResponse {
-  responses: {
-    labelAnnotations?: LabelAnnotation[];
-  }[];
-}
+// interface ImageRecognitionResponse {
+//   responses: {
+//     labelAnnotations?: LabelAnnotation[];
+//   }[];
+// }
 
-// Will use the following function when I work on the UI of the app
-// @ts-ignore
-const onImageRecognitionSuccess = (
-  data: ImageRecognitionResponse,
-  showError: (
-    errorType: string,
-    setErrorMessage: (message: string) => void,
-    query: string | null
-  ) => void,
-  setErrorMessage: (message: string) => void
-) => {
-  const labelAnnotations = data.responses[0]?.labelAnnotations;
-  // if (!labelAnnotations) {
-  //   this.showRecognitionFailure();
-  //   return;
-  // }
+// const onImageRecognitionSuccess = (
+//   data: ImageRecognitionResponse,
+//   showError: (
+//     errorType: string,
+//     setErrorMessage: (message: string) => void,
+//     query: string | null
+//   ) => void,
+//   setErrorMessage: (message: string) => void
+// ) => {
+//   const labelAnnotations = data.responses[0]?.labelAnnotations;
+//   // if (!labelAnnotations) {
+//   //   this.showRecognitionFailure();
+//   //   return;
+//   // }
 
-  if (!labelAnnotations || labelAnnotations.length === 0) {
-    showError("errorNoLabelAnnotions", setErrorMessage, null);
-    console.error("No label annotations found.");
-    return;
-  }
+//   if (!labelAnnotations || labelAnnotations.length === 0) {
+//     showError("errorNoLabelAnnotions", setErrorMessage, null);
+//     console.error("No label annotations found.");
+//     return;
+//   }
 
-  const [firstAnnotation] = labelAnnotations;
-  // Score will be a variable I will use in the future, ignoring for now
-  // @ts-ignore
-  const { description: imageTitle, score } = firstAnnotation;
+//   const [firstAnnotation] = labelAnnotations;
+//   // Score will be a variable I will use in the future, ignoring for now
+//   // @ts-ignore
+//   const { description: imageTitle, score } = firstAnnotation;
 
-  // // Get recipes based on title
-  // getRecipes(imageTitle, showError, setErrorMessage);
-};
+//   // // Get recipes based on title
+//   // getRecipes(imageTitle, showError, setErrorMessage);
+// };
 
 // const onImageRecognitionError = (error) => {
 //   console.error("Image recognition error:", error);
@@ -250,6 +248,7 @@ const getRecipes = async (
       json = await response.json();
     } catch (error) {
       showError("errorMalformedSpoonacularResponse", setErrorMessage, query);
+      console.error(`Error with malformeed JSON response`, error);
       throw new Error("Malformed JSON response");
     }
 
