@@ -112,10 +112,3 @@ export const FoodIntoleranceLabels: Record<FoodIntolerance, string> = {
   [FoodIntolerance.TreeNut]: "Tree Nut",
   [FoodIntolerance.Wheat]: "Wheat",
 };
-
-export interface ISettingsContentProps {
-  restrictionsArray: string[] | null;
-  intolerancesArray: string[] | null;
-  handleRestrictionClick: (restriction: string) => void;
-  handleIntoleranceClick: (intolerance: string) => void;
-}

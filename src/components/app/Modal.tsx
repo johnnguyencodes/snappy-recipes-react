@@ -6,7 +6,7 @@ import {
   DialogDescription,
 } from "../ui/dialog.tsx";
 import { useEffect, useRef, MutableRefObject } from "react";
-import { IModalProps } from "types/AppTypes";
+import { IModalProps } from "types/APIResponseTypes";
 
 const Modal: React.FC<IModalProps> = ({
   isOpen,
