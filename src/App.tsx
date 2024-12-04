@@ -180,7 +180,7 @@ function App() {
           }
 
           const [firstAnnotation] = labelAnnotations;
-          // @ts-ignore
+          // @ts-expect-error score will be used later, but it is kept here as a reminder
           const { description: imageTitle, score } = firstAnnotation;
           setQuery(imageTitle);
           callSpoonacularAPI();
@@ -365,7 +365,7 @@ function App() {
           <div>
             <img
               src={selectedImagePreviewUrl}
-              alt="Selected image preview"
+              alt="recipe preview"
               width="200px"
               height="100%"
             />
