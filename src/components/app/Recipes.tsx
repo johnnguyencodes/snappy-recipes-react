@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { IRecipe, IRecipesProps } from "../../../types/AppTypes";
+import { IRecipe, IRecipesProps } from "../../../types/APIResponseTypes";
 import RecipeCard from "./RecipeCard";
 import Modal from "./Modal";
 import { validateImageUrl } from "@/lib/appUtils";
