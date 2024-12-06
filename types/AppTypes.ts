@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { ReactElement, ChangeEvent, KeyboardEvent } from "react";
 
 export interface IRecipe {
   id: number;
@@ -34,7 +34,6 @@ export interface IRecipesProps {
 export interface IRecipeCardProps {
   recipe: IRecipe;
   id: number;
-  // key: number;
   image: string;
   title: string;
   readyInMinutes: number;
@@ -118,4 +117,17 @@ export interface ISettingsContentProps {
   intolerancesArray: string[] | null;
   handleRestrictionClick: (restriction: string) => void;
   handleIntoleranceClick: (intolerance: string) => void;
+}
+
+export interface IFormProps {
+  query: string;
+  errorMessage: string | null;
+  selectedImagePreviewUrl: string | null;
+  statusMessage: string | null;
+  handleQueryChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  handleKeyDown: (event: KeyboardEvent<HTMLInputElement>) => void;
+  handleUploadButtonClick: () => void;
+  handleFileChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  handleSearch: (query: string) => void;
+  handleSettingsClick: () => void;
 }
