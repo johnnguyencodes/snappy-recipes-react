@@ -15,6 +15,7 @@ const Recipes: React.FC<IRecipesProps> = ({
   recipes,
   favoritesArray,
   toggleFavorite,
+  isFavoritesVisible,
 }) => {
   const [validatedRecipes, setValidatedRecipes] = useState<IRecipe[] | null>(
     null
@@ -45,32 +46,57 @@ const Recipes: React.FC<IRecipesProps> = ({
     setSelectedRecipe(null);
   };
 
-  if (!validatedRecipes || validatedRecipes.length === 0) {
-    // todo: if searching, don't show anything
-    // todo: if not searching and no recipes, then show no recipes found
-    return <div></div>;
-  }
-
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {validatedRecipes.map((recipe) => (
-        <RecipeCard
-          recipe={recipe}
-          id={recipe.id}
-          key={recipe.id}
-          image={recipe.image}
-          title={recipe.title}
-          readyInMinutes={recipe.readyInMinutes}
-          servings={recipe.servings}
-          nutrition={recipe.nutrition}
-          sourceUrl={recipe.sourceUrl}
-          diets={recipe.diets}
-          summary={recipe.summary}
-          onCardClick={() => handleCardClick(recipe)}
-          favoritesArray={favoritesArray}
-          toggleFavorite={toggleFavorite}
-        />
-      ))}
+      {isFavoritesVisible ? (
+        !favoritesArray || favoritesArray.length === 0 ? (
+          <div>
+            <p>Your favorite recipes will appear here.</p>
+          </div>
+        ) : (
+          favoritesArray.map((recipe) => (
+            <RecipeCard
+              recipe={recipe}
+              id={recipe.id}
+              key={recipe.id}
+              image={recipe.image}
+              title={recipe.title}
+              readyInMinutes={recipe.readyInMinutes}
+              servings={recipe.servings}
+              nutrition={recipe.nutrition}
+              sourceUrl={recipe.sourceUrl}
+              diets={recipe.diets}
+              summary={recipe.summary}
+              onCardClick={() => handleCardClick(recipe)}
+              favoritesArray={favoritesArray}
+              toggleFavorite={toggleFavorite}
+            />
+          ))
+        )
+      ) : !validatedRecipes || validatedRecipes.length === 0 ? (
+        // todo: if searching, don't show anything
+        // todo: if not searching and no recipes, then show no recipes found
+        <div></div>
+      ) : (
+        validatedRecipes.map((recipe) => (
+          <RecipeCard
+            recipe={recipe}
+            id={recipe.id}
+            key={recipe.id}
+            image={recipe.image}
+            title={recipe.title}
+            readyInMinutes={recipe.readyInMinutes}
+            servings={recipe.servings}
+            nutrition={recipe.nutrition}
+            sourceUrl={recipe.sourceUrl}
+            diets={recipe.diets}
+            summary={recipe.summary}
+            onCardClick={() => handleCardClick(recipe)}
+            favoritesArray={favoritesArray}
+            toggleFavorite={toggleFavorite}
+          />
+        ))
+      )}
       {selectedRecipe && (
         <Modal
           isOpen={!!selectedRecipe}
