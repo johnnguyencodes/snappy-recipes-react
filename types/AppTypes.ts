@@ -29,6 +29,7 @@ export interface IRecipesProps {
   recipes: IRecipe[] | null;
   favoritesArray: IRecipe[];
   toggleFavorite: (recipe: IRecipe) => void;
+  isFavoritesVisible: boolean;
 }
 
 export interface IRecipeCardProps {

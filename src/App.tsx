@@ -30,6 +30,7 @@ function App() {
     loadFromLocalStorage("intolerancesArray") || []
   );
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isFavoritesVisible, setIsFavoritesVisible] = useState(false);
   const [previousFile, setPreviousFile] = useState<File | null>(null);
   const [, setImageFile] = useState<File | null>(null);
   const [query, setQuery] = useState("");
@@ -251,6 +252,10 @@ function App() {
     setIsSettingsOpen(true);
   };
 
+  const handleShowFavoritesClick = () => {
+    setIsFavoritesVisible(!isFavoritesVisible);
+  };
+
   const closeSettingsModal = () => {
     setIsSettingsOpen(false);
   };
@@ -309,7 +314,10 @@ function App() {
             </div>
           )}
           <div className="flex">
-            <Button className="border border-black bg-white font-bold text-black">
+            <Button
+              className="border border-black bg-white font-bold text-black"
+              onClick={handleShowFavoritesClick}
+            >
               Show Favorites
             </Button>
             <Button
@@ -373,6 +381,7 @@ function App() {
       <Recipes
         favoritesArray={favoritesArray}
         toggleFavorite={toggleFavorite}
+        isFavoritesVisible={isFavoritesVisible}
         recipes={recipeArray}
       />
       {isSettingsOpen && (
