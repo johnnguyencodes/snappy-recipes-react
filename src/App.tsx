@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, ChangeEvent, KeyboardEvent } from "react";
-import Form from "@/components/app/Form";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Settings, Upload } from "lucide-react";
 import Recipes from "@/components/app/Recipes";
 import SettingsContent from "@/components/app/SettingsContent";
 import { saveToLocalStorage, loadFromLocalStorage } from "@/lib/appUtils";
@@ -27,8 +29,6 @@ function App() {
   const [intolerancesArray, setIntolerancesArray] = useState<string[] | null>(
     loadFromLocalStorage("intolerancesArray") || []
   );
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const searchInputRef = useRef<HTMLInputElement | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [previousFile, setPreviousFile] = useState<File | null>(null);
   const [, setImageFile] = useState<File | null>(null);
@@ -42,6 +42,8 @@ function App() {
   const [selectedImagePreviewUrl, setSelectedImagePreviewUrl] = useState<
     string | null
   >(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const fetchAccessToken = async () => {
@@ -85,266 +87,115 @@ function App() {
     }
   };
 
-  const validateFile = ({
-    file,
-    previousFile,
-    showError,
-    setErrorMessage,
-  }: {
-    file: File;
-    previousFile: File | null;
-    showError: Function;
-    setErrorMessage: Function;
-  }): boolean => {
-    if (
-      previousFile &&
-      file.name === previousFile.name &&
-      file.size === previousFile.size &&
-      file.lastModified === previousFile.lastModified
-    ) {
-      console.warn("The same image file was selected again.");
-      showError("errorSameImage", setErrorMessage, null);
-      return false;
-    }
-    return true;
-  };
-
-  const handleFileUpload = async ({
-    file,
-    imgurAccessToken,
-    showError,
-    setErrorMessage,
-  }: {
-    file: File;
-    imgurAccessToken: string;
-    showError: Function;
-    setErrorMessage: Function;
-  }) => {
-    const formData = appendImgurFormData(file);
-
-    try {
-      const imgurJson = await postImage(
-        formData,
-        imgurAccessToken,
-        showError,
-        setErrorMessage
-      );
-      return imgurJson.data.link;
-    } catch (error) {
-      console.error("Error uploading image to Imgur:", error);
-      throw error;
-    }
-  };
-
-  const callGoogleVisionAPI = async ({
-    imageURL,
-    showError,
-    setErrorMessage,
-  }: {
-    imageURL: string;
-    showError: Function;
-    setErrorMessage: Function;
-  }) => {
-    try {
-      const googleJson = await postImageUrlToGoogle(
-        imageURL,
-        showError,
-        setErrorMessage
-      );
-      const labelAnnotations = googleJson.responses[0]?.labelAnnotations;
-
-      if (!labelAnnotations || labelAnnotations.length === 0) {
-        showError("errorNoLabelAnnotations", setErrorMessage, null);
-        throw new Error("No label annotations found in Google API response");
-      }
-
-      return labelAnnotations[0].description;
-    } catch (error) {
-      console.error("Error fetching data from Google Vision API:", error);
-      throw error;
-    }
-  };
-
-  const updatePreviewUrl = ({
-    file,
-    setSelectedImagePreviewUrl,
-  }: {
-    file: File;
-    setSelectedImagePreviewUrl: Function;
-  }) => {
-    const previewUrl = URL.createObjectURL(file);
-    setSelectedImagePreviewUrl(previewUrl);
-    return previewUrl;
-  };
-
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     setImageFile(null);
     setQuery("");
     setErrorMessage("");
-
     if (searchInputRef.current) {
       searchInputRef.current.value = "";
     }
 
+    let currentFile: File | null = null;
     const files = event.target.files;
-    if (!files || files.length === 0) {
-      console.error("No file selected");
-      return;
-    }
+    if (files && files.length > 0) {
+      currentFile = files[0];
 
-    const file = files[0];
+      // Check if the same file is selected
+      if (
+        previousFile &&
+        currentFile &&
+        currentFile.name === previousFile.name &&
+        currentFile.size === previousFile.size &&
+        currentFile.lastModified === previousFile.lastModified
+      ) {
+        console.warn("The same image file was selected again.");
+        showError("errorSameImage", setErrorMessage, null);
+        return;
+      }
 
-    const isValidFile = validateFile({
-      file,
-      previousFile,
-      showError,
-      setErrorMessage,
-    });
+      // Update the previously selected file
+      setPreviousFile(currentFile);
 
-    if (!isValidFile) return;
-
-    setPreviousFile(file);
-
-    updatePreviewUrl({
-      file,
-      setSelectedImagePreviewUrl,
-    });
-
-    try {
-      const imageURL = await handleFileUpload({
-        file,
-        imgurAccessToken,
+      let selectedFile: File | null = null;
+      // Validate file input
+      const isValid = fileValidation(
+        event,
         showError,
+        (currentFile) => {
+          setImageFile(currentFile); // Update State
+          setSelectedImagePreviewUrl(URL.createObjectURL(currentFile)); // Create a temporary URL for preview
+          selectedFile = currentFile; // Immediate access to file
+        },
         setErrorMessage,
-      });
+        clearErrorMessage
+      );
+      if (isValid && selectedFile) {
+        setRecipeArray(null);
+        setStatusMessage("Analyzing image");
+        // Prepare form data for Imgur upload
+        const formData = appendImgurFormData(selectedFile); // Call the utility function to handle form data and image upload
 
-      const imageTitle = await callGoogleVisionAPI({
-        imageURL,
-        showError,
-        setErrorMessage,
-      });
+        try {
+          // Call the Imgur API
+          let imgurJson;
+          try {
+            imgurJson = await postImage(
+              formData,
+              imgurAccessToken,
+              showError,
+              setErrorMessage
+            );
+          } catch (error) {
+            console.error("Error uploading image to Imgur:", error);
+            setStatusMessage("");
+            return;
+          }
 
-      setQuery(imageTitle);
-      callSpoonacularAPI();
-    } catch (error) {
-      setStatusMessage("");
-      console.error("Unexpected error during API calls:", error);
-    } finally {
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
+          const imageURL = imgurJson.data.link;
+
+          // Call Google Vision API
+          let googleJson;
+          try {
+            googleJson = await postImageUrlToGoogle(
+              imageURL,
+              showError,
+              setErrorMessage
+            );
+          } catch (error) {
+            console.error("Error fetching data from Google Vision API:", error);
+            setStatusMessage("");
+            return;
+          }
+
+          const labelAnnotations = googleJson.responses[0]?.labelAnnotations;
+          if (!labelAnnotations || labelAnnotations.length === 0) {
+            showError("errorNoLabelAnnotations", setErrorMessage, null);
+            throw new Error(
+              "No label annotations found in Google API response"
+            );
+          }
+
+          const [firstAnnotation] = labelAnnotations;
+          // eslint-disable-next-line
+          const { description: imageTitle, score: _score } = firstAnnotation;
+          setQuery(imageTitle);
+          callSpoonacularAPI();
+        } catch (error) {
+          setStatusMessage("");
+          console.error("Unexpected error during API calls:", error);
+        }
+      } else {
+        setStatusMessage("");
+        setSelectedImagePreviewUrl(null); // Clear preview if validation fails
+        console.error("No valid file selected");
       }
     }
+
+    // Clear the file input's value to allow reselecting the same file
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
-
-  // const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
-  //   setImageFile(null);
-  //   setQuery("");
-  //   setErrorMessage("");
-  //   if (searchInputRef.current) {
-  //     searchInputRef.current.value = "";
-  //   }
-
-  //   let currentFile: File | null = null;
-  //   const files = event.target.files;
-  //   if (files && files.length > 0) {
-  //     currentFile = files[0];
-
-  //     // Check if the same file is selected
-  //     if (
-  //       previousFile &&
-  //       currentFile &&
-  //       currentFile.name === previousFile.name &&
-  //       currentFile.size === previousFile.size &&
-  //       currentFile.lastModified === previousFile.lastModified
-  //     ) {
-  //       console.warn("The same image file was selected again.");
-  //       showError("errorSameImage", setErrorMessage, null);
-  //       return;
-  //     }
-
-  //     // Update the previously selected file
-  //     setPreviousFile(currentFile);
-
-  //     let selectedFile: File | null = null;
-  //     // Validate file input
-  //     const isValid = fileValidation(
-  //       event,
-  //       showError,
-  //       (currentFile) => {
-  //         setImageFile(currentFile); // Update State
-  //         setSelectedImagePreviewUrl(URL.createObjectURL(currentFile)); // Create a temporary URL for preview
-  //         selectedFile = currentFile; // Immediate access to file
-  //       },
-  //       setErrorMessage,
-  //       clearErrorMessage
-  //     );
-  //     if (isValid && selectedFile) {
-  //       setRecipeArray(null);
-  //       setStatusMessage("Analyzing image");
-  //       // Prepare form data for Imgur upload
-  //       const formData = appendImgurFormData(selectedFile); // Call the utility function to handle form data and image upload
-
-  //       try {
-  //         // Call the Imgur API
-  //         let imgurJson;
-  //         try {
-  //           imgurJson = await postImage(
-  //             formData,
-  //             imgurAccessToken,
-  //             showError,
-  //             setErrorMessage
-  //           );
-  //         } catch (error) {
-  //           console.error("Error uploading image to Imgur:", error);
-  //           setStatusMessage("");
-  //           return;
-  //         }
-
-  //         const imageURL = imgurJson.data.link;
-
-  //         // Call Google Vision API
-  //         let googleJson;
-  //         try {
-  //           googleJson = await postImageUrlToGoogle(
-  //             imageURL,
-  //             showError,
-  //             setErrorMessage
-  //           );
-  //         } catch (error) {
-  //           console.error("Error fetching data from Google Vision API:", error);
-  //           setStatusMessage("");
-  //           return;
-  //         }
-
-  //         const labelAnnotations = googleJson.responses[0]?.labelAnnotations;
-  //         if (!labelAnnotations || labelAnnotations.length === 0) {
-  //           showError("errorNoLabelAnnotations", setErrorMessage, null);
-  //           throw new Error(
-  //             "No label annotations found in Google API response"
-  //           );
-  //         }
-
-  //         const [firstAnnotation] = labelAnnotations;
-  //         // eslint-disable-next-line
-  //         const { description: imageTitle, score: _score } = firstAnnotation;
-  //         setQuery(imageTitle);
-  //         callSpoonacularAPI();
-  //       } catch (error) {
-  //         setStatusMessage("");
-  //         console.error("Unexpected error during API calls:", error);
-  //       }
-  //     } else {
-  //       setStatusMessage("");
-  //       setSelectedImagePreviewUrl(null); // Clear preview if validation fails
-  //       console.error("No valid file selected");
-  //     }
-  //   }
-
-  //   // Clear the file input's value to allow reselecting the same file
-  //   if (fileInputRef.current) {
-  //     fileInputRef.current.value = "";
-  //   }
-  // };
 
   const handleSearch = async (query: string) => {
     setImageFile(null);
@@ -449,18 +300,76 @@ function App() {
 
   return (
     <div className="m-10">
-      <Form
-        query={query}
-        errorMessage={errorMessage}
-        selectedImagePreviewUrl={selectedImagePreviewUrl}
-        statusMessage={statusMessage}
-        handleQueryChange={handleQueryChange}
-        handleKeyDown={handleKeyDown}
-        handleUploadButtonClick={handleUploadButtonClick}
-        handleFileChange={handleFileChange}
-        handleSearch={handleSearch}
-        handleSettingsClick={handleSettingsClick}
-      />
+      <div>
+        <header className="row mb-0 flex items-center justify-between">
+          <h1 className="mb-0 pb-0 text-2xl font-extrabold">Snappy Recipes</h1>
+          {statusMessage && (
+            <div className="error-message mb-4 rounded bg-green-100 p-2 text-green-600">
+              {statusMessage}
+            </div>
+          )}
+          <div className="flex">
+            <Button className="border border-black bg-white font-bold text-black">
+              Show Favorites
+            </Button>
+            <Button
+              onClick={handleSettingsClick}
+              className="ml-2 border border-black bg-white font-bold text-black"
+            >
+              <Settings className="h-4 w-4"></Settings>
+            </Button>
+          </div>
+        </header>
+        <div className="mt-3">
+          <label htmlFor="input" className="text-sm font-semibold">
+            Search Recipes
+          </label>
+          <div className="row flex">
+            <Button
+              onClick={handleUploadButtonClick}
+              className="rounded-br-none rounded-tr-none"
+            >
+              <Upload />
+            </Button>
+            <input
+              type="file"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
+            <Input
+              id="input"
+              ref={searchInputRef}
+              placeholder="Search by entering your ingredient or upload an image"
+              onChange={(event) => handleQueryChange(event)}
+              onKeyDown={(event) => handleKeyDown(event)}
+              className="rounded-br-none rounded-tr-none"
+              name=""
+            />
+            <Button
+              onClick={() => handleSearch(query)}
+              className="rounded-bl-none rounded-tl-none"
+            >
+              Submit
+            </Button>
+          </div>
+          {errorMessage && (
+            <div className="error-message mb-4 rounded bg-red-100 p-2 text-red-600">
+              {errorMessage}
+            </div>
+          )}
+          {selectedImagePreviewUrl && (
+            <div>
+              <img
+                src={selectedImagePreviewUrl}
+                alt="recipe preview"
+                width="200px"
+                height="100%"
+              />
+            </div>
+          )}
+        </div>
+      </div>
       <Recipes
         favoritesArray={favoritesArray}
         toggleFavorite={toggleFavorite}
