@@ -119,16 +119,3 @@ export interface ISettingsContentProps {
   handleRestrictionClick: (restriction: string) => void;
   handleIntoleranceClick: (intolerance: string) => void;
 }
-
-export interface IFormProps {
-  query: string;
-  errorMessage: string | null;
-  selectedImagePreviewUrl: string | null;
-  statusMessage: string | null;
-  handleQueryChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  handleKeyDown: (event: KeyboardEvent<HTMLInputElement>) => void;
-  handleUploadButtonClick: () => void;
-  handleFileChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  handleSearch: (query: string) => void;
-  handleSettingsClick: () => void;
-}
