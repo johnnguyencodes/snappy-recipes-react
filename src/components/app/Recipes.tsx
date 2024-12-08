@@ -23,6 +23,9 @@ const Recipes: React.FC<IRecipesProps> = ({
   const [selectedRecipe, setSelectedRecipe] = useState<IRecipe | null>(null);
 
   useEffect(() => {
+    // Clear validated recipes when a new search starts
+    setValidatedRecipes(null);
+
     const validateRecipes = async () => {
       if (recipes) {
         const fallbackImage = "https://placehold.co/312x231";
