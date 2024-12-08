@@ -89,7 +89,7 @@ function App() {
   };
 
   const resetStateAndInputs = (
-    setRecipeArray: React.Dispatch<React.SetStateAction<string[] | null>>,
+    setRecipeArray: React.Dispatch<React.SetStateAction<IRecipe[] | null>>,
     setImageFile: React.Dispatch<React.SetStateAction<File | null>>,
     setQuery: React.Dispatch<React.SetStateAction<string>>,
     setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>,
