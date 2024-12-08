@@ -88,115 +88,297 @@ function App() {
     }
   };
 
-  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+  const resetStateAndInputs = (
+    setRecipeArray: React.Dispatch<React.SetStateAction<string[] | null>>,
+    setImageFile: React.Dispatch<React.SetStateAction<File | null>>,
+    setQuery: React.Dispatch<React.SetStateAction<string>>,
+    setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>,
+    searchInputRef: React.RefObject<HTMLInputElement>
+  ) => {
+    setRecipeArray(null);
     setImageFile(null);
     setQuery("");
     setErrorMessage("");
     if (searchInputRef.current) {
       searchInputRef.current.value = "";
     }
+  };
+
+  const validateAndSetFile = (
+    event: ChangeEvent<HTMLInputElement>,
+    fileValidation: (
+      event: ChangeEvent<HTMLInputElement>,
+      showError: (
+        errorType: string,
+        setErrorMessage: (message: string) => void,
+        query: string | null
+      ) => void,
+      setImageFile: (file: File) => void,
+      setErrorMessage: (message: string) => void,
+      clearErrorMessage: (setErrorMessage: (message: string) => void) => void
+    ) => boolean,
+    setImageFile: React.Dispatch<React.SetStateAction<File | null>>,
+    setSelectedImagePreviewUrl: React.Dispatch<
+      React.SetStateAction<string | null>
+    >,
+    setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>,
+    clearErrorMessage: (setErrorMessage: (message: string) => void) => void
+  ): File | null => {
+    let selectedFile: File | null = null;
+
+    const isValid = fileValidation(
+      event,
+      showError,
+      (file) => {
+        setImageFile(file);
+        setSelectedImagePreviewUrl(URL.createObjectURL(file));
+        selectedFile = file;
+      },
+      setErrorMessage,
+      clearErrorMessage
+    );
+
+    if (!isValid) {
+      setSelectedImagePreviewUrl(null);
+      return null;
+    }
+
+    return selectedFile;
+  };
+
+  const isDuplicateFile = (
+    previousFile: File | null,
+    currentFile: File | null
+  ): boolean => {
+    if (!previousFile || !currentFile) {
+      return false;
+    }
+
+    return (
+      previousFile &&
+      currentFile &&
+      previousFile.name === currentFile.name &&
+      previousFile.size === currentFile.size &&
+      previousFile.lastModified === currentFile.lastModified
+    );
+  };
+
+  const uploadFileToImgur = async (
+    selectedFile: File,
+    imgurAccessToken: string,
+    setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>
+  ): Promise<string | null> => {
+    const formData = appendImgurFormData(selectedFile);
+
+    try {
+      const imgurJson = await postImage(
+        formData,
+        imgurAccessToken,
+        showError,
+        setErrorMessage
+      );
+      return imgurJson.data.link;
+    } catch (error) {
+      console.error("Error uploading image to Imgur:", error);
+      return null;
+    }
+  };
+
+  const analyzeImage = async (
+    imageURL: string,
+    setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>
+  ): Promise<string | null> => {
+    try {
+      const googleJson = await postImageUrlToGoogle(
+        imageURL,
+        showError,
+        setErrorMessage
+      );
+      console.log("googleJson:", googleJson);
+      const labelAnnotations = googleJson.responses[0]?.labelAnnotations;
+
+      if (!labelAnnotations || labelAnnotations.length === 0) {
+        showError("errorNoLabelAnnotations", setErrorMessage, null);
+        throw new Error("No label annotations found in Google API response");
+      }
+
+      const [firstAnnotation] = labelAnnotations;
+      // eslint-disable-next-line
+      const { description: imageTitle, score: _score } = firstAnnotation;
+
+      return imageTitle;
+    } catch (error) {
+      console.error("Error fetching data from Google Vision API:", error);
+      return null;
+    }
+  };
+
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    resetStateAndInputs(
+      setRecipeArray,
+      setImageFile,
+      setQuery,
+      setErrorMessage,
+      searchInputRef
+    );
 
     let currentFile: File | null = null;
     const files = event.target.files;
+
     if (files && files.length > 0) {
       currentFile = files[0];
 
-      // Check if the same file is selected
-      if (
-        previousFile &&
-        currentFile &&
-        currentFile.name === previousFile.name &&
-        currentFile.size === previousFile.size &&
-        currentFile.lastModified === previousFile.lastModified
-      ) {
+      if (isDuplicateFile(previousFile, currentFile)) {
         console.warn("The same image file was selected again.");
         showError("errorSameImage", setErrorMessage, null);
         return;
       }
 
-      // Update the previously selected file
       setPreviousFile(currentFile);
 
-      let selectedFile: File | null = null;
-      // Validate file input
-      const isValid = fileValidation(
+      const selectedFile = validateAndSetFile(
         event,
-        showError,
-        (currentFile) => {
-          setImageFile(currentFile); // Update State
-          setSelectedImagePreviewUrl(URL.createObjectURL(currentFile)); // Create a temporary URL for preview
-          selectedFile = currentFile; // Immediate access to file
-        },
+        fileValidation,
+        setImageFile,
+        setSelectedImagePreviewUrl,
         setErrorMessage,
         clearErrorMessage
       );
-      if (isValid && selectedFile) {
-        setRecipeArray(null);
-        setStatusMessage("Analyzing image");
-        // Prepare form data for Imgur upload
-        const formData = appendImgurFormData(selectedFile); // Call the utility function to handle form data and image upload
 
-        try {
-          // Call the Imgur API
-          let imgurJson;
-          try {
-            imgurJson = await postImage(
-              formData,
-              imgurAccessToken,
-              showError,
-              setErrorMessage
-            );
-          } catch (error) {
-            console.error("Error uploading image to Imgur:", error);
-            setStatusMessage("");
-            return;
-          }
+      if (!selectedFile) return;
 
-          const imageURL = imgurJson.data.link;
+      setStatusMessage("Analyzing image");
 
-          // Call Google Vision API
-          let googleJson;
-          try {
-            googleJson = await postImageUrlToGoogle(
-              imageURL,
-              showError,
-              setErrorMessage
-            );
-          } catch (error) {
-            console.error("Error fetching data from Google Vision API:", error);
-            setStatusMessage("");
-            return;
-          }
-
-          const labelAnnotations = googleJson.responses[0]?.labelAnnotations;
-          if (!labelAnnotations || labelAnnotations.length === 0) {
-            showError("errorNoLabelAnnotations", setErrorMessage, null);
-            throw new Error(
-              "No label annotations found in Google API response"
-            );
-          }
-
-          const [firstAnnotation] = labelAnnotations;
-          // eslint-disable-next-line
-          const { description: imageTitle, score: _score } = firstAnnotation;
-          setQuery(imageTitle);
-          callSpoonacularAPI();
-        } catch (error) {
-          setStatusMessage("");
-          console.error("Unexpected error during API calls:", error);
-        }
-      } else {
+      const imageURL = await uploadFileToImgur(
+        selectedFile,
+        imgurAccessToken,
+        setErrorMessage
+      );
+      if (!imageURL) {
         setStatusMessage("");
-        setSelectedImagePreviewUrl(null); // Clear preview if validation fails
-        console.error("No valid file selected");
+        return;
       }
-    }
 
-    // Clear the file input's value to allow reselecting the same file
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+      const query = await analyzeImage(imageURL, setErrorMessage);
+      if (!query) {
+        setStatusMessage("");
+        return;
+      }
+
+      setQuery(query);
+      callSpoonacularAPI();
     }
   };
+
+  // const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+  //   setImageFile(null);
+  //   setQuery("");
+  //   setErrorMessage("");
+  //   if (searchInputRef.current) {
+  //     searchInputRef.current.value = "";
+  //   }
+
+  //   let currentFile: File | null = null;
+  //   const files = event.target.files;
+  //   if (files && files.length > 0) {
+  //     currentFile = files[0];
+
+  //     // Check if the same file is selected
+  //     if (
+  //       previousFile &&
+  //       currentFile &&
+  //       currentFile.name === previousFile.name &&
+  //       currentFile.size === previousFile.size &&
+  //       currentFile.lastModified === previousFile.lastModified
+  //     ) {
+  //       console.warn("The same image file was selected again.");
+  //       showError("errorSameImage", setErrorMessage, null);
+  //       return;
+  //     }
+
+  //     // Update the previously selected file
+  //     setPreviousFile(currentFile);
+
+  //     let selectedFile: File | null = null;
+  //     // Validate file input
+  //     const isValid = fileValidation(
+  //       event,
+  //       showError,
+  //       (currentFile) => {
+  //         setImageFile(currentFile); // Update State
+  //         setSelectedImagePreviewUrl(URL.createObjectURL(currentFile)); // Create a temporary URL for preview
+  //         selectedFile = currentFile; // Immediate access to file
+  //       },
+  //       setErrorMessage,
+  //       clearErrorMessage
+  //     );
+  //     if (isValid && selectedFile) {
+  //       setRecipeArray(null);
+  //       setStatusMessage("Analyzing image");
+  //       // Prepare form data for Imgur upload
+  //       const formData = appendImgurFormData(selectedFile); // Call the utility function to handle form data and image upload
+
+  //       try {
+  //         // Call the Imgur API
+  //         let imgurJson;
+  //         try {
+  //           imgurJson = await postImage(
+  //             formData,
+  //             imgurAccessToken,
+  //             showError,
+  //             setErrorMessage
+  //           );
+  //         } catch (error) {
+  //           console.error("Error uploading image to Imgur:", error);
+  //           setStatusMessage("");
+  //           return;
+  //         }
+
+  //         const imageURL = imgurJson.data.link;
+
+  //         // Call Google Vision API
+  //         let googleJson;
+  //         try {
+  //           googleJson = await postImageUrlToGoogle(
+  //             imageURL,
+  //             showError,
+  //             setErrorMessage
+  //           );
+  //         } catch (error) {
+  //           console.error("Error fetching data from Google Vision API:", error);
+  //           setStatusMessage("");
+  //           return;
+  //         }
+
+  //         const labelAnnotations = googleJson.responses[0]?.labelAnnotations;
+  //         if (!labelAnnotations || labelAnnotations.length === 0) {
+  //           showError("errorNoLabelAnnotations", setErrorMessage, null);
+  //           throw new Error(
+  //             "No label annotations found in Google API response"
+  //           );
+  //         }
+
+  //         const [firstAnnotation] = labelAnnotations;
+  //         // eslint-disable-next-line
+  //         const { description: imageTitle, score: _score } = firstAnnotation;
+  //         setQuery(imageTitle);
+  //         callSpoonacularAPI();
+  //       } catch (error) {
+  //         setStatusMessage("");
+  //         console.error("Unexpected error during API calls:", error);
+  //       }
+  //     } else {
+  //       setStatusMessage("");
+  //       setSelectedImagePreviewUrl(null); // Clear preview if validation fails
+  //       console.error("No valid file selected");
+  //     }
+  //   }
+
+  //   // Clear the file input's value to allow reselecting the same file
+  //   if (fileInputRef.current) {
+  //     fileInputRef.current.value = "";
+  //   }
+  // };
 
   const handleSearch = async (query: string) => {
     setImageFile(null);
