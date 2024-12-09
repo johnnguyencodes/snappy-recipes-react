@@ -99,14 +99,14 @@ function App() {
     >,
     setPreviousFile?: React.Dispatch<React.SetStateAction<File | null>>
   ) => {
-    if (setRecipeArray) {
-      setRecipeArray(null);
-    }
     setImageFile(null);
     setQuery("");
     setErrorMessage("");
     if (searchInputRef.current) {
       searchInputRef.current.value = "";
+    }
+    if (setRecipeArray) {
+      setRecipeArray(null);
     }
     if (setSelectedImagePreviewUrl) {
       setSelectedImagePreviewUrl(null);
