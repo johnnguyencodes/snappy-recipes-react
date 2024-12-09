@@ -86,58 +86,75 @@ const showError = (
   let message = "";
   switch (errorType) {
     case "errorNoFile":
-      message = "No file selected. Please select a file.";
+      message =
+        "No file selected. Click the upload button and choose a file to proceed.";
       break;
     case "errorIncorrectFile":
-      message = "Invalid file type. Please upload a jpg, gif, or png file.";
+      message =
+        "Unsupported file type. Please upload an image in JPG, PNG, or GIF format.";
       break;
     case "errorFileExceedsSize":
-      message = "File size exceeds the allowed limit.";
+      message =
+        "The selected file is too large. Please choose an image smaller than 10MB.";
       break;
     case "errorRefreshToken":
-      message = "Error refreshing Imgur accessToken.";
+      message =
+        'There was an issue refreshing the Imgur access token. Please try again later. If the problem persists, <a style="color: rgb(220 38 38); text-decoration: underline; font-weight: 400;" href="https://github.com/johnnguyencodes/snappy-recipes-react/issues/new" target="_blank" rel="noopener noreferrer">report the issue here</a>.';
       break;
     case "errorPostImageData":
-      message = "Missing formData or accessToken for posting image";
+      message =
+        "Unable to upload the image due to a network error. Please check your connection and try again.";
       break;
     case "errorPostImageResponse":
-      message = "Error with POST image response.";
+      message =
+        "An error occurred while processing the image upload. Please check your internet connection and try again.";
       break;
     case "errorPostImage":
-      message = "Error with posting image";
+      message =
+        "An issue occurred while uploading the image. Please check your network and try again.";
       break;
     case "errorGooglePostResponse":
-      message = "Error with Google POST response";
+      message =
+        "We encountered a problem connecting to the Google API. Please ensure you have an active internet connection and try again.";
       break;
     case "errorMalformedGoogleResponse":
-      message = "Recieved empty or malformed response from Google API";
+      message =
+        "We received an unexpected response from Google. Please refresh the page and try again.";
       break;
     case "errorPostImageUrlToGoogle":
-      message = "Error with POSTing image url to Google";
+      message =
+        "There was an issue analyzing the image. Please check your network connection and try again.";
       break;
     case "errorNoLabelAnnotations":
-      message = "Error, no label annotations found";
+      message =
+        "We couldn't identify any objects in the image. Please upload a clearer or different image.";
       break;
     case "errorSpoonacularGetRequest":
       message = query
-        ? `Error with Spoonacular GET fetch request with query ${query}`
-        : "Error with Spoonacular GET fetch request";
+        ? `Error retrieving recipes for "${query}". Please check your network connection and try again.`
+        : "An issue occurred while fetching recipes. Please check your internet connection and try again.";
       break;
     case "errorSearchTooLong":
-      message = "Search queries should be less than 50 characters";
+      message =
+        "Your search query is too long. Please limit it to 50 characters or fewer.";
       break;
     case "errorSearchInvalidCharacters":
       message =
-        "Search queries should not contain numbers or special characters";
+        "Invalid search query. Please use only letters (e.g., 'pasta').";
       break;
     case "errorSameImage":
-      message = "The same image was selected. Please choose a different image.";
+      message =
+        "You selected the same image. Please choose a new image to continue.";
+      break;
+    case "errorSpoonacularLimitReached":
+      message = "Spoonacular API limit reached. Please try again in 24 hours.";
       break;
     case "noError":
       message = "";
       break;
     default:
-      message = "An unknown error occurred.";
+      message =
+        "An unexpected error occurred. Please try again. If the issue persists, contact support or <a style='color: rgb(220 38 38); text-decoration: underline;' href='https://github.com/johnnguyencodes/snappy-recipes-react/issues/new' target='_blank' rel='noopener noreferrer'>report it here</a>.";
   }
   setErrorMessage(message);
 };

@@ -160,7 +160,7 @@ describe("getRecipes", () => {
     ).rejects.toThrow("Malformed JSON response");
 
     expect(mockShowError).toHaveBeenCalledWith(
-      "errorSpoonacularGetRequest",
+      "errorMalformedSpoonacularResponse",
       mockSetErrorMessage,
       "pasta"
     );

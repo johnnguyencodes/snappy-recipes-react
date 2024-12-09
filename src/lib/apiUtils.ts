@@ -105,7 +105,6 @@ const postImage = async (
       },
     });
     if (!response.ok) {
-      showError("errorPostImageResponse", setErrorMessage, null);
       throw new Error(`Error with imgur POST response`);
     }
     const json = await response.json();
@@ -147,7 +146,6 @@ const postImageUrlToGoogle = async (
       throw new Error("Error with Google POST response");
     }
     const json = await response.json();
-
     if (!json || typeof json !== "object" || !Array.isArray(json.responses)) {
       showError("errorMalformedGoogleResponse", setErrorMessage, null);
       console.warn(
@@ -238,10 +236,17 @@ const getRecipes = async (
         },
       }
     );
-    if (!response.ok) {
+
+    if (response.status === 402) {
+      showError("errorSpoonacularLimitReached", setErrorMessage, null);
+      throw new Error(
+        "Spoonacular API limit reached. Please try again an 24 hours."
+      );
+    } else if (!response.ok) {
       showError("errorSpoonacularGetRequest", setErrorMessage, query);
       throw new Error(`Error with GET fetch request with query ${query}`);
     }
+
     // Validate and catch JSON parsing errors
     let json;
     try {
@@ -259,7 +264,6 @@ const getRecipes = async (
 
     return json;
   } catch (error) {
-    showError("errorSpoonacularGetRequest", setErrorMessage, query);
     console.error(`Error with fetching recipes with query ${query}`, error);
     throw error;
   }
