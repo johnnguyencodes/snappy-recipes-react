@@ -4,20 +4,19 @@ import { Input } from "@/components/ui/input";
 import { Settings, Upload } from "lucide-react";
 import Recipes from "@/components/app/Recipes";
 import SettingsContent from "@/components/app/SettingsContent";
-import { saveToLocalStorage, loadFromLocalStorage } from "@/lib/appUtils";
+
 import {
-  fileValidation,
-  searchValidation,
-  showError,
-  clearErrorMessage,
-} from "./lib/formUtils";
-import {
-  refreshAccessToken,
-  appendImgurFormData,
-  postImage,
-  postImageUrlToGoogle,
-  getRecipes,
-} from "./lib/apiUtils";
+  saveToLocalStorage,
+  loadFromLocalStorage,
+  validateAndSetFile,
+  isDuplicateFile,
+  validateSearchInput,
+  uploadFileToImgur,
+  analyzeImage,
+  callSpoonacularAPI,
+} from "@/lib/appUtils";
+import { fileValidation, showError, clearErrorMessage } from "./lib/formUtils";
+import { refreshAccessToken } from "./lib/apiUtils";
 import { IRecipe } from "../types/AppTypes";
 import Modal from "./components/app/Modal";
 import DOMPurify from "dompurify";
@@ -68,7 +67,14 @@ function App() {
 
   useEffect(() => {
     // Get random recipes on page load
-    callSpoonacularAPI("");
+    callSpoonacularAPI(
+      "",
+      setErrorMessage,
+      setStatusMessage,
+      setRecipeArray,
+      restrictionsArray,
+      intolerancesArray
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -174,157 +180,6 @@ function App() {
     }
   };
 
-  // search validator helper functions
-  // file search validator functions
-  const validateAndSetFile = (
-    event: ChangeEvent<HTMLInputElement>,
-    fileValidation: (
-      event: ChangeEvent<HTMLInputElement>,
-      showError: (
-        errorType: string,
-        setErrorMessage: (message: string) => void,
-        query: string | null
-      ) => void,
-      setImageFile: (file: File) => void,
-      setErrorMessage: (message: string) => void,
-      clearErrorMessage: (setErrorMessage: (message: string) => void) => void
-    ) => boolean,
-    setImageFile: React.Dispatch<React.SetStateAction<File | null>>,
-    setSelectedImagePreviewUrl: React.Dispatch<
-      React.SetStateAction<string | null>
-    >,
-    setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>,
-    clearErrorMessage: (setErrorMessage: (message: string) => void) => void
-  ): File | null => {
-    let selectedFile: File | null = null;
-
-    const isValid = fileValidation(
-      event,
-      showError,
-      (file) => {
-        setImageFile(file);
-        setSelectedImagePreviewUrl(URL.createObjectURL(file));
-        selectedFile = file;
-      },
-      setErrorMessage,
-      clearErrorMessage
-    );
-
-    if (!isValid) {
-      setSelectedImagePreviewUrl(null);
-      return null;
-    }
-
-    return selectedFile;
-  };
-
-  const isDuplicateFile = (
-    previousFile: File | null,
-    currentFile: File | null
-  ): boolean => {
-    if (!previousFile || !currentFile) {
-      return false;
-    }
-
-    return (
-      previousFile &&
-      currentFile &&
-      previousFile.name === currentFile.name &&
-      previousFile.size === currentFile.size &&
-      previousFile.lastModified === currentFile.lastModified
-    );
-  };
-
-  // text search validator function
-  const validateSearchInput = (query: string): boolean => {
-    return searchValidation(
-      query,
-      showError,
-      setErrorMessage,
-      clearErrorMessage
-    );
-  };
-
-  // helper functions to prepare API calls
-  const uploadFileToImgur = async (
-    selectedFile: File,
-    imgurAccessToken: string,
-    setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>
-  ): Promise<string | null> => {
-    const formData = appendImgurFormData(selectedFile);
-
-    try {
-      const imgurJson = await postImage(
-        formData,
-        imgurAccessToken,
-        showError,
-        setErrorMessage
-      );
-      return imgurJson.data.link;
-    } catch (error) {
-      console.error("Error uploading image to Imgur:", error);
-      return null;
-    }
-  };
-
-  const analyzeImage = async (
-    imageURL: string,
-    setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>
-  ): Promise<string | null> => {
-    try {
-      const googleJson = await postImageUrlToGoogle(
-        imageURL,
-        showError,
-        setErrorMessage
-      );
-      const labelAnnotations = googleJson.responses[0]?.labelAnnotations;
-
-      if (!labelAnnotations || labelAnnotations.length === 0) {
-        showError("errorNoLabelAnnotations", setErrorMessage, null);
-        throw new Error("No label annotations found in Google API response");
-      }
-
-      const [firstAnnotation] = labelAnnotations;
-      // eslint-disable-next-line
-      const { description: imageTitle, score: _score } = firstAnnotation;
-
-      return imageTitle;
-    } catch (error) {
-      console.error("Error fetching data from Google Vision API:", error);
-      return null;
-    }
-  };
-
-  const callSpoonacularAPI = async (query: string) => {
-    const restrictionsString = (restrictionsArray ?? []).toString();
-    const intolerancesString = (intolerancesArray ?? []).toString();
-    try {
-      setStatusMessage(
-        query.length
-          ? `searching for recipes that contain ${query}`
-          : `searching for random recipes`
-      );
-      const spoonacularJson = await getRecipes(
-        query,
-        restrictionsString,
-        intolerancesString,
-        showError,
-        setErrorMessage
-      );
-      if (spoonacularJson) {
-        setRecipeArray(spoonacularJson.results);
-        setStatusMessage(
-          query.length
-            ? `${spoonacularJson.number} recipes found that contains ${query}`
-            : `${spoonacularJson.number} random recipes found.`
-        );
-      }
-    } catch (error) {
-      setStatusMessage("");
-      console.error("Error fetching data from Spoonacular API:", error);
-    }
-  };
-
   // the helper functions defined above are composed into the two main logic flows
   // of searching by image file or by text
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -381,7 +236,14 @@ function App() {
       }
 
       setQuery(query);
-      callSpoonacularAPI(query);
+      callSpoonacularAPI(
+        query,
+        setErrorMessage,
+        setStatusMessage,
+        setRecipeArray,
+        restrictionsArray,
+        intolerancesArray
+      );
     }
   };
 
@@ -400,8 +262,15 @@ function App() {
     setPreviousFile(null);
 
     // Validate search input
-    if (validateSearchInput(query)) {
-      callSpoonacularAPI(query);
+    if (validateSearchInput(query, setErrorMessage)) {
+      callSpoonacularAPI(
+        query,
+        setErrorMessage,
+        setStatusMessage,
+        setRecipeArray,
+        restrictionsArray,
+        intolerancesArray
+      );
     } else {
       console.error("Not a valid search query");
       setStatusMessage("");
