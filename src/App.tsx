@@ -20,6 +20,7 @@ import {
 } from "./lib/apiUtils";
 import { IRecipe } from "../types/AppTypes";
 import Modal from "./components/app/Modal";
+import DOMPurify from "dompurify";
 
 function App() {
   const [imgurAccessToken, setImgurAccessToken] = useState("");
@@ -146,24 +147,24 @@ function App() {
 
   // helper functions for image and text search flows
   const resetStateAndInputs = (
+    setRecipeArray: React.Dispatch<React.SetStateAction<IRecipe[] | null>>,
+    setStatusMessage: React.Dispatch<React.SetStateAction<string | null>>,
     setImageFile: React.Dispatch<React.SetStateAction<File | null>>,
     setQuery: React.Dispatch<React.SetStateAction<string>>,
     setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>,
     searchInputRef: React.RefObject<HTMLInputElement>,
-    setRecipeArray?: React.Dispatch<React.SetStateAction<IRecipe[] | null>>,
     setSelectedImagePreviewUrl?: React.Dispatch<
       React.SetStateAction<string | null>
     >,
     setPreviousFile?: React.Dispatch<React.SetStateAction<File | null>>
   ) => {
+    setRecipeArray(null);
+    setStatusMessage("");
     setImageFile(null);
     setQuery("");
     setErrorMessage("");
     if (searchInputRef.current) {
       searchInputRef.current.value = "";
-    }
-    if (setRecipeArray) {
-      setRecipeArray(null);
     }
     if (setSelectedImagePreviewUrl) {
       setSelectedImagePreviewUrl(null);
@@ -315,7 +316,7 @@ function App() {
         setStatusMessage(
           query.length
             ? `${spoonacularJson.number} recipes found that contains ${query}`
-            : `${spoonacularJson.number} random recipes found`
+            : `${spoonacularJson.number} random recipes found.`
         );
       }
     } catch (error) {
@@ -328,6 +329,8 @@ function App() {
   // of searching by image file or by text
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     resetStateAndInputs(
+      setRecipeArray,
+      setStatusMessage,
       setImageFile,
       setQuery,
       setErrorMessage,
@@ -358,7 +361,6 @@ function App() {
       );
 
       if (!selectedFile) return;
-      setRecipeArray(null);
 
       setStatusMessage("Analyzing image");
 
@@ -385,11 +387,12 @@ function App() {
 
   const handleSearch = async (query: string) => {
     resetStateAndInputs(
+      setRecipeArray,
+      setStatusMessage,
       setImageFile,
       setQuery,
       setErrorMessage,
       searchInputRef,
-      setRecipeArray,
       setSelectedImagePreviewUrl,
       setPreviousFile
     );
@@ -464,9 +467,12 @@ function App() {
             </Button>
           </div>
           {errorMessage && (
-            <div className="error-message mb-4 rounded bg-red-100 p-2 text-red-600">
-              {errorMessage}
-            </div>
+            <div
+              className="error-message mb-4 rounded bg-red-100 p-2 text-red-600"
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(errorMessage),
+              }}
+            ></div>
           )}
           {selectedImagePreviewUrl && (
             <div>

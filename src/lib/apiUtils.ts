@@ -111,7 +111,6 @@ const postImage = async (
     const json = await response.json();
     return json;
   } catch (error) {
-    showError("errorPostImage", setErrorMessage, null);
     console.error(`Error with POSTing imgur file:`, error);
     throw error;
   }
@@ -158,7 +157,6 @@ const postImageUrlToGoogle = async (
     }
     return json;
   } catch (error) {
-    showError("errorPostImageUrlToGoogle", setErrorMessage, null);
     console.error("Error with POSTing image URL to Google:", error);
     throw error;
   }
@@ -222,13 +220,12 @@ const getRecipes = async (
   ) => void,
   setErrorMessage: (message: string) => void
 ) => {
-  if (process.env.NODE_ENV === "development") {
-    const cachedData = localStorage.getItem("spoonacularCache");
-    if (cachedData) {
-      return JSON.parse(cachedData);
-    }
-  }
-  console.log("query:", query);
+  // if (process.env.NODE_ENV === "development") {
+  //   const cachedData = localStorage.getItem("spoonacularCache");
+  //   if (cachedData) {
+  //     return JSON.parse(cachedData);
+  //   }
+  // }
   try {
     const response = await fetch(
       `${SPOONACULAR_BASE_URL}&number=100&query=${query}&intolerances=${intolerances}&diet=${restrictions}`,
@@ -239,10 +236,17 @@ const getRecipes = async (
         },
       }
     );
-    if (!response.ok) {
+
+    if (response.status === 402) {
+      showError("errorSpoonacularLimitReached", setErrorMessage, null);
+      throw new Error(
+        "Spoonacular API limit reached. Please try again an 24 hours."
+      );
+    } else if (!response.ok) {
       showError("errorSpoonacularGetRequest", setErrorMessage, query);
       throw new Error(`Error with GET fetch request with query ${query}`);
     }
+
     // Validate and catch JSON parsing errors
     let json;
     try {
@@ -253,14 +257,13 @@ const getRecipes = async (
       throw new Error("Malformed JSON response");
     }
 
-    // Save the data to localStorage in development mode
-    if (process.env.NODE_ENV === "development") {
-      localStorage.setItem("spoonacularCache", JSON.stringify(json));
-    }
+    // // Save the data to localStorage in development mode
+    // if (process.env.NODE_ENV === "development") {
+    //   localStorage.setItem("spoonacularCache", JSON.stringify(json));
+    // }
 
     return json;
   } catch (error) {
-    showError("errorSpoonacularGetRequest", setErrorMessage, query);
     console.error(`Error with fetching recipes with query ${query}`, error);
     throw error;
   }
