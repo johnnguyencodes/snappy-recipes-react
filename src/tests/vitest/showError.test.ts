@@ -5,57 +5,73 @@ describe("showError", () => {
   const errorCases = [
     {
       errorType: "errorRefreshToken",
-      expected: "Error refreshing Imgur accessToken.",
+      expected:
+        'There was an issue refreshing the Imgur access token. Please try again later. If the problem persists, <a style="color: rgb(220 38 38); text-decoration: underline; font-weight: 400;" href="https://github.com/johnnguyencodes/snappy-recipes-react/issues/new" target="_blank" rel="noopener noreferrer">report the issue here</a>.',
     },
     {
       errorType: "errorPostImageData",
-      expected: "Missing formData or accessToken for posting image",
+      expected:
+        "Unable to upload the image due to a network error. Please check your connection and try again.",
     },
     {
       errorType: "errorPostImageResponse",
-      expected: "Error with POST image response.",
+      expected:
+        "An error occurred while processing the image upload. Please check your internet connection and try again.",
     },
-    { errorType: "errorPostImage", expected: "Error with posting image" },
+    {
+      errorType: "errorPostImage",
+      expected:
+        "An issue occurred while uploading the image. Please check your network and try again.",
+    },
     {
       errorType: "errorGooglePostResponse",
-      expected: "Error with Google POST response",
+      expected:
+        "We encountered a problem connecting to the Google API. Please ensure you have an active internet connection and try again.",
     },
     {
       errorType: "errorMalformedGoogleResponse",
-      expected: "Recieved empty or malformed response from Google API",
+      expected:
+        "We received an unexpected response from Google. Please refresh the page and try again.",
     },
     {
       errorType: "errorPostImageUrlToGoogle",
-      expected: "Error with POSTing image url to Google",
+      expected:
+        "There was an issue analyzing the image. Please check your network connection and try again.",
     },
     {
       errorType: "errorNoLabelAnnotations",
-      expected: "Error, no label annotations found",
+      expected:
+        "We couldn't identify any objects in the image. Please upload a clearer or different image.",
     },
     {
       errorType: "errorSearchTooLong",
-      expected: "Search queries should be less than 50 characters",
+      expected:
+        "Your search query is too long. Please limit it to 50 characters or fewer.",
     },
     {
       errorType: "errorSearchInvalidCharacters",
       expected:
-        "Search queries should not contain numbers or special characters",
+        "Invalid search query. Please use only letters (e.g., 'pasta').",
     },
     {
       errorType: "errorSameImage",
-      expected: "The same image was selected. Please choose a different image.",
+      expected:
+        "You selected the same image. Please choose a new image to continue.",
     },
     {
       errorType: "errorFileExceedsSize",
-      expected: "File size exceeds the allowed limit.",
+      expected:
+        "The selected file is too large. Please choose an image smaller than 10MB.",
     },
     {
       errorType: "errorIncorrectFile",
-      expected: "Invalid file type. Please upload a jpg, gif, or png file.",
+      expected:
+        "Unsupported file type. Please upload an image in JPG, PNG, or GIF format.",
     },
     {
       errorType: "unknownErrorType",
-      expected: "An unknown error occurred.",
+      expected:
+        "An unexpected error occurred. Please try again. If the issue persists, contact support or <a style='color: rgb(220 38 38); text-decoration: underline;' href='https://github.com/johnnguyencodes/snappy-recipes-react/issues/new' target='_blank' rel='noopener noreferrer'>report it here</a>.",
     },
     {
       errorType: "noError",
@@ -63,11 +79,17 @@ describe("showError", () => {
     },
     {
       errorType: "",
-      expected: "An unknown error occurred.",
+      expected:
+        "An unexpected error occurred. Please try again. If the issue persists, contact support or <a style='color: rgb(220 38 38); text-decoration: underline;' href='https://github.com/johnnguyencodes/snappy-recipes-react/issues/new' target='_blank' rel='noopener noreferrer'>report it here</a>.",
     },
     {
       errorType: "a".repeat(1000),
-      expected: "An unknown error occurred.",
+      expected:
+        "An unexpected error occurred. Please try again. If the issue persists, contact support or <a style='color: rgb(220 38 38); text-decoration: underline;' href='https://github.com/johnnguyencodes/snappy-recipes-react/issues/new' target='_blank' rel='noopener noreferrer'>report it here</a>.",
+    },
+    {
+      errorType: "errorSpoonacularLimitReached",
+      expected: "Spoonacular API limit reached. Please try again in 24 hours.",
     },
   ];
 
@@ -86,7 +108,7 @@ describe("showError", () => {
     showError("errorSpoonacularGetRequest", mockSetErrorMessage, query);
 
     expect(mockSetErrorMessage).toHaveBeenCalledWith(
-      "Error with Spoonacular GET fetch request with query pasta"
+      'Error retrieving recipes for "pasta". Please check your network connection and try again.'
     );
   });
 
@@ -96,7 +118,7 @@ describe("showError", () => {
     showError("errorSpoonacularGetRequest", mockSetErrorMessage, null);
 
     expect(mockSetErrorMessage).toHaveBeenCalledWith(
-      "Error with Spoonacular GET fetch request"
+      "An issue occurred while fetching recipes. Please check your internet connection and try again."
     );
   });
 });
@@ -113,7 +135,7 @@ describe("clearErrorMessage", () => {
 
     showError("errorNoFile", mockSetErrorMessage, null);
     expect(mockSetErrorMessage).toHaveBeenCalledWith(
-      "No file selected. Please select a file."
+      "No file selected. Click the upload button and choose a file to proceed."
     );
 
     clearErrorMessage(mockSetErrorMessage);
