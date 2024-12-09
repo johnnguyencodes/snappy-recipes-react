@@ -105,12 +105,12 @@ const postImage = async (
       },
     });
     if (!response.ok) {
-      showError("errorPostImageResponse", setErrorMessage, null);
       throw new Error(`Error with imgur POST response`);
     }
     const json = await response.json();
     return json;
   } catch (error) {
+    showError("errorPostImage", setErrorMessage, null);
     console.error(`Error with POSTing imgur file:`, error);
     throw error;
   }
@@ -146,7 +146,6 @@ const postImageUrlToGoogle = async (
       throw new Error("Error with Google POST response");
     }
     const json = await response.json();
-
     if (!json || typeof json !== "object" || !Array.isArray(json.responses)) {
       showError("errorMalformedGoogleResponse", setErrorMessage, null);
       console.warn(
@@ -157,6 +156,7 @@ const postImageUrlToGoogle = async (
     }
     return json;
   } catch (error) {
+    showError("errorPostImageUrlToGoogle", setErrorMessage, null);
     console.error("Error with POSTing image URL to Google:", error);
     throw error;
   }
@@ -220,12 +220,12 @@ const getRecipes = async (
   ) => void,
   setErrorMessage: (message: string) => void
 ) => {
-  // if (process.env.NODE_ENV === "development") {
-  //   const cachedData = localStorage.getItem("spoonacularCache");
-  //   if (cachedData) {
-  //     return JSON.parse(cachedData);
-  //   }
-  // }
+  if (process.env.NODE_ENV === "development") {
+    const cachedData = localStorage.getItem("spoonacularCache");
+    if (cachedData) {
+      return JSON.parse(cachedData);
+    }
+  }
   try {
     const response = await fetch(
       `${SPOONACULAR_BASE_URL}&number=100&query=${query}&intolerances=${intolerances}&diet=${restrictions}`,
@@ -257,10 +257,10 @@ const getRecipes = async (
       throw new Error("Malformed JSON response");
     }
 
-    // // Save the data to localStorage in development mode
-    // if (process.env.NODE_ENV === "development") {
-    //   localStorage.setItem("spoonacularCache", JSON.stringify(json));
-    // }
+    // Save the data to localStorage in development mode
+    if (process.env.NODE_ENV === "development") {
+      localStorage.setItem("spoonacularCache", JSON.stringify(json));
+    }
 
     return json;
   } catch (error) {

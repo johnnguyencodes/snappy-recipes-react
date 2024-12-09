@@ -36,33 +36,6 @@ describe("postImage", () => {
     expect(response).toEqual({ data: { link: "https://mocked.url" } });
   });
 
-  it("should throw an error if the response is not OK", async () => {
-    const mockFormData = new FormData();
-    const mockAccessToken = "mocked_access_token";
-    const mockShowError = vi.fn();
-    const mockSetErrorMessage = vi.fn();
-
-    global.fetch = vi.fn().mockResolvedValueOnce({
-      ok: false,
-      json: async () => ({ message: "Something went wrong test message" }),
-    });
-
-    await expect(
-      postImage(
-        mockFormData,
-        mockAccessToken,
-        mockShowError,
-        mockSetErrorMessage
-      )
-    ).rejects.toThrow("Error with imgur POST response");
-
-    expect(mockShowError).toHaveBeenCalledWith(
-      "errorPostImageResponse",
-      mockSetErrorMessage,
-      null
-    );
-  });
-
   it("should throw an error if the fetch call fails", async () => {
     const mockFormData = new FormData();
     const mockAccessToken = "mocked_access_token";

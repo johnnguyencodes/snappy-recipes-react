@@ -83,6 +83,7 @@ const showError = (
   setErrorMessage: (message: string) => void,
   query: string | null
 ) => {
+  console.log("error:", errorType);
   let message = "";
   switch (errorType) {
     case "errorNoFile":
