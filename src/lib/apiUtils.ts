@@ -228,6 +228,7 @@ const getRecipes = async (
       return JSON.parse(cachedData);
     }
   }
+  console.log("query:", query);
   try {
     const response = await fetch(
       `${SPOONACULAR_BASE_URL}&number=100&query=${query}&intolerances=${intolerances}&diet=${restrictions}`,

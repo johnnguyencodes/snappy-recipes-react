@@ -67,7 +67,7 @@ function App() {
 
   useEffect(() => {
     // Get random recipes on page load
-    callSpoonacularAPI();
+    callSpoonacularAPI("");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -294,11 +294,15 @@ function App() {
     }
   };
 
-  const callSpoonacularAPI = async () => {
+  const callSpoonacularAPI = async (query: string) => {
     const restrictionsString = (restrictionsArray ?? []).toString();
     const intolerancesString = (intolerancesArray ?? []).toString();
     try {
-      setStatusMessage(`Searching for recipes with ${query}`);
+      setStatusMessage(
+        query.length
+          ? `searching for recipes that contain ${query}`
+          : `searching for random recipes`
+      );
       const spoonacularJson = await getRecipes(
         query,
         restrictionsString,
@@ -308,8 +312,12 @@ function App() {
       );
       if (spoonacularJson) {
         setRecipeArray(spoonacularJson.results);
+        setStatusMessage(
+          query.length
+            ? `${spoonacularJson.number} recipes found that contains ${query}`
+            : `${spoonacularJson.number} random recipes found`
+        );
       }
-      setStatusMessage("");
     } catch (error) {
       setStatusMessage("");
       console.error("Error fetching data from Spoonacular API:", error);
@@ -371,7 +379,7 @@ function App() {
       }
 
       setQuery(query);
-      callSpoonacularAPI();
+      callSpoonacularAPI(query);
     }
   };
 
@@ -390,7 +398,7 @@ function App() {
 
     // Validate search input
     if (validateSearchInput(query)) {
-      callSpoonacularAPI();
+      callSpoonacularAPI(query);
     } else {
       console.error("Not a valid search query");
       setStatusMessage("");
