@@ -71,6 +71,7 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // app UI handler functions
   const handleUploadButtonClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -88,6 +89,62 @@ function App() {
     }
   };
 
+  const handleSettingsClick = () => {
+    setIsSettingsOpen(true);
+  };
+
+  const handleShowFavoritesClick = () => {
+    setIsFavoritesVisible(!isFavoritesVisible);
+  };
+
+  const closeSettingsModal = () => {
+    setIsSettingsOpen(false);
+  };
+
+  const handleRestrictionClick = (restriction: string) => {
+    const tempArray = [...(restrictionsArray || [])];
+    const index = tempArray.indexOf(restriction);
+    if (index > -1) {
+      tempArray.splice(index, 1);
+    } else {
+      tempArray.push(restriction);
+    }
+    setRestrictionsArray(tempArray);
+    saveToLocalStorage("restrictionsArray", tempArray);
+  };
+
+  const handleIntoleranceClick = (intolerance: string) => {
+    const tempArray = [...(intolerancesArray || [])];
+    const index = tempArray.indexOf(intolerance);
+    if (index > -1) {
+      tempArray.splice(index, 1);
+    } else {
+      tempArray.push(intolerance);
+    }
+    setIntolerancesArray(tempArray);
+    saveToLocalStorage("intolerancesArray", tempArray);
+  };
+
+  const toggleFavorite = (recipe: IRecipe) => {
+    const isAlreadyFavorite = favoritesArray.some(
+      (favorite) => favorite.id === recipe.id
+    );
+
+    let updatedFavorites;
+    if (isAlreadyFavorite) {
+      // Remove from favorites
+      updatedFavorites = favoritesArray.filter(
+        (favorite) => favorite.id !== recipe.id
+      );
+    } else {
+      // Add to favorites
+      updatedFavorites = [...favoritesArray, recipe];
+    }
+    setFavoritesArray(updatedFavorites);
+    saveToLocalStorage("favoritesArray", updatedFavorites);
+  };
+
+  // helper functions for image and text search flows
   const resetStateAndInputs = (
     setImageFile: React.Dispatch<React.SetStateAction<File | null>>,
     setQuery: React.Dispatch<React.SetStateAction<string>>,
@@ -116,6 +173,8 @@ function App() {
     }
   };
 
+  // search validator helper functions
+  // file search validator functions
   const validateAndSetFile = (
     event: ChangeEvent<HTMLInputElement>,
     fileValidation: (
@@ -175,6 +234,17 @@ function App() {
     );
   };
 
+  // text search validator function
+  const validateSearchInput = (query: string): boolean => {
+    return searchValidation(
+      query,
+      showError,
+      setErrorMessage,
+      clearErrorMessage
+    );
+  };
+
+  // helper functions to prepare API calls
   const uploadFileToImgur = async (
     selectedFile: File,
     imgurAccessToken: string,
@@ -224,6 +294,30 @@ function App() {
     }
   };
 
+  const callSpoonacularAPI = async () => {
+    const restrictionsString = (restrictionsArray ?? []).toString();
+    const intolerancesString = (intolerancesArray ?? []).toString();
+    try {
+      setStatusMessage(`Searching for recipes with ${query}`);
+      const spoonacularJson = await getRecipes(
+        query,
+        restrictionsString,
+        intolerancesString,
+        showError,
+        setErrorMessage
+      );
+      if (spoonacularJson) {
+        setRecipeArray(spoonacularJson.results);
+      }
+      setStatusMessage("");
+    } catch (error) {
+      setStatusMessage("");
+      console.error("Error fetching data from Spoonacular API:", error);
+    }
+  };
+
+  // the helper functions defined above are composed into the two main logic flows
+  // of searching by image file or by text
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     resetStateAndInputs(
       setImageFile,
@@ -292,11 +386,6 @@ function App() {
       setPreviousFile
     );
 
-    if (selectedImagePreviewUrl) {
-      URL.revokeObjectURL(selectedImagePreviewUrl); // Free memory by revoking the URL
-      setSelectedImagePreviewUrl(null);
-    }
-
     setPreviousFile(null);
 
     // Validate search input
@@ -306,92 +395,6 @@ function App() {
       console.error("Not a valid search query");
       setStatusMessage("");
     }
-  };
-
-  const validateSearchInput = (query: string): boolean => {
-    return searchValidation(
-      query,
-      showError,
-      setErrorMessage,
-      clearErrorMessage
-    );
-  };
-
-  const callSpoonacularAPI = async () => {
-    const restrictionsString = (restrictionsArray ?? []).toString();
-    const intolerancesString = (intolerancesArray ?? []).toString();
-    try {
-      setStatusMessage(`Searching for recipes with ${query}`);
-      const spoonacularJson = await getRecipes(
-        query,
-        restrictionsString,
-        intolerancesString,
-        showError,
-        setErrorMessage
-      );
-      if (spoonacularJson) {
-        setRecipeArray(spoonacularJson.results);
-      }
-      setStatusMessage("");
-    } catch (error) {
-      setStatusMessage("");
-      console.error("Error fetching data from Spoonacular API:", error);
-    }
-  };
-
-  const handleSettingsClick = () => {
-    setIsSettingsOpen(true);
-  };
-
-  const handleShowFavoritesClick = () => {
-    setIsFavoritesVisible(!isFavoritesVisible);
-  };
-
-  const closeSettingsModal = () => {
-    setIsSettingsOpen(false);
-  };
-
-  const handleRestrictionClick = (restriction: string) => {
-    const tempArray = [...(restrictionsArray || [])];
-    const index = tempArray.indexOf(restriction);
-    if (index > -1) {
-      tempArray.splice(index, 1);
-    } else {
-      tempArray.push(restriction);
-    }
-    setRestrictionsArray(tempArray);
-    saveToLocalStorage("restrictionsArray", tempArray);
-  };
-
-  const handleIntoleranceClick = (intolerance: string) => {
-    const tempArray = [...(intolerancesArray || [])];
-    const index = tempArray.indexOf(intolerance);
-    if (index > -1) {
-      tempArray.splice(index, 1);
-    } else {
-      tempArray.push(intolerance);
-    }
-    setIntolerancesArray(tempArray);
-    saveToLocalStorage("intolerancesArray", tempArray);
-  };
-
-  const toggleFavorite = (recipe: IRecipe) => {
-    const isAlreadyFavorite = favoritesArray.some(
-      (favorite) => favorite.id === recipe.id
-    );
-
-    let updatedFavorites;
-    if (isAlreadyFavorite) {
-      // Remove from favorites
-      updatedFavorites = favoritesArray.filter(
-        (favorite) => favorite.id !== recipe.id
-      );
-    } else {
-      // Add to favorites
-      updatedFavorites = [...favoritesArray, recipe];
-    }
-    setFavoritesArray(updatedFavorites);
-    saveToLocalStorage("favoritesArray", updatedFavorites);
   };
 
   return (
