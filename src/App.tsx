@@ -89,18 +89,30 @@ function App() {
   };
 
   const resetStateAndInputs = (
-    setRecipeArray: React.Dispatch<React.SetStateAction<IRecipe[] | null>>,
     setImageFile: React.Dispatch<React.SetStateAction<File | null>>,
     setQuery: React.Dispatch<React.SetStateAction<string>>,
     setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>,
-    searchInputRef: React.RefObject<HTMLInputElement>
+    searchInputRef: React.RefObject<HTMLInputElement>,
+    setRecipeArray?: React.Dispatch<React.SetStateAction<IRecipe[] | null>>,
+    setSelectedImagePreviewUrl?: React.Dispatch<
+      React.SetStateAction<string | null>
+    >,
+    setPreviousFile?: React.Dispatch<React.SetStateAction<File | null>>
   ) => {
-    setRecipeArray(null);
     setImageFile(null);
     setQuery("");
     setErrorMessage("");
     if (searchInputRef.current) {
       searchInputRef.current.value = "";
+    }
+    if (setRecipeArray) {
+      setRecipeArray(null);
+    }
+    if (setSelectedImagePreviewUrl) {
+      setSelectedImagePreviewUrl(null);
+    }
+    if (setPreviousFile) {
+      setPreviousFile(null);
     }
   };
 
@@ -194,7 +206,6 @@ function App() {
         showError,
         setErrorMessage
       );
-      console.log("googleJson:", googleJson);
       const labelAnnotations = googleJson.responses[0]?.labelAnnotations;
 
       if (!labelAnnotations || labelAnnotations.length === 0) {
@@ -215,7 +226,6 @@ function App() {
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     resetStateAndInputs(
-      setRecipeArray,
       setImageFile,
       setQuery,
       setErrorMessage,
@@ -246,6 +256,7 @@ function App() {
       );
 
       if (!selectedFile) return;
+      setRecipeArray(null);
 
       setStatusMessage("Analyzing image");
 
@@ -271,31 +282,39 @@ function App() {
   };
 
   const handleSearch = async (query: string) => {
-    setImageFile(null);
-    setErrorMessage("");
-    setRecipeArray(null);
+    resetStateAndInputs(
+      setImageFile,
+      setQuery,
+      setErrorMessage,
+      searchInputRef,
+      setRecipeArray,
+      setSelectedImagePreviewUrl,
+      setPreviousFile
+    );
+
     if (selectedImagePreviewUrl) {
       URL.revokeObjectURL(selectedImagePreviewUrl); // Free memory by revoking the URL
       setSelectedImagePreviewUrl(null);
     }
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+
     setPreviousFile(null);
 
     // Validate search input
-    const isValid = searchValidation(
-      query,
-      showError,
-      setErrorMessage,
-      clearErrorMessage
-    );
-    if (isValid) {
+    if (validateSearchInput(query)) {
       callSpoonacularAPI();
     } else {
       console.error("Not a valid search query");
       setStatusMessage("");
     }
+  };
+
+  const validateSearchInput = (query: string): boolean => {
+    return searchValidation(
+      query,
+      showError,
+      setErrorMessage,
+      clearErrorMessage
+    );
   };
 
   const callSpoonacularAPI = async () => {
