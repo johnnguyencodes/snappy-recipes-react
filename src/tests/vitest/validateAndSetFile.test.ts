@@ -1,31 +1,42 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { ChangeEvent } from "react";
 
-// Mock the module at the very top
+// First, mock formUtils
+vi.mock("../../lib/formUtils", () => ({
+  showError: vi.fn(),
+  clearErrorMessage: vi.fn(),
+  searchValidation: vi.fn(),
+}));
+
+// Then mock appUtils
 vi.mock("../../lib/appUtils", async () => {
-  const actual = await vi.importActual<unknown>("../../lib/appUtils");
+  const actual =
+    await vi.importActual<Record<string, unknown>>("../../lib/appUtils");
   return {
-    ...(actual as Record<string, unknown>),
+    ...actual,
     showError: vi.fn(),
     clearErrorMessage: vi.fn(),
   };
 });
 
-// Now import everything after we've mocked
 import { validateAndSetFile } from "../../lib/appUtils";
 import { clearErrorMessage as mockClearErrorMessage } from "../../lib/formUtils";
 
 describe("validateAndSetFile", () => {
   afterEach(() => {
     vi.clearAllMocks();
-    global.URL.createObjectURL = vi.fn(); // Reset URL mock
+    global.URL.createObjectURL = vi.fn(); // Reset the URL mock between tests
   });
 
   it("should return null if fileValidation fails", () => {
+    // fileValidation returns false, meaning no validation success
     const mockFileValidation = vi.fn().mockReturnValue(false);
     const mockSetImageFile = vi.fn();
     const mockSetSelectedImagePreviewUrl = vi.fn();
-    const mockSetErrorMessage = vi.fn();
+    // Cast the mock to match React state setter type
+    const mockSetErrorMessage = vi.fn() as unknown as React.Dispatch<
+      React.SetStateAction<string | null>
+    >;
 
     function createMockEvent(file: File): ChangeEvent<HTMLInputElement> {
       const fileList = {
@@ -34,14 +45,10 @@ describe("validateAndSetFile", () => {
         item: (index: number) => (index === 0 ? file : null),
       };
 
-      const event = {
-        target: { files: fileList },
-      };
-
+      const event = { target: { files: fileList } };
       return event as unknown as ChangeEvent<HTMLInputElement>;
     }
 
-    // Now you can do:
     const event = createMockEvent(new File([], "test.jpg"));
 
     const result = validateAndSetFile(
@@ -66,21 +73,30 @@ describe("validateAndSetFile", () => {
   });
 
   it("should set image file and preview URL if fileValidation succeeds", () => {
-    // Mock dependencies
+    // In the successful scenario, we must provide all arguments
     const mockFileValidation = vi
       .fn()
-      .mockImplementation((event, setImageFileCallback) => {
-        // Simulate a successful validation by calling setImageFileCallback
-        setImageFileCallback(event.target.files[0]);
-        return true;
-      });
+      .mockImplementation(
+        (
+          event,
+          showError,
+          setImageFileCallback,
+          setErrorMessage,
+          clearErrorMessage
+        ) => {
+          // Simulate successful validation by calling setImageFileCallback
+          setImageFileCallback(event.target.files[0]);
+          return true;
+        }
+      );
 
     const mockSetImageFile = vi.fn();
     const mockSetSelectedImagePreviewUrl = vi.fn();
-    const mockSetErrorMessage = vi.fn();
+    const mockSetErrorMessage = vi.fn() as unknown as React.Dispatch<
+      React.SetStateAction<string | null>
+    >;
 
     const mockFile = new File(["test content"], "test.jpg");
-
     const fileList = {
       0: mockFile,
       length: 1,
@@ -90,16 +106,12 @@ describe("validateAndSetFile", () => {
     } as unknown as FileList;
 
     const event = {
-      target: {
-        files: fileList,
-      },
-    } as unknown as React.ChangeEvent<HTMLInputElement>;
+      target: { files: fileList },
+    } as unknown as ChangeEvent<HTMLInputElement>;
 
-    // Mock URL.createObjectURL
     const mockObjectUrl = "mock-url";
     global.URL.createObjectURL = vi.fn().mockReturnValue(mockObjectUrl);
 
-    // Call the function
     const result = validateAndSetFile(
       event,
       mockFileValidation,
@@ -109,7 +121,6 @@ describe("validateAndSetFile", () => {
       mockClearErrorMessage
     );
 
-    // Assertions
     expect(mockFileValidation).toHaveBeenCalledWith(
       event,
       expect.any(Function), // showError
@@ -126,7 +137,9 @@ describe("validateAndSetFile", () => {
     const mockFileValidation = vi.fn().mockReturnValue(false);
     const mockSetImageFile = vi.fn();
     const mockSetSelectedImagePreviewUrl = vi.fn();
-    const mockSetErrorMessage = vi.fn();
+    const mockSetErrorMessage = vi.fn() as unknown as React.Dispatch<
+      React.SetStateAction<string | null>
+    >;
 
     function createMockEvent(file: File): ChangeEvent<HTMLInputElement> {
       const fileList = {
@@ -135,14 +148,10 @@ describe("validateAndSetFile", () => {
         item: (index: number) => (index === 0 ? file : null),
       };
 
-      const event = {
-        target: { files: fileList },
-      };
-
+      const event = { target: { files: fileList } };
       return event as unknown as ChangeEvent<HTMLInputElement>;
     }
 
-    // Now you can do:
     const event = createMockEvent(new File([], "test.jpg"));
 
     const result = validateAndSetFile(
