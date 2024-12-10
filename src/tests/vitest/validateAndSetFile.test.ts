@@ -28,26 +28,25 @@ describe("validateAndSetFile", () => {
     global.URL.createObjectURL = vi.fn(); // Reset the URL mock between tests
   });
 
+  function createMockEvent(file: File): ChangeEvent<HTMLInputElement> {
+    const fileList = {
+      0: file,
+      length: 1,
+      item: (index: number) => (index === 0 ? file : null),
+    };
+
+    const event = { target: { files: fileList } };
+    return event as unknown as ChangeEvent<HTMLInputElement>;
+  }
+
   it("should return null if fileValidation fails", () => {
     // fileValidation returns false, meaning no validation success
     const mockFileValidation = vi.fn().mockReturnValue(false);
     const mockSetImageFile = vi.fn();
     const mockSetSelectedImagePreviewUrl = vi.fn();
-    // Cast the mock to match React state setter type
     const mockSetErrorMessage = vi.fn() as unknown as React.Dispatch<
       React.SetStateAction<string | null>
     >;
-
-    function createMockEvent(file: File): ChangeEvent<HTMLInputElement> {
-      const fileList = {
-        0: file,
-        length: 1,
-        item: (index: number) => (index === 0 ? file : null),
-      };
-
-      const event = { target: { files: fileList } };
-      return event as unknown as ChangeEvent<HTMLInputElement>;
-    }
 
     const event = createMockEvent(new File([], "test.jpg"));
 
@@ -73,23 +72,24 @@ describe("validateAndSetFile", () => {
   });
 
   it("should set image file and preview URL if fileValidation succeeds", () => {
-    // In the successful scenario, we must provide all arguments
-    const mockFileValidation = vi
-      .fn()
-      .mockImplementation(
-        (
-          event,
-          showError,
-          setImageFileCallback,
-          setErrorMessage,
-          clearErrorMessage
-        ) => {
-          // Simulate successful validation by calling setImageFileCallback
+    const mockFileValidation = vi.fn().mockImplementation(
+      (
+        event: ChangeEvent<HTMLInputElement>,
+        _showError: unknown,
+        setImageFileCallback: (file: File) => void,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        _setErrorMessage: unknown,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        _clearErrorMessage: unknown
+      ) => {
+        if (event.target.files) {
           setImageFileCallback(event.target.files[0]);
-          return true;
+        } else {
+          throw new Error("Files should not be null during testing.");
         }
-      );
-
+        return true;
+      }
+    );
     const mockSetImageFile = vi.fn();
     const mockSetSelectedImagePreviewUrl = vi.fn();
     const mockSetErrorMessage = vi.fn() as unknown as React.Dispatch<
@@ -140,17 +140,6 @@ describe("validateAndSetFile", () => {
     const mockSetErrorMessage = vi.fn() as unknown as React.Dispatch<
       React.SetStateAction<string | null>
     >;
-
-    function createMockEvent(file: File): ChangeEvent<HTMLInputElement> {
-      const fileList = {
-        0: file,
-        length: 1,
-        item: (index: number) => (index === 0 ? file : null),
-      };
-
-      const event = { target: { files: fileList } };
-      return event as unknown as ChangeEvent<HTMLInputElement>;
-    }
 
     const event = createMockEvent(new File([], "test.jpg"));
 
