@@ -180,8 +180,6 @@ function App() {
     }
   };
 
-  // the helper functions defined above are composed into the two main logic flows
-  // of searching by image file or by text
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     resetStateAndInputs(
       setRecipeArray,
