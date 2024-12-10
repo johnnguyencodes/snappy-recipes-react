@@ -1,3 +1,13 @@
+import { searchValidation, showError, clearErrorMessage } from "./formUtils";
+import {
+  appendImgurFormData,
+  postImage,
+  postImageUrlToGoogle,
+  getRecipes,
+} from "./apiUtils";
+import { ChangeEvent } from "react";
+import { IRecipe } from "types/AppTypes";
+
 const validateImageUrl = (url: string, fallback: string): Promise<string> => {
   return new Promise((resolve) => {
     const img = new Image();
@@ -7,7 +17,7 @@ const validateImageUrl = (url: string, fallback: string): Promise<string> => {
   });
 };
 
-const saveToLocalStorage = (key: string, value: any) => {
+const saveToLocalStorage = (key: string, value: string | object) => {
   localStorage.setItem(key, JSON.stringify(value));
 };
 
@@ -16,4 +26,170 @@ const loadFromLocalStorage = (key: string) => {
   return storedValue ? JSON.parse(storedValue) : null;
 };
 
-export { validateImageUrl, saveToLocalStorage, loadFromLocalStorage };
+// search validator helper functions
+// file search validator functions
+const validateAndSetFile = (
+  event: ChangeEvent<HTMLInputElement>,
+  fileValidation: (
+    event: ChangeEvent<HTMLInputElement>,
+    showError: (
+      errorType: string,
+      setaErrorMessage: (message: string) => void,
+      query: string | null
+    ) => void,
+    setImageFile: (file: File) => void,
+    setErrorMessage: (message: string) => void,
+    clearErrorMessage: (setErrorMessage: (message: string) => void) => void
+  ) => boolean,
+  setImageFile: React.Dispatch<React.SetStateAction<File | null>>,
+  setSelectedImagePreviewUrl: React.Dispatch<
+    React.SetStateAction<string | null>
+  >,
+  setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>,
+  clearErrorMessage: (setErrorMessage: (message: string) => void) => void
+): File | null => {
+  let selectedFile: File | null = null;
+
+  const isValid = fileValidation(
+    event,
+    showError,
+    (file) => {
+      setImageFile(file);
+      setSelectedImagePreviewUrl(URL.createObjectURL(file));
+      selectedFile = file;
+    },
+    setErrorMessage,
+    clearErrorMessage
+  );
+
+  if (!isValid) {
+    setSelectedImagePreviewUrl(null);
+    return null;
+  }
+
+  return selectedFile;
+};
+
+const isDuplicateFile = (
+  previousFile: File | null,
+  currentFile: File | null
+): boolean => {
+  if (!previousFile || !currentFile) {
+    return false;
+  }
+
+  return (
+    previousFile &&
+    currentFile &&
+    previousFile.name === currentFile.name &&
+    previousFile.size === currentFile.size &&
+    previousFile.lastModified === currentFile.lastModified
+  );
+};
+
+// text search validator function
+const validateSearchInput = (
+  query: string,
+  setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>
+): boolean => {
+  return searchValidation(query, showError, setErrorMessage, clearErrorMessage);
+};
+
+// helper functions to prepare API calls
+const uploadFileToImgur = async (
+  selectedFile: File,
+  imgurAccessToken: string,
+  setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>
+): Promise<string | null> => {
+  const formData = appendImgurFormData(selectedFile);
+
+  try {
+    const imgurJson = await postImage(
+      formData,
+      imgurAccessToken,
+      showError,
+      setErrorMessage
+    );
+    return imgurJson.data.link;
+  } catch (error) {
+    console.error("Error uploading image to Imgur:", error);
+    return null;
+  }
+};
+
+const analyzeImage = async (
+  imageURL: string,
+  setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>
+): Promise<string | null> => {
+  try {
+    const googleJson = await postImageUrlToGoogle(
+      imageURL,
+      showError,
+      setErrorMessage
+    );
+    const labelAnnotations = googleJson.responses[0]?.labelAnnotations;
+
+    if (!labelAnnotations || labelAnnotations.length === 0) {
+      showError("errorNoLabelAnnotations", setErrorMessage, null);
+      throw new Error("No label annotations found in Google API response");
+    }
+
+    const [firstAnnotation] = labelAnnotations;
+    // eslint-disable-next-line
+    const { description: imageTitle, score: _score } = firstAnnotation;
+
+    return imageTitle;
+  } catch (error) {
+    console.error("Error fetching data from Google Vision API:", error);
+    return null;
+  }
+};
+
+const callSpoonacularAPI = async (
+  query: string,
+  setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>,
+  setStatusMessage: React.Dispatch<React.SetStateAction<string | null>>,
+  setRecipeArray: React.Dispatch<React.SetStateAction<IRecipe[] | null>>,
+  restrictionsArray: string[] | null,
+  intolerancesArray: string[] | null
+) => {
+  const restrictionsString = (restrictionsArray ?? []).toString();
+  const intolerancesString = (intolerancesArray ?? []).toString();
+  try {
+    setStatusMessage(
+      query.length
+        ? `searching for recipes that contain ${query}`
+        : `searching for random recipes`
+    );
+    const spoonacularJson = await getRecipes(
+      query,
+      restrictionsString,
+      intolerancesString,
+      showError,
+      setErrorMessage
+    );
+    if (spoonacularJson) {
+      setRecipeArray(spoonacularJson.results);
+      setStatusMessage(
+        query.length
+          ? `${spoonacularJson.number} recipes found that contains ${query}`
+          : `${spoonacularJson.number} random recipes found.`
+      );
+    }
+  } catch (error) {
+    setStatusMessage("");
+    console.error("Error fetching data from Spoonacular API:", error);
+  }
+};
+
+export {
+  validateImageUrl,
+  saveToLocalStorage,
+  loadFromLocalStorage,
+  validateAndSetFile,
+  isDuplicateFile,
+  validateSearchInput,
+  uploadFileToImgur,
+  analyzeImage,
+  callSpoonacularAPI,
+};
