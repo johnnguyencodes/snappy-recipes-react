@@ -2,10 +2,9 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import React from "react";
 
 vi.mock("../../lib/apiUtils", async () => {
-  const actual =
-    await vi.importActual<Record<string, any>>("../../lib/apiUtils");
+  const actual = await vi.importActual<unknown>("../../lib/apiUtils");
   return {
-    ...actual,
+    ...(actual as Record<string, unknown>),
     postImageUrlToGoogle: vi.fn(),
   };
 });
