@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import React from "react";
 
-// Mock the dependent modules first
 vi.mock("../../lib/apiUtils", async () => {
   const actual =
     await vi.importActual<Record<string, any>>("../../lib/apiUtils");
@@ -16,7 +16,6 @@ vi.mock("../../lib/formUtils", () => ({
   searchValidation: vi.fn(),
 }));
 
-// Now import analyzeImage and the mocked functions
 import { analyzeImage } from "../../lib/appUtils";
 import { postImageUrlToGoogle } from "../../lib/apiUtils";
 import { showError } from "../../lib/formUtils";
@@ -25,11 +24,14 @@ const mockPostImageUrlToGoogle = vi.mocked(postImageUrlToGoogle);
 const mockShowError = vi.mocked(showError);
 
 describe("analyzeImage", () => {
-  let mockSetErrorMessage: (message: string | null) => void;
+  let mockSetErrorMessage: React.Dispatch<React.SetStateAction<string | null>>;
   const mockImageURL = "https://example.com/image.jpg";
 
   beforeEach(() => {
-    mockSetErrorMessage = vi.fn();
+    // Cast vi.fn() to the correct type
+    mockSetErrorMessage = vi.fn() as React.Dispatch<
+      React.SetStateAction<string | null>
+    >;
     vi.clearAllMocks();
   });
 

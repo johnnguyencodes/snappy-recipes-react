@@ -69,19 +69,11 @@ describe("validateAndSetFile", () => {
     // Mock dependencies
     const mockFileValidation = vi
       .fn()
-      .mockImplementation(
-        (
-          event,
-          showError,
-          setImageFileCallback,
-          setErrorMessage,
-          clearErrorMessage
-        ) => {
-          // Simulate a successful validation by calling setImageFileCallback
-          setImageFileCallback(event.target.files[0]);
-          return true;
-        }
-      );
+      .mockImplementation((event, setImageFileCallback) => {
+        // Simulate a successful validation by calling setImageFileCallback
+        setImageFileCallback(event.target.files[0]);
+        return true;
+      });
 
     const mockSetImageFile = vi.fn();
     const mockSetSelectedImagePreviewUrl = vi.fn();
@@ -102,6 +94,7 @@ describe("validateAndSetFile", () => {
         files: fileList,
       },
     } as unknown as React.ChangeEvent<HTMLInputElement>;
+
     // Mock URL.createObjectURL
     const mockObjectUrl = "mock-url";
     global.URL.createObjectURL = vi.fn().mockReturnValue(mockObjectUrl);
@@ -135,7 +128,22 @@ describe("validateAndSetFile", () => {
     const mockSetSelectedImagePreviewUrl = vi.fn();
     const mockSetErrorMessage = vi.fn();
 
-    const event = { target: { files: [new File([], "invalid.jpg")] } } as any;
+    function createMockEvent(file: File): ChangeEvent<HTMLInputElement> {
+      const fileList = {
+        0: file,
+        length: 1,
+        item: (index: number) => (index === 0 ? file : null),
+      };
+
+      const event = {
+        target: { files: fileList },
+      };
+
+      return event as unknown as ChangeEvent<HTMLInputElement>;
+    }
+
+    // Now you can do:
+    const event = createMockEvent(new File([], "test.jpg"));
 
     const result = validateAndSetFile(
       event,
