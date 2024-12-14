@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import "@testing-library/jest-dom";
 import App from "../../App.tsx";
 import { vi, describe, it, expect } from "vitest";
 import {
@@ -13,6 +14,17 @@ vi.mock("../../lib/appUtils", () => ({
   uploadFileToImgur: vi.fn(),
   analyzeImage: vi.fn(),
   callSpoonacularAPI: vi.fn(),
+  validateImageUrl: vi.fn().mockResolvedValue("mock-image.jpg"),
+  loadFromLocalStorage: vi.fn(),
+}));
+
+vi.mock("../../components/app/RecipeCard", () => ({
+  __esmodule: true,
+  default: vi.fn(({ recipe }) => (
+    <div id={recipe.id.toString()}>
+      <h3>{recipe.title}</h3>
+    </div>
+  )),
 }));
 
 describe("Searching for a recipe by uploading an image file", () => {
@@ -37,6 +49,7 @@ describe("Searching for a recipe by uploading an image file", () => {
         restrictionsArray: string[] | null,
         intolerancesArray: string[] | null
       ): Promise<void> => {
+        query = "pasta";
         if (query === "") {
           setErrorMessage("Query cannot be empty");
         }
@@ -76,14 +89,14 @@ describe("Searching for a recipe by uploading an image file", () => {
             },
           },
         ]);
-        setStatusMessage(`1 recipe found that contains ${query}`);
+        setStatusMessage(`1 recipes found that contains ${query}`);
       }
     );
 
     render(<App />);
 
     //  Simulate file upload
-    const uploadButton = screen.getByText("upload");
+    const uploadButton = screen.getByTestId("upload");
     fireEvent.click(uploadButton);
 
     const fileInput = screen.getByPlaceholderText(

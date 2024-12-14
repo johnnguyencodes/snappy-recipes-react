@@ -281,7 +281,7 @@ function App() {
         <header className="row mb-0 flex items-center justify-between">
           <h1 className="mb-0 pb-0 text-2xl font-extrabold">Snappy Recipes</h1>
           {statusMessage && (
-            <div className="error-message mb-4 rounded bg-green-100 p-2 text-green-600">
+            <div className="mb-4 rounded bg-green-100 p-2 text-green-600">
               {statusMessage}
             </div>
           )}
@@ -316,6 +316,7 @@ function App() {
               ref={fileInputRef}
               style={{ display: "none" }}
               onChange={handleFileChange}
+              data-testid="upload"
             />
             <Input
               id="input"
@@ -335,7 +336,7 @@ function App() {
           </div>
           {errorMessage && (
             <div
-              className="error-message mb-4 rounded bg-red-100 p-2 text-red-600"
+              className="mb-4 rounded bg-red-100 p-2 text-red-600"
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(errorMessage),
               }}
