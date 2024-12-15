@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, ChangeEvent, KeyboardEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Settings, Upload } from "lucide-react";
+import { Settings } from "lucide-react";
 import Recipes from "@/components/app/Recipes";
 import SettingsContent from "@/components/app/SettingsContent";
 
