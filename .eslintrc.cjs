@@ -48,6 +48,13 @@ module.exports = {
     ],
 
     // Additional custom rules can be added here
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",    // Ignore unused function arguments starting with _
+        "varsIgnorePattern": "^_",    // Ignore unused variables starting with _
+      }
+    ]
   },
   settings: {
     react: {
