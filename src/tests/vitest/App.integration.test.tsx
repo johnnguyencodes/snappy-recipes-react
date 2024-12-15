@@ -1,23 +1,58 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event"; // More accurate user interactions
 import "@testing-library/jest-dom";
+import { vi, describe, it, expect, afterEach } from "vitest";
 import App from "../../App.tsx";
-import { vi, describe, it, expect } from "vitest";
-import {
-  uploadFileToImgur,
-  analyzeImage,
-  callSpoonacularAPI,
-} from "../../lib/appUtils";
+import * as appUtils from "../../lib/appUtils"; // Import all as namespace
 import { IRecipe } from "types/AppTypes";
 
+// Mock global URL.createObjectURL and URL.revokeObjectURL to prevent errors during image preview
+global.URL.createObjectURL = vi.fn(() => "mock-url");
+global.URL.revokeObjectURL = vi.fn();
+
+// Mock appUtils with actual implementation except specific functions
 vi.mock("../../lib/appUtils", () => ({
   ...vi.importActual("../../lib/appUtils"),
   uploadFileToImgur: vi.fn(),
   analyzeImage: vi.fn(),
   callSpoonacularAPI: vi.fn(),
+  isDuplicateFile: vi.fn(),
+  validateAndSetFile: vi.fn(),
   validateImageUrl: vi.fn().mockResolvedValue("mock-image.jpg"),
   loadFromLocalStorage: vi.fn(),
 }));
 
+// Define a mock recipe to be returned by callSpoonacularAPI
+const mockRecipe: IRecipe = {
+  id: 1,
+  title: "Mock Recipe",
+  image: "mock-image.jpg",
+  readyInMinutes: 45,
+  servings: 10,
+  diets: ["gluten free"],
+  sourceUrl: "https://example.com",
+  summary: "Summary",
+  nutrition: {
+    nutrients: [
+      {
+        name: "mock Calories",
+        amount: 90.93,
+        unit: "kcal",
+        percentOfDailyNeeds: 4.55,
+      },
+    ],
+    ingredients: [
+      {
+        id: 1,
+        name: "mock ingredient",
+        amount: 1,
+        unit: "mock unit",
+      },
+    ],
+  },
+};
+
+// Mock RecipeCard component to simplify the DOM structure
 vi.mock("../../components/app/RecipeCard", () => ({
   __esmodule: true,
   default: vi.fn(({ recipe }) => (
@@ -28,88 +63,164 @@ vi.mock("../../components/app/RecipeCard", () => ({
 }));
 
 describe("Searching for a recipe by uploading an image file", () => {
-  it("should display recipes after uploading an image and completing the search flow", async () => {
+  afterEach(() => {
+    vi.clearAllMocks(); // Clear mocks after each test
+  });
+
+  it("calls callSpoonacularAPI twice and shows '1 recipes found that contains pasta' after a valid file upload", async () => {
+    // Create a mock file
     const mockFile = new File(["dummy content"], "test.jpg", {
       type: "image/jpeg",
     });
 
-    // Cast the mocked functions explicitly to avoid type issues
-    const mockUploadFileToImgur = vi.mocked(uploadFileToImgur);
-    const mockAnalyzeImage = vi.mocked(analyzeImage);
-    const mockCallSpoonacularAPI = vi.mocked(callSpoonacularAPI);
+    // Access the mocked functions via appUtils
+    const mockUploadFileToImgur = vi.mocked(appUtils.uploadFileToImgur);
+    const mockAnalyzeImage = vi.mocked(appUtils.analyzeImage);
+    const mockCallSpoonacularAPI = vi.mocked(appUtils.callSpoonacularAPI);
+    const mockIsDuplicateFile = vi.mocked(appUtils.isDuplicateFile);
+    const mockValidateAndSetFile = vi.mocked(appUtils.validateAndSetFile);
 
-    mockUploadFileToImgur.mockResolvedValue("https://example.com/image.jpg");
-    mockAnalyzeImage.mockResolvedValue("pasta");
-    mockCallSpoonacularAPI.mockImplementation(
-      async (
-        query: string,
-        setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>,
-        setStatusMessage: React.Dispatch<React.SetStateAction<string | null>>,
-        setRecipeArray: React.Dispatch<React.SetStateAction<IRecipe[] | null>>,
-        restrictionsArray: string[] | null,
-        intolerancesArray: string[] | null
-      ): Promise<void> => {
-        query = "pasta";
-        if (query === "") {
-          setErrorMessage("Query cannot be empty");
+    // Set up mock implementations with console.logs
+
+    // Mock isDuplicateFile to always return false and log its call
+    mockIsDuplicateFile.mockImplementation((previousFile, currentFile) => {
+      console.log("isDuplicateFile called with:", {
+        previousFile,
+        currentFile,
+      });
+      return false; // Always false to allow upload flow
+    });
+
+    // Mock validateAndSetFile to return the file and log its call
+    mockValidateAndSetFile.mockImplementation(
+      (
+        event,
+        fileValidation,
+        setImageFile,
+        setSelectedImagePreviewUrl,
+        setErrorMessage,
+        clearErrorMessage
+      ) => {
+        console.log("validateAndSetFile called");
+        const file = event.target.files?.[0];
+        if (
+          file &&
+          fileValidation(
+            event,
+            vi.fn(),
+            setImageFile,
+            setErrorMessage,
+            clearErrorMessage
+          )
+        ) {
+          console.log("File validated and set");
+          setImageFile(file);
+          setSelectedImagePreviewUrl("mock-preview-url");
+          return file;
         }
-
-        const combinedFilters = [
-          ...(restrictionsArray || []),
-          ...(intolerancesArray || []),
-        ];
-        console.log(combinedFilters);
-        setRecipeArray([
-          {
-            id: 1,
-            title: "Mock Recipe",
-            image: "mock-image.jpg",
-            readyInMinutes: 45,
-            servings: 10,
-            diets: ["gluten free"],
-            sourceUrl: "https://example.com",
-            summary: "Summary",
-            nutrition: {
-              nutrients: [
-                {
-                  name: "mock Calories",
-                  amount: 90.93,
-                  unit: "kcal",
-                  percentOfDailyNeeds: 4.55,
-                },
-              ],
-              ingredients: [
-                {
-                  id: 1,
-                  name: "mock ingredient",
-                  amount: 1,
-                  unit: "mock unit",
-                },
-              ],
-            },
-          },
-        ]);
-        setStatusMessage(`1 recipes found that contains ${query}`);
+        console.log("File validation failed");
+        return null;
       }
     );
 
+    // Mock uploadFileToImgur with console log
+    mockUploadFileToImgur.mockImplementation(
+      async (selectedFile, imgurAccessToken, _setErrorMessage) => {
+        console.log("uploadFileToImgur called with:", {
+          selectedFile,
+          imgurAccessToken,
+        });
+        return "https://example.com/image.jpg"; // Mocked URL
+      }
+    );
+
+    // Mock analyzeImage with console log
+    mockAnalyzeImage.mockImplementation(async (imageURL, _setErrorMessage) => {
+      console.log("analyzeImage called with:", { imageURL });
+      return "pasta"; // Mocked analysis
+    });
+
+    // Mock callSpoonacularAPI with console log
+    mockCallSpoonacularAPI.mockImplementation(
+      async (
+        query: string,
+        _setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>,
+        setStatusMessage: React.Dispatch<React.SetStateAction<string | null>>,
+        setRecipeArray: React.Dispatch<React.SetStateAction<IRecipe[] | null>>,
+        _restrictionsArray: string[] | null,
+        _intolerancesArray: string[] | null
+      ) => {
+        console.log("callSpoonacularAPI called with:", { query });
+        if (!query) {
+          // Initial load: no recipes, no message
+          setRecipeArray([mockRecipe]);
+          setStatusMessage("1 random recipes found.");
+        } else if (query === "pasta") {
+          // After analysis: return mock recipe and message
+          setRecipeArray([mockRecipe]);
+          setStatusMessage("1 recipes found that contains pasta");
+        }
+      }
+    );
+
+    // Render the App
+    console.log("Rendering App...");
     render(<App />);
 
-    //  Simulate file upload
-    const uploadButton = screen.getByTestId("upload");
-    fireEvent.click(uploadButton);
-
-    const fileInput = screen.getByPlaceholderText(
-      "Search by entering your ingredient or upload an image"
+    // Verify initial callSpoonacularAPI("") was called
+    expect(mockCallSpoonacularAPI).toHaveBeenCalledWith(
+      "",
+      expect.any(Function),
+      expect.any(Function),
+      expect.any(Function),
+      expect.anything(),
+      expect.anything()
     );
-    fireEvent.change(fileInput, { target: { files: [mockFile] } });
+
+    // Initial state checks
+    console.log("Initial state checked: no final message or recipe present.");
+    expect(
+      screen.queryByText("1 recipes found that contains pasta")
+    ).toBeNull();
+    expect(screen.queryByText("Mock Recipe")).toBeNull();
+
+    // Simulate clicking the upload button
+    console.log("Clicking upload button...");
+    const uploadButton = screen.getByTestId("upload-button");
+    await userEvent.click(uploadButton);
+
+    // Simulate file upload using userEvent.upload
+    console.log("Uploading a valid jpg file to trigger upload flow...");
+    const fileInput = screen.getByTestId("file-input") as HTMLInputElement;
+
+    await userEvent.upload(fileInput, mockFile);
+
+    // Verify that the file was uploaded
+    expect(fileInput.files?.[0]).toBe(mockFile);
+    expect(fileInput.files).toHaveLength(1);
 
     // Wait for the status message and recipes to appear
-    await waitFor(() => {
-      expect(
-        screen.getByText("1 recipes found that contains pasta")
-      ).toBeInTheDocument();
-      expect(screen.getByText("Mock Recipe")).toBeInTheDocument();
-    });
+    console.log(
+      "Waiting for '1 recipes found that contains pasta' to appear..."
+    );
+    const statusMessage = await screen.findByText(
+      "1 recipes found that contains pasta"
+    );
+    console.log("Found status message in DOM!");
+
+    // Assert that the status message and mock recipe are present
+    expect(statusMessage).toBeInTheDocument();
+    expect(screen.getByText("Mock Recipe")).toBeInTheDocument();
+
+    // Check that callSpoonacularAPI was called twice
+    expect(mockCallSpoonacularAPI).toHaveBeenCalledTimes(2);
+    expect(mockCallSpoonacularAPI).toHaveBeenCalledWith(
+      "pasta",
+      expect.any(Function),
+      expect.any(Function),
+      expect.any(Function),
+      expect.anything(),
+      expect.anything()
+    );
   });
 });

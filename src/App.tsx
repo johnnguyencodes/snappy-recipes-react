@@ -227,15 +227,15 @@ function App() {
         return;
       }
 
-      const query = await analyzeImage(imageURL, setErrorMessage);
-      if (!query) {
+      const analyzedQuery = await analyzeImage(imageURL, setErrorMessage);
+      if (!analyzedQuery) {
         setStatusMessage("");
         return;
       }
 
-      setQuery(query);
+      setQuery(analyzedQuery);
       callSpoonacularAPI(
-        query,
+        analyzedQuery,
         setErrorMessage,
         setStatusMessage,
         setRecipeArray,
@@ -308,15 +308,16 @@ function App() {
             <Button
               onClick={handleUploadButtonClick}
               className="rounded-br-none rounded-tr-none"
+              data-testid="upload-button"
             >
-              <Upload />
+              Upload
             </Button>
             <input
               type="file"
               ref={fileInputRef}
               style={{ display: "none" }}
               onChange={handleFileChange}
-              data-testid="upload"
+              data-testid="file-input"
             />
             <Input
               id="input"
@@ -326,6 +327,7 @@ function App() {
               onKeyDown={(event) => handleKeyDown(event)}
               className="rounded-br-none rounded-tr-none"
               name=""
+              data-testid="text-input"
             />
             <Button
               onClick={() => handleSearch(query)}
