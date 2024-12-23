@@ -73,6 +73,7 @@ const RecipeCard: React.FC<IRecipeCardProps> = ({
             event.stopPropagation();
             toggleFavorite(recipe);
           }}
+          data-testid={`favorite-button-${id}`}
         >
           {favoritesArray.some((favorite: IRecipe) => favorite.id === id)
             ? "Unfavorite"
