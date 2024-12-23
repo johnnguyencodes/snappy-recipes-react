@@ -5,6 +5,7 @@ import { vi, describe, it, expect, afterEach } from "vitest";
 import App from "../../App.tsx";
 import * as appUtils from "../../lib/appUtils"; // Import all as namespace
 import { IRecipe } from "types/AppTypes";
+import { searchValidation } from "@/lib/formUtils.ts";
 
 // Mock global URL.createObjectURL and URL.revokeObjectURL to prevent errors during image preview
 global.URL.createObjectURL = vi.fn(() => "mock-url");
@@ -18,6 +19,7 @@ vi.mock("../../lib/appUtils", () => ({
   callSpoonacularAPI: vi.fn(),
   isDuplicateFile: vi.fn(),
   validateAndSetFile: vi.fn(),
+  validateSearchInput: vi.fn(),
   validateImageUrl: vi.fn().mockResolvedValue("mock-image.jpg"),
   loadFromLocalStorage: vi.fn(),
 }));
@@ -216,6 +218,107 @@ describe("Searching for a recipe by uploading an image file", () => {
     expect(mockCallSpoonacularAPI).toHaveBeenCalledTimes(2);
     expect(mockCallSpoonacularAPI).toHaveBeenCalledWith(
       "pasta",
+      expect.any(Function),
+      expect.any(Function),
+      expect.any(Function),
+      expect.anything(),
+      expect.anything()
+    );
+  });
+
+  it("calls callSpoonacularAPI twice and shows '1 recipes found that contains pizza' after entering a valid query", async () => {
+    // create a mock search query
+    const mockQuery = "pizza";
+
+    // Access the mocked functions via appUtils
+    const mockValidateSearchInput = vi.mocked(appUtils.validateSearchInput);
+    const mockCallSpoonacularAPI = vi.mocked(appUtils.callSpoonacularAPI);
+
+    // Mock validateSearchInput
+    mockValidateSearchInput.mockImplementation(
+      (
+        query: string,
+        setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>
+      ): boolean => {
+        console.log("validateSearchInput called with:", { query });
+        if (searchValidation(query, vi.fn(), setErrorMessage, vi.fn())) {
+          console.log("Search validated");
+          return true;
+        } else {
+          return false;
+        }
+      }
+    );
+
+    // Mock callSpoonacularAPI with console log
+    mockCallSpoonacularAPI.mockImplementation(
+      async (
+        query: string,
+        _setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>,
+        setStatusMessage: React.Dispatch<React.SetStateAction<string | null>>,
+        setRecipeArray: React.Dispatch<React.SetStateAction<IRecipe[] | null>>,
+        _restrictionsArray: string[] | null,
+        _intolerancesArray: string[] | null
+      ) => {
+        console.log("callSpoonacularAPI called with:", { query });
+        if (!query) {
+          // Initial load: no recipes, no message
+          setRecipeArray([mockRecipe]);
+          setStatusMessage("1 random recipes found.");
+        } else if (query === "pizza") {
+          // After analysis: return mock recipe and message
+          setRecipeArray([mockRecipe]);
+          setStatusMessage("1 recipes found that contains pizza");
+        }
+      }
+    );
+
+    // Render the App
+    console.log("Rendering App...");
+    render(<App />);
+
+    // Verify initial callSpoonacularAPI("") was called
+    expect(mockCallSpoonacularAPI).toHaveBeenCalledWith(
+      "",
+      expect.any(Function),
+      expect.any(Function),
+      expect.any(Function),
+      expect.anything(),
+      expect.anything()
+    );
+
+    // Initial state checks
+    console.log("Initial state checked: no final message or recipe present.");
+    expect(
+      screen.queryByText("1 recipes found that contains pizza")
+    ).toBeNull();
+    expect(screen.queryByText("Mock Recipe")).toBeNull();
+
+    // Simulate entering a query
+    console.log("Entering query");
+    const textInput = screen.getByTestId("text-input");
+    await userEvent.type(textInput, mockQuery);
+
+    const submitButton = screen.getByTestId("submit");
+    await userEvent.click(submitButton);
+
+    // Wait for the status message and recipes to appear
+    console.log(
+      "Waiting for '1 recipes found that contains pizza' to appear..."
+    );
+    const statusMessage = await screen.findByText(
+      "1 recipes found that contains pizza"
+    );
+    console.log("Found status message in DOM!");
+
+    // Assert that the status message and mock recipe are present
+    expect(statusMessage).toBeInTheDocument();
+    expect(screen.getByText("Mock Recipe")).toBeInTheDocument();
+
+    // Check that callSpoonacularAPI was called twice
+    expect(mockCallSpoonacularAPI).toHaveBeenCalledTimes(2);
+    expect(mockCallSpoonacularAPI).toHaveBeenCalledWith(
+      "pizza",
       expect.any(Function),
       expect.any(Function),
       expect.any(Function),

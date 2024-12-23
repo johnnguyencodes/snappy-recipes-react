@@ -332,6 +332,7 @@ function App() {
             <Button
               onClick={() => handleSearch(query)}
               className="rounded-bl-none rounded-tl-none"
+              data-testid="submit"
             >
               Submit
             </Button>
