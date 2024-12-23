@@ -1,4 +1,4 @@
-import { IRecipeCardProps } from "../../../types/AppTypes";
+import { IRecipe, IRecipeCardProps } from "../../../types/AppTypes";
 import {
   Card,
   CardContent,
@@ -74,7 +74,7 @@ const RecipeCard: React.FC<IRecipeCardProps> = ({
             toggleFavorite(recipe);
           }}
         >
-          {favoritesArray.some((favorite) => favorite.id === id)
+          {favoritesArray.some((favorite: IRecipe) => favorite.id === id)
             ? "Unfavorite"
             : "Favorite"}
         </Button>
