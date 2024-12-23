@@ -22,6 +22,7 @@ vi.mock("../../lib/appUtils", () => ({
   validateSearchInput: vi.fn(),
   validateImageUrl: vi.fn().mockResolvedValue("mock-image.jpg"),
   loadFromLocalStorage: vi.fn(),
+  saveToLocalStorage: vi.fn(),
 }));
 
 // Define a mock recipe to be returned by callSpoonacularAPI
@@ -57,14 +58,27 @@ const mockRecipe: IRecipe = {
 // Mock RecipeCard component to simplify the DOM structure
 vi.mock("../../components/app/RecipeCard", () => ({
   __esmodule: true,
-  default: vi.fn(({ recipe }) => (
-    <div id={recipe.id.toString()}>
-      <h3>{recipe.title}</h3>
-    </div>
-  )),
+  default: vi.fn(({ recipe, toggleFavorite, favoritesArray }) => {
+    return (
+      <div id={`recipe-${recipe.id}`}>
+        <h3>{recipe.title}</h3>
+        <button
+          data-testid={`favorite-button-${recipe.id}`}
+          onClick={(event) => {
+            event.stopPropagation();
+            toggleFavorite(recipe);
+          }}
+        >
+          {favoritesArray.some((favorite: IRecipe) => favorite.id === recipe.id)
+            ? "Unfavorite"
+            : "Favorite"}
+        </button>
+      </div>
+    );
+  }),
 }));
 
-describe("Searching for a recipe by uploading an image file", () => {
+describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
   afterEach(() => {
     vi.clearAllMocks(); // Clear mocks after each test
   });
@@ -325,5 +339,95 @@ describe("Searching for a recipe by uploading an image file", () => {
       expect.anything(),
       expect.anything()
     );
+  });
+
+  it("should diplay a favorited recipe in the favorites section", async () => {
+    // Create a mock file
+    const mockFile = new File(["dummy content"], "test.jpg", {
+      type: "image/jpeg",
+    });
+
+    // Access the mocked functions via appUtils
+    const mockUploadFileToImgur = vi.mocked(appUtils.uploadFileToImgur);
+    const mockAnalyzeImage = vi.mocked(appUtils.analyzeImage);
+    const mockCallSpoonacularAPI = vi.mocked(appUtils.callSpoonacularAPI);
+
+    // Mock implementations
+    mockUploadFileToImgur.mockResolvedValue("https://example.com/image.jpg");
+    mockAnalyzeImage.mockResolvedValue("pasta");
+    mockCallSpoonacularAPI.mockImplementation(
+      async (
+        query: string,
+        _setErrorMessage,
+        setStatusMessage,
+        setRecipeArray
+      ) => {
+        if (query === "pasta") {
+          setRecipeArray([mockRecipe]);
+          setStatusMessage("1 recipes found that contains pasta");
+        }
+      }
+    );
+
+    render(<App />);
+
+    // Simulate file upload
+    const uploadButton = screen.getByTestId("upload-button");
+    await userEvent.click(uploadButton);
+
+    const fileInput = screen.getByTestId("file-input");
+    await userEvent.upload(fileInput, mockFile);
+
+    // Wait for the recipe to be displayed
+    const recipeTitle = await screen.findByText("Mock Recipe");
+    expect(recipeTitle).toBeInTheDocument();
+
+    // Favorite the recipe
+    const favoriteButton = screen.getByTestId(
+      `favorite-button-${mockRecipe.id}`
+    );
+    expect(favoriteButton).toHaveTextContent("Favorite");
+    await userEvent.click(favoriteButton);
+    expect(favoriteButton).toHaveTextContent("Unfavorite");
+
+    // Navigate to the Favorites section
+    const favoritesButton = screen.getByTestId("viewFavorites");
+    await userEvent.click(favoritesButton);
+
+    // Verify the favorited recipe is displayed in Favorites
+    const favoriteRecipeTitle = await screen.findByText("Mock Recipe");
+    expect(favoriteRecipeTitle).toBeInTheDocument();
+  });
+
+  it("should display favorited recipes in the Favorites section and allow removing a recipe from Favorites", async () => {
+    // Access the mocked functions via appUtils
+    const mockLoadFromLocalStorage = vi.mocked(appUtils.loadFromLocalStorage);
+    mockLoadFromLocalStorage.mockReturnValue([mockRecipe]);
+
+    // Render the App
+    render(<App />);
+
+    // Navigate to the Favorites section
+    const favoritesButton = screen.getByTestId("viewFavorites");
+    await userEvent.click(favoritesButton);
+
+    // Verify the "Unfavorite" button is present and has the correct text
+    const unfavoriteButton = screen.getByTestId(
+      `favorite-button-${mockRecipe.id}`
+    );
+    expect(unfavoriteButton).toHaveTextContent("Unfavorite");
+
+    // Simulate unfavoriting the recipe
+    await userEvent.click(unfavoriteButton);
+
+    // Verify the recipe is removed from the Favorites section
+    const favoriteRecipeTitle = screen.queryByText("Mock Recipe");
+    expect(favoriteRecipeTitle).not.toBeInTheDocument();
+
+    // Wait for the recipe to be removed and the favorites section to be empty
+    const emptyFavoritesMessage = await screen.findByText(
+      "Your favorite recipes will appear here."
+    );
+    expect(emptyFavoritesMessage).toBeInTheDocument();
   });
 });

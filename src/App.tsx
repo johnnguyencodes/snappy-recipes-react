@@ -289,6 +289,7 @@ function App() {
             <Button
               className="border border-black bg-white font-bold text-black"
               onClick={handleShowFavoritesClick}
+              data-testid="viewFavorites"
             >
               Show Favorites
             </Button>
