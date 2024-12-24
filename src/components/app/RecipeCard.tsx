@@ -31,7 +31,8 @@ const RecipeCard: React.FC<IRecipeCardProps> = ({
 
   return (
     <Card
-      id={id.toString()}
+      id={`${id}`}
+      data-testid={`recipe-card-${id}`}
       onClick={() =>
         onCardClick({
           id,
