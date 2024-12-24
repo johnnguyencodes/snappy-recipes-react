@@ -55,17 +55,21 @@ const mockRecipe: IRecipe = {
   },
 };
 
-// Mock RecipeCard component to simplify the DOM structure
+// Mock RecipeCard component to include click handling for displaying details
 vi.mock("../../components/app/RecipeCard", () => ({
   __esmodule: true,
-  default: vi.fn(({ recipe, toggleFavorite, favoritesArray }) => {
+  default: vi.fn(({ recipe, toggleFavorite, favoritesArray, onClick }) => {
     return (
-      <div id={`recipe-${recipe.id}`}>
+      <div
+        id={`recipe-${recipe.id}`}
+        data-testid={`recipe-card-${recipe.id}`}
+        onClick={() => onClick(recipe)} // Trigger the mocked click handler
+      >
         <h3>{recipe.title}</h3>
         <button
           data-testid={`favorite-button-${recipe.id}`}
           onClick={(event) => {
-            event.stopPropagation();
+            event.stopPropagation(); // Prevent parent click handler from firing
             toggleFavorite(recipe);
           }}
         >
