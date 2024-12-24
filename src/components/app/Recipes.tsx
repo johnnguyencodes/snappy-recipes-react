@@ -155,7 +155,11 @@ const Recipes: React.FC<IRecipesProps> = ({
                 ? "Unfavorite"
                 : "Favorite"}
             </Button>
-            <Button onClick={closeRecipeModal} className="mt-4">
+            <Button
+              onClick={closeRecipeModal}
+              className="mt-4"
+              data-testid="close-recipe-modal"
+            >
               Close
             </Button>
           </div>
