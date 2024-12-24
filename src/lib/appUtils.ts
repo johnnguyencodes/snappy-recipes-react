@@ -92,6 +92,7 @@ const validateSearchInput = (
   query: string,
   setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>
 ): boolean => {
+  console.log("Validating query in app:", query);
   return searchValidation(query, showError, setErrorMessage, clearErrorMessage);
 };
 

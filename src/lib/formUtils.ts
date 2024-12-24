@@ -58,6 +58,7 @@ const searchValidation = (
   setErrorMessage: (message: string) => void,
   clearErrorMessage: (setErrorMessage: (message: string) => void) => void
 ): boolean => {
+  console.log("searchValidation received query:", query);
   if (!query) {
     clearErrorMessage(setErrorMessage);
     return true;

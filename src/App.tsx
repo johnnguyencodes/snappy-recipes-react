@@ -270,8 +270,7 @@ function App() {
         intolerancesArray
       );
     } else {
-      console.error("Not a valid search query");
-      setStatusMessage("");
+      console.error("Not a valid search query:", query);
     }
   };
 
@@ -289,13 +288,14 @@ function App() {
             <Button
               className="border border-black bg-white font-bold text-black"
               onClick={handleShowFavoritesClick}
-              data-testid="viewFavorites"
+              data-testid="openFavorites"
             >
               Show Favorites
             </Button>
             <Button
               onClick={handleSettingsClick}
               className="ml-2 border border-black bg-white font-bold text-black"
+              data-testid="openSettings"
             >
               <Settings className="h-4 w-4"></Settings>
             </Button>
