@@ -8,6 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 /playwright-report
 /test-results
+/coverage 
 
 node_modules
 dist
