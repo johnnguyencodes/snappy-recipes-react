@@ -55,33 +55,62 @@ const mockRecipe: IRecipe = {
   },
 };
 
-// Mock RecipeCard component to simplify the DOM structure
 vi.mock("../../components/app/RecipeCard", () => ({
   __esmodule: true,
-  default: vi.fn(({ recipe, toggleFavorite, favoritesArray }) => {
-    return (
-      <div id={`recipe-${recipe.id}`}>
-        <h3>{recipe.title}</h3>
-        <button
-          data-testid={`favorite-button-${recipe.id}`}
-          onClick={(event) => {
-            event.stopPropagation();
-            toggleFavorite(recipe);
-          }}
+  default: vi.fn(
+    ({
+      recipe,
+      id,
+      image,
+      title,
+      readyInMinutes,
+      servings,
+      nutrition,
+      diets,
+      summary,
+      onCardClick,
+      favoritesArray,
+      toggleFavorite,
+    }) => {
+      return (
+        <div
+          id={`recipe-card-${id}`}
+          data-testid={`recipe-card-${id}`}
+          onClick={() =>
+            onCardClick &&
+            onCardClick({
+              id,
+              image,
+              title,
+              readyInMinutes,
+              servings,
+              nutrition,
+              diets,
+              summary,
+            })
+          }
         >
-          {favoritesArray.some((favorite: IRecipe) => favorite.id === recipe.id)
-            ? "Unfavorite"
-            : "Favorite"}
-        </button>
-      </div>
-    );
-  }),
+          <h3>{title}</h3>
+          <button
+            onClick={(event) => {
+              event.stopPropagation();
+              toggleFavorite(recipe);
+            }}
+            data-testid={`favorite-button-${id}`}
+          >
+            {favoritesArray.some((favorite: IRecipe) => favorite.id === id)
+              ? "Unfavorite"
+              : "Favorite"}
+          </button>
+        </div>
+      );
+    }
+  ),
 }));
 
 describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
   afterEach(() => {
     vi.clearAllMocks(); // Clear mocks after each test
-    // vi.resetAllMocks();
   });
 
   it("calls callSpoonacularAPI twice and shows '1 recipes found that contains pizza' after entering a valid query", async () => {
@@ -550,5 +579,52 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
       "Your favorite recipes will appear here."
     );
     expect(emptyFavoritesMessage).toBeInTheDocument();
+  });
+
+  it("displays recipe details in a modal when a recipe card is clicked", async () => {
+    const mockCallSpoonacularAPI = vi.mocked(appUtils.callSpoonacularAPI);
+
+    // Mock callSpoonacularAPI to provide recipe data
+    mockCallSpoonacularAPI.mockImplementation(
+      async (
+        query: string,
+        _setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>,
+        setStatusMessage: React.Dispatch<React.SetStateAction<string | null>>,
+        setRecipeArray: React.Dispatch<React.SetStateAction<IRecipe[] | null>>
+      ) => {
+        if (query === "pizza") {
+          setRecipeArray([mockRecipe]); // Provide mock recipe data
+          setStatusMessage("1 recipes found that contains pizza");
+        }
+      }
+    );
+
+    // Render the app
+    render(<App />);
+
+    // Simulate entering a search query
+    const textInput = screen.getByTestId("text-input");
+    await userEvent.type(textInput, "pizza");
+
+    const submitButton = screen.getByTestId("submit");
+    await userEvent.click(submitButton);
+
+    // Wait for the recipe card to appear
+    const recipeCard = await screen.findByTestId("recipe-card-1");
+    expect(recipeCard).toBeInTheDocument();
+
+    // Simulate clicking the recipe card
+    await userEvent.click(recipeCard);
+
+    // Verify the modal is displayed with the correct details
+    const modalContent = await screen.findByText("Summary"); // Content in the modal
+    expect(modalContent).toBeInTheDocument();
+
+    // Simulate closing the modal
+    const closeButton = screen.getByTestId("close-recipe-modal");
+    await userEvent.click(closeButton);
+
+    // Verify the modal is closed
+    expect(modalContent).not.toBeInTheDocument();
   });
 });
