@@ -43,6 +43,7 @@ const Recipes: React.FC<IRecipesProps> = ({
 
   const handleCardClick = (recipe: IRecipe) => {
     setSelectedRecipe(recipe);
+    console.log("I was clicked");
   };
 
   const closeRecipeModal = () => {

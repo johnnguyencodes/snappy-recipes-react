@@ -42,6 +42,7 @@ const Modal: React.FC<IModalProps> = ({
         ref={modalRef}
         className="fixed left-1/2 top-1/2 z-50 max-h-[80%] max-w-lg -translate-x-1/2 -translate-y-1/2 transform overflow-auto rounded-md bg-white p-6 opacity-100 shadow-lg"
         id="modal-content"
+        data-testid="modal"
       >
         {title && (
           <DialogTitle

@@ -31,7 +31,7 @@ const RecipeCard: React.FC<IRecipeCardProps> = ({
 
   return (
     <Card
-      id={id.toString()}
+      id={`${id}`}
       onClick={() =>
         onCardClick({
           id,
@@ -45,6 +45,7 @@ const RecipeCard: React.FC<IRecipeCardProps> = ({
           summary,
         })
       }
+      data-testid={`recipe-card-${id}`}
     >
       <CardHeader className="image-container">
         <img

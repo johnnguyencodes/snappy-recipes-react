@@ -25,6 +25,7 @@ vi.mock("../../lib/appUtils", () => ({
   saveToLocalStorage: vi.fn(),
 }));
 
+// Search for a recipe
 // Define a mock recipe to be returned by callSpoonacularAPI
 const mockRecipe: IRecipe = {
   id: 1,
@@ -34,7 +35,7 @@ const mockRecipe: IRecipe = {
   servings: 10,
   diets: ["gluten free"],
   sourceUrl: "https://example.com",
-  summary: "Summary",
+  summary: "This is the recipe's summary",
   nutrition: {
     nutrients: [
       {
@@ -58,9 +59,53 @@ const mockRecipe: IRecipe = {
 // Mock RecipeCard component to simplify the DOM structure
 vi.mock("../../components/app/RecipeCard", () => ({
   __esmodule: true,
-  default: vi.fn(({ recipe, toggleFavorite, favoritesArray }) => {
+  default: vi.fn(({ recipe, toggleFavorite, favoritesArray, onCardClick }) => {
+    const {
+      id,
+      image,
+      title,
+      readyInMinutes,
+      servings,
+      nutrition,
+      sourceUrl,
+      diets,
+      summary,
+    } = recipe;
     return (
-      <div id={`recipe-${recipe.id}`}>
+      <div
+        id={`recipe-${recipe.id}`}
+        data-testid={`recipe-card-${recipe.id}`}
+        role="button"
+        tabindex="0"
+        onClick={() =>
+          onCardClick({
+            id,
+            image,
+            title,
+            readyInMinutes,
+            servings,
+            nutrition,
+            sourceUrl,
+            diets,
+            summary,
+          })
+        }
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            onCardClick({
+              id,
+              image,
+              title,
+              readyInMinutes,
+              servings,
+              nutrition,
+              sourceUrl,
+              diets,
+              summary,
+            });
+          }
+        }}
+      >
         <h3>{recipe.title}</h3>
         <button
           data-testid={`favorite-button-${recipe.id}`}
@@ -305,7 +350,7 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
     );
   });
 
-  it("calls callSpoonacularAPI twice and shows '1 recipes found that contains pasta' after a valid file upload", async () => {
+  it("calls callSpoonacularAPI twice and shows '1 recipes found that contains pasta' after a valid file upload, and user can see recipe details", async () => {
     // Create a mock file
     const mockFile = new File(["dummy content"], "test.jpg", {
       type: "image/jpeg",
@@ -460,6 +505,16 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
       expect.anything(),
       expect.anything()
     );
+
+    // Simulate the use clicking on a recipe card to view details
+    const recipeCard = screen.getByTestId(`recipe-card-${mockRecipe.id}`);
+    await userEvent.click(recipeCard);
+
+    // Verify the recipe details are on the page
+    const recipeSummary = await screen.findByText(
+      "This is the recipe's summary."
+    );
+    expect(recipeSummary).toBeInTheDocument();
   });
 
   it("should diplay a favorited recipe in the favorites section", async () => {
@@ -550,5 +605,9 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
       "Your favorite recipes will appear here."
     );
     expect(emptyFavoritesMessage).toBeInTheDocument();
+  });
+
+  it("allows the user to click on a recipe card to see detials and close the details", async () => {
+    render(<App />);
   });
 });
