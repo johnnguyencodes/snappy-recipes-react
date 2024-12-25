@@ -172,8 +172,8 @@ const callSpoonacularAPI = async (
       setRecipeArray(spoonacularJson.results);
       setStatusMessage(
         query.length
-          ? `${spoonacularJson.number} recipes found that contains ${query}`
-          : `${spoonacularJson.number} random recipes found.`
+          ? `${spoonacularJson.totalResults} recipes found that contains ${query}.${spoonacularJson.totalResults > 100 ? " Displaying first 100 results." : ""}`
+          : `${spoonacularJson.totalResults} random recipes found.${spoonacularJson.totalResults > 100 ? " Displaying first 100 results." : ""}`
       );
     }
   } catch (error) {

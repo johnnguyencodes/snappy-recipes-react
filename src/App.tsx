@@ -43,6 +43,7 @@ function App() {
   const [selectedImagePreviewUrl, setSelectedImagePreviewUrl] = useState<
     string | null
   >(null);
+  const [isFetching, setIsFetching] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -66,15 +67,25 @@ function App() {
   }, [selectedImagePreviewUrl]);
 
   useEffect(() => {
-    // Get random recipes on page load
-    callSpoonacularAPI(
-      "",
-      setErrorMessage,
-      setStatusMessage,
-      setRecipeArray,
-      restrictionsArray,
-      intolerancesArray
-    );
+    const getRandomRecipes = async () => {
+      setIsFetching(true);
+      try {
+        await callSpoonacularAPI(
+          "",
+          setErrorMessage,
+          setStatusMessage,
+          setRecipeArray,
+          restrictionsArray,
+          intolerancesArray
+        );
+      } catch (error) {
+        console.error("Error fetching random recipes:", error);
+      } finally {
+        setIsFetching(false);
+      }
+    };
+
+    getRandomRecipes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -181,6 +192,7 @@ function App() {
   };
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    setIsFetching(true);
     resetStateAndInputs(
       setRecipeArray,
       setStatusMessage,
@@ -193,59 +205,72 @@ function App() {
     let currentFile: File | null = null;
     const files = event.target.files;
 
-    if (files && files.length > 0) {
-      currentFile = files[0];
+    try {
+      if (files && files.length > 0) {
+        currentFile = files[0];
 
-      if (isDuplicateFile(previousFile, currentFile)) {
-        console.warn("The same image file was selected again.");
-        showError("errorSameImage", setErrorMessage, null);
-        return;
+        if (isDuplicateFile(previousFile, currentFile)) {
+          console.warn("The same image file was selected again.");
+          showError("errorSameImage", setErrorMessage, null);
+          return;
+        }
+
+        setPreviousFile(currentFile);
+
+        const selectedFile = validateAndSetFile(
+          event,
+          fileValidation,
+          setImageFile,
+          setSelectedImagePreviewUrl,
+          setErrorMessage,
+          clearErrorMessage
+        );
+
+        if (!selectedFile) {
+          setIsFetching(false);
+          return;
+        }
+
+        setStatusMessage("Analyzing image");
+
+        const imageURL = await uploadFileToImgur(
+          selectedFile,
+          imgurAccessToken,
+          setErrorMessage
+        );
+        if (!imageURL) {
+          setStatusMessage("");
+          setIsFetching(false);
+          return;
+        }
+
+        const analyzedQuery = await analyzeImage(imageURL, setErrorMessage);
+        if (!analyzedQuery) {
+          setStatusMessage("");
+          setIsFetching(false);
+          return;
+        }
+
+        setQuery(analyzedQuery);
+        await callSpoonacularAPI(
+          analyzedQuery,
+          setErrorMessage,
+          setStatusMessage,
+          setRecipeArray,
+          restrictionsArray,
+          intolerancesArray
+        );
       }
-
-      setPreviousFile(currentFile);
-
-      const selectedFile = validateAndSetFile(
-        event,
-        fileValidation,
-        setImageFile,
-        setSelectedImagePreviewUrl,
-        setErrorMessage,
-        clearErrorMessage
-      );
-
-      if (!selectedFile) return;
-
-      setStatusMessage("Analyzing image");
-
-      const imageURL = await uploadFileToImgur(
-        selectedFile,
-        imgurAccessToken,
-        setErrorMessage
-      );
-      if (!imageURL) {
-        setStatusMessage("");
-        return;
-      }
-
-      const analyzedQuery = await analyzeImage(imageURL, setErrorMessage);
-      if (!analyzedQuery) {
-        setStatusMessage("");
-        return;
-      }
-
-      setQuery(analyzedQuery);
-      callSpoonacularAPI(
-        analyzedQuery,
-        setErrorMessage,
-        setStatusMessage,
-        setRecipeArray,
-        restrictionsArray,
-        intolerancesArray
-      );
+    } catch (error) {
+      console.error("Error handling file upload:", error);
+    } finally {
+      setIsFetching(false);
     }
   };
 
   const handleSearch = async (query: string) => {
+    setIsFetching(true);
+
     resetStateAndInputs(
       setRecipeArray,
       setStatusMessage,
@@ -261,15 +286,22 @@ function App() {
 
     // Validate search input
     if (validateSearchInput(query, setErrorMessage)) {
-      callSpoonacularAPI(
-        query,
-        setErrorMessage,
-        setStatusMessage,
-        setRecipeArray,
-        restrictionsArray,
-        intolerancesArray
-      );
+      try {
+        await callSpoonacularAPI(
+          query,
+          setErrorMessage,
+          setStatusMessage,
+          setRecipeArray,
+          restrictionsArray,
+          intolerancesArray
+        );
+      } catch (error) {
+        console.error("Error in handleSearch:", error);
+      } finally {
+        setIsFetching(false);
+      }
     } else {
+      setIsFetching(false);
       console.error("Not a valid search query:", query);
     }
   };
@@ -289,6 +321,7 @@ function App() {
               className="border border-black bg-white font-bold text-black"
               onClick={handleShowFavoritesClick}
               data-testid="openFavorites"
+              disabled={isFetching}
             >
               Show Favorites
             </Button>
@@ -296,6 +329,7 @@ function App() {
               onClick={handleSettingsClick}
               className="ml-2 border border-black bg-white font-bold text-black"
               data-testid="openSettings"
+              disabled={isFetching}
             >
               <Settings className="h-4 w-4"></Settings>
             </Button>
@@ -310,6 +344,7 @@ function App() {
               onClick={handleUploadButtonClick}
               className="rounded-br-none rounded-tr-none"
               data-testid="upload-button"
+              disabled={isFetching}
             >
               Upload
             </Button>
@@ -319,6 +354,7 @@ function App() {
               style={{ display: "none" }}
               onChange={handleFileChange}
               data-testid="file-input"
+              disabled={isFetching}
             />
             <Input
               id="input"
@@ -329,11 +365,13 @@ function App() {
               className="rounded-br-none rounded-tr-none"
               name=""
               data-testid="text-input"
+              disabled={isFetching}
             />
             <Button
               onClick={() => handleSearch(query)}
               className="rounded-bl-none rounded-tl-none"
               data-testid="submit"
+              disabled={isFetching}
             >
               Submit
             </Button>
@@ -363,6 +401,8 @@ function App() {
         toggleFavorite={toggleFavorite}
         isFavoritesVisible={isFavoritesVisible}
         recipes={recipeArray}
+        isFetching={isFetching}
+        setIsFetching={setIsFetching}
       />
       {isSettingsOpen && (
         <Modal

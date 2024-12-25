@@ -30,6 +30,8 @@ export interface IRecipesProps {
   favoritesArray: IRecipe[];
   toggleFavorite: (recipe: IRecipe) => void;
   isFavoritesVisible: boolean;
+  isFetching: boolean;
+  setIsFetching: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface IRecipeCardProps {
