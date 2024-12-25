@@ -14,24 +14,34 @@ describe("App Component", () => {
   });
 
   it("enters a search query by pressing enter", async () => {
-    global.fetch = vi.fn((url) => {
-      if (url.includes("imgur")) {
-        return Promise.resolve({
-          ok: true,
-          json: async () => ({}), // Mock Imgur response
-        });
-      } else if (url.includes("spoonacular")) {
-        return Promise.resolve({
-          ok: true,
-          json: async () => mockResponse, // Mock Spoonacular response
-        });
+    global.fetch = vi.fn(
+      async (
+        input: RequestInfo | URL,
+        _init?: RequestInit
+      ): Promise<Response> => {
+        const url = typeof input === "string" ? input : input.toString();
+
+        if (url.includes("imgur")) {
+          return new Response(JSON.stringify({}), {
+            status: 200,
+            statusText: "OK",
+          });
+        } else if (url.includes("spoonacular")) {
+          return new Response(
+            JSON.stringify({
+              ok: true,
+              ...mockResponse,
+            }),
+            { status: 200, statusText: "OK" }
+          );
+        }
+        return Promise.reject(new Error("Unexpected API call: " + url));
       }
-      return Promise.reject(new Error("Unexpected API call"));
-    });
+    ) as typeof fetch; // Tells TS this mock is the same type as fetch
 
     render(<App />);
 
-    const input = screen.getByTestId("text-input");
+    const input = screen.getByTestId("text-input") as HTMLInputElement;
     fireEvent.change(input, { target: { value: "pizza" } });
 
     // Ensure the input value is updated before pressing Enter
@@ -68,25 +78,34 @@ describe("App Component", () => {
 
   it("enters a search query by clicking the submit button", async () => {
     // Mock fetch calls
-    global.fetch = vi.fn((url) => {
-      if (url.includes("imgur")) {
-        return Promise.resolve({
-          ok: true,
-          json: async () => ({}), // Mock Imgur response
-        });
-      } else if (url.includes("spoonacular")) {
-        // This covers both random recipes & user-typed queries
-        return Promise.resolve({
-          ok: true,
-          json: async () => mockResponse,
-        });
+    global.fetch = vi.fn(
+      async (
+        input: RequestInfo | URL,
+        _init?: RequestInit
+      ): Promise<Response> => {
+        const url = typeof input === "string" ? input : input.toString();
+
+        if (url.includes("imgur")) {
+          return new Response(JSON.stringify({}), {
+            status: 200,
+            statusText: "OK",
+          });
+        } else if (url.includes("spoonacular")) {
+          return new Response(
+            JSON.stringify({
+              ok: true,
+              ...mockResponse,
+            }),
+            { status: 200, statusText: "OK" }
+          );
+        }
+        return Promise.reject(new Error("Unexpected API call: " + url));
       }
-      return Promise.reject(new Error("Unexpected API call: " + url));
-    });
+    ) as typeof fetch; // Tells TS this mock is the same type as fetch
 
     render(<App />);
 
-    const input = screen.getByTestId("text-input");
+    const input = screen.getByTestId("text-input") as HTMLInputElement;
     fireEvent.change(input, { target: { value: "pizza" } });
 
     // Ensure the input value is updated before pressing Enter
