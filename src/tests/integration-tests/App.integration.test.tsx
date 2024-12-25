@@ -181,12 +181,17 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
     ).toBeNull();
     expect(screen.queryByText("Mock Recipe")).toBeNull();
 
+    await screen.findByText("1 random recipes found.");
+    expect(screen.getByTestId("submit")).not.toBeDisabled();
+
     // Simulate entering a query
     console.log("Entering query");
     const textInput = screen.getByTestId("text-input");
     await userEvent.type(textInput, mockQuery);
 
     const submitButton = screen.getByTestId("submit");
+    expect(submitButton).not.toBeDisabled();
+
     await userEvent.click(submitButton);
 
     // Wait for the status message and recipes to appear
@@ -212,6 +217,95 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
       expect.anything(),
       expect.anything()
     );
+  });
+
+  it("displays recipe details in a modal when a recipe card is clicked", async () => {
+    // create a mock search query
+    const mockQuery = "pizza";
+
+    // Access the mocked functions via appUtils
+    const mockValidateSearchInput = vi.mocked(appUtils.validateSearchInput);
+    const mockCallSpoonacularAPI = vi.mocked(appUtils.callSpoonacularAPI);
+
+    // Mock validateSearchInput
+    mockValidateSearchInput.mockImplementation(
+      (
+        query: string,
+        setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>
+      ): boolean => {
+        console.log("validateSearchInput called with:", { query });
+        if (searchValidation(query, vi.fn(), setErrorMessage, vi.fn())) {
+          console.log("Search validated");
+          return true;
+        } else {
+          return false;
+        }
+      }
+    );
+
+    // Mock callSpoonacularAPI with console log
+    mockCallSpoonacularAPI.mockImplementation(
+      async (
+        query: string,
+        _setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>,
+        setStatusMessage: React.Dispatch<React.SetStateAction<string | null>>,
+        setRecipeArray: React.Dispatch<React.SetStateAction<IRecipe[] | null>>,
+        _restrictionsArray: string[] | null,
+        _intolerancesArray: string[] | null
+      ) => {
+        console.log("callSpoonacularAPI called with:", { query });
+        if (!query) {
+          // Initial load: no recipes, no message
+          setRecipeArray([mockRecipe]);
+          setStatusMessage("1 random recipes found.");
+        } else if (query === "pizza") {
+          // After analysis: return mock recipe and message
+          setRecipeArray([mockRecipe]);
+          setStatusMessage("1 recipes found that contains pizza");
+        }
+      }
+    );
+
+    // Render the app
+    render(<App />);
+
+    // Initial state checks
+    console.log("Initial state checked: no final message or recipe present.");
+    expect(
+      screen.queryByText("1 recipes found that contains pizza")
+    ).toBeNull();
+    expect(screen.queryByText("Mock Recipe")).toBeNull();
+
+    await screen.findByText("1 random recipes found.");
+    expect(screen.getByTestId("submit")).not.toBeDisabled();
+
+    // Simulate entering a query
+    console.log("Entering query");
+    const textInput = screen.getByTestId("text-input");
+    await userEvent.type(textInput, mockQuery);
+
+    const submitButton = screen.getByTestId("submit");
+    expect(submitButton).not.toBeDisabled();
+
+    await userEvent.click(submitButton);
+
+    // Wait for the recipe card to appear
+    const recipeCard = await screen.findByTestId("recipe-card-1");
+    expect(recipeCard).toBeInTheDocument();
+
+    // Simulate clicking the recipe card
+    await userEvent.click(recipeCard);
+
+    // Verify the modal is displayed with the correct details
+    const modalContent = await screen.findByText("Summary"); // Content in the modal
+    expect(modalContent).toBeInTheDocument();
+
+    // Simulate closing the modal
+    const closeButton = screen.getByTestId("close-recipe-modal");
+    await userEvent.click(closeButton);
+
+    // Verify the modal is closed
+    expect(modalContent).not.toBeInTheDocument();
   });
 
   it("should filter recipes based on dietary restrictions, food intolerances, and a search query", async () => {
@@ -579,52 +673,5 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
       "Your favorite recipes will appear here."
     );
     expect(emptyFavoritesMessage).toBeInTheDocument();
-  });
-
-  it("displays recipe details in a modal when a recipe card is clicked", async () => {
-    const mockCallSpoonacularAPI = vi.mocked(appUtils.callSpoonacularAPI);
-
-    // Mock callSpoonacularAPI to provide recipe data
-    mockCallSpoonacularAPI.mockImplementation(
-      async (
-        query: string,
-        _setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>,
-        setStatusMessage: React.Dispatch<React.SetStateAction<string | null>>,
-        setRecipeArray: React.Dispatch<React.SetStateAction<IRecipe[] | null>>
-      ) => {
-        if (query === "pizza") {
-          setRecipeArray([mockRecipe]); // Provide mock recipe data
-          setStatusMessage("1 recipes found that contains pizza");
-        }
-      }
-    );
-
-    // Render the app
-    render(<App />);
-
-    // Simulate entering a search query
-    const textInput = screen.getByTestId("text-input");
-    await userEvent.type(textInput, "pizza");
-
-    const submitButton = screen.getByTestId("submit");
-    await userEvent.click(submitButton);
-
-    // Wait for the recipe card to appear
-    const recipeCard = await screen.findByTestId("recipe-card-1");
-    expect(recipeCard).toBeInTheDocument();
-
-    // Simulate clicking the recipe card
-    await userEvent.click(recipeCard);
-
-    // Verify the modal is displayed with the correct details
-    const modalContent = await screen.findByText("Summary"); // Content in the modal
-    expect(modalContent).toBeInTheDocument();
-
-    // Simulate closing the modal
-    const closeButton = screen.getByTestId("close-recipe-modal");
-    await userEvent.click(closeButton);
-
-    // Verify the modal is closed
-    expect(modalContent).not.toBeInTheDocument();
   });
 });
