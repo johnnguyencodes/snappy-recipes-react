@@ -1,60 +1,125 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { expect, test, vi } from "vitest";
-// @ts-ignore
-import React from "react";
+import "@testing-library/jest-dom";
+import { describe, it, vi, expect, afterEach } from "vitest";
 import App from "../../App";
 
-test("calls fetch when Enter is pressed", async () => {
+describe("App Component", () => {
   const mockResponse = {
     results: [{ id: 1, name: "Pizza" }],
+    totalResults: 1,
   };
 
-  global.fetch = vi.fn().mockResolvedValue({
-    ok: true,
-    json: async () => mockResponse,
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
-  render(<App />);
+  it("enters a search query by pressing enter", async () => {
+    global.fetch = vi.fn((url) => {
+      if (url.includes("imgur")) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({}), // Mock Imgur response
+        });
+      } else if (url.includes("spoonacular")) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => mockResponse, // Mock Spoonacular response
+        });
+      }
+      return Promise.reject(new Error("Unexpected API call"));
+    });
 
-  const input = screen.getByPlaceholderText(
-    "Search by entering your ingredient or upload an image"
-  );
-  fireEvent.change(input, { target: { value: "pizza" } });
+    render(<App />);
 
-  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+    const input = screen.getByTestId("text-input");
+    fireEvent.change(input, { target: { value: "pizza" } });
 
-  await waitFor(() => {
-    expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining("query=pizza"),
-      expect.any(Object)
-    );
+    // Ensure the input value is updated before pressing Enter
+    await waitFor(() => {
+      expect(input.value).toBe("pizza");
+    });
+
+    fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledTimes(3);
+
+      expect(global.fetch).toHaveBeenNthCalledWith(
+        1,
+        expect.stringContaining("https://api.imgur.com/oauth2/token"),
+        expect.objectContaining({
+          method: "POST",
+        })
+      );
+
+      expect(global.fetch).toHaveBeenNthCalledWith(
+        2,
+        expect.stringContaining("query=&"),
+        expect.any(Object)
+      );
+
+      expect(global.fetch).toHaveBeenNthCalledWith(
+        3,
+        expect.stringContaining("query=pizza"),
+        expect.any(Object)
+      );
+    });
   });
-});
 
-test("calls fetch when Submit button is clicked", async () => {
-  const mockResponse = {
-    results: [{ id: 1, name: "Pizza" }],
-  };
+  it("enters a search query by clicking the submit button", async () => {
+    // Mock fetch calls
+    global.fetch = vi.fn((url) => {
+      if (url.includes("imgur")) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({}), // Mock Imgur response
+        });
+      } else if (url.includes("spoonacular")) {
+        // This covers both random recipes & user-typed queries
+        return Promise.resolve({
+          ok: true,
+          json: async () => mockResponse,
+        });
+      }
+      return Promise.reject(new Error("Unexpected API call: " + url));
+    });
 
-  global.fetch = vi.fn().mockResolvedValue({
-    ok: true,
-    json: async () => mockResponse,
-  });
+    render(<App />);
 
-  render(<App />);
+    const input = screen.getByTestId("text-input");
+    fireEvent.change(input, { target: { value: "pizza" } });
 
-  const input = screen.getByPlaceholderText(
-    "Search by entering your ingredient or upload an image"
-  );
-  fireEvent.change(input, { target: { value: "pizza" } });
+    // Ensure the input value is updated before pressing Enter
+    await waitFor(() => {
+      expect(input.value).toBe("pizza");
+    });
 
-  const button = screen.getByText("Submit");
-  fireEvent.click(button);
+    const submitButton = screen.getByTestId("submit");
+    fireEvent.click(submitButton);
 
-  await waitFor(() => {
-    expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining("query=pizza"),
-      expect.any(Object)
-    );
+    // 5) Assert the 3rd fetch call is made with query=pizza
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledTimes(3);
+
+      expect(global.fetch).toHaveBeenNthCalledWith(
+        1,
+        expect.stringContaining("https://api.imgur.com/oauth2/token"),
+        expect.objectContaining({
+          method: "POST",
+        })
+      );
+
+      expect(global.fetch).toHaveBeenNthCalledWith(
+        2,
+        expect.stringContaining("query=&"),
+        expect.any(Object)
+      );
+
+      expect(global.fetch).toHaveBeenNthCalledWith(
+        3,
+        expect.stringContaining("query=pizza"),
+        expect.any(Object)
+      );
+    });
   });
 });
