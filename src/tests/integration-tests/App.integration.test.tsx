@@ -73,7 +73,7 @@ vi.mock("../../components/app/RecipeCard", () => ({
       toggleFavorite,
     }) => {
       return (
-        <div
+        <button
           id={`recipe-card-${id}`}
           data-testid={`recipe-card-${id}`}
           onClick={() =>
@@ -102,7 +102,7 @@ vi.mock("../../components/app/RecipeCard", () => ({
               ? "Unfavorite"
               : "Favorite"}
           </button>
-        </div>
+        </button>
       );
     }
   ),

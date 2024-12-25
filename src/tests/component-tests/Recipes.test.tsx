@@ -1,4 +1,4 @@
-import { render, screen, cleanup, act } from "@testing-library/react";
+import { render, screen, cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
 import Recipes from "../../components/app/Recipes";
@@ -6,8 +6,38 @@ import { IRecipe } from "types/AppTypes";
 import * as appUtils from "../../lib/appUtils";
 
 describe("Recipes Component", () => {
-  let mockFavorites: IRecipe[];
   let mockToggleFavorite: ReturnType<typeof vi.fn>;
+
+  /**
+   * Creates a mock for `setIsFetching` that fully implements
+   * React.Dispatch<React.SetStateAction<boolean>>. That means
+   * it can accept either a boolean or a callback function.
+   */
+  function createSetIsFetchingMock(initialValue: boolean) {
+    let current = initialValue;
+
+    // This is the real setter signature: (value: boolean | (prev: boolean) => boolean) => void
+    const setIsFetchingImpl: React.Dispatch<React.SetStateAction<boolean>> = (
+      action
+    ) => {
+      if (typeof action === "function") {
+        current = action(current);
+      } else {
+        current = action;
+      }
+    };
+
+    // Wrap it in a Vitest mock so we can do .toHaveBeenCalledWith(...)
+    // and also track how many times it's called.
+    const setIsFetchingMock = vi.fn(setIsFetchingImpl);
+
+    return {
+      setIsFetchingMock,
+      get isFetching() {
+        return current;
+      },
+    };
+  }
 
   const mockRecipe: IRecipe = {
     id: 1,
@@ -103,7 +133,6 @@ describe("Recipes Component", () => {
 
   beforeEach(() => {
     // Fresh copy for each test
-    mockFavorites = [];
     mockToggleFavorite = vi.fn();
   });
 
@@ -114,7 +143,7 @@ describe("Recipes Component", () => {
   });
 
   it("renders no recipes message when no recipes are available", async () => {
-    const setIsFetchingMock = vi.fn();
+    const { setIsFetchingMock } = createSetIsFetchingMock(false);
 
     render(
       <Recipes
@@ -140,12 +169,7 @@ describe("Recipes Component", () => {
     const validateImageUrlMock = vi.mocked(appUtils.validateImageUrl);
     validateImageUrlMock.mockResolvedValue("validated-image.jpg");
 
-    // Track isFetching in your test.
-    //    If you start true, the effect sets it to false after validation.
-    let isFetching = true;
-    const setIsFetchingMock = vi.fn((value: boolean) => {
-      isFetching = value;
-    });
+    const { setIsFetchingMock, isFetching } = createSetIsFetchingMock(true);
 
     // Render the component with the relevant props
     render(
@@ -176,13 +200,7 @@ describe("Recipes Component", () => {
   });
 
   it("renders the favorites section when isFavoritesVisible is true", async () => {
-    // Track isFetching in your test.
-    //    If you start true, the effect sets it to false after validation.
-    let isFetching = true;
-    const setIsFetchingMock = vi.fn((value: boolean) => {
-      isFetching = value;
-    });
-
+    const { setIsFetchingMock, isFetching } = createSetIsFetchingMock(true);
     // Suppose if we pass `recipes={[]}` but `favoritesArray={[mockRecipe]}`,
     // the component will show our mock recipe in the favorites section.
     render(
