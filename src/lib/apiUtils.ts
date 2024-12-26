@@ -221,10 +221,18 @@ const getRecipes = async (
   setErrorMessage: (message: string) => void
 ) => {
   if (process.env.NODE_ENV === "development") {
-    const cachedData = localStorage.getItem("spoonacularCache");
-    if (cachedData) {
-      return JSON.parse(cachedData);
+    try {
+      const response = await fetch("/spoonacularCache.json");
+      if (response.ok) {
+        return await response.json();
+      }
+    } catch (error) {
+      console.error("Error reading local dev JSON spoonacularCache:", error);
     }
+    // const cachedData = localStorage.getItem("spoonacularCache");
+    // if (cachedData) {
+    //   return JSON.parse(cachedData);
+    // }
   }
   try {
     const response = await fetch(
@@ -255,11 +263,6 @@ const getRecipes = async (
       showError("errorMalformedSpoonacularResponse", setErrorMessage, query);
       console.error(`Error with malformeed JSON response`, error);
       throw new Error("Malformed JSON response");
-    }
-
-    // Save the data to localStorage in development mode
-    if (process.env.NODE_ENV === "development") {
-      localStorage.setItem("spoonacularCache", JSON.stringify(json));
     }
 
     return json;

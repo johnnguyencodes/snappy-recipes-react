@@ -29,11 +29,7 @@ export default defineConfig({
         process.env.VITE_GOOGLE_API_KEY || "mock-google-api-key-for-tests",
     },
 
-    exclude: [
-      "**/node_modules/**",
-      "**/dist/**",
-      "**/playwright/**", // Exclude the Playwright tests directory
-    ],
+    exclude: ["**/node_modules/**", "**/dist/**"],
   },
   resolve: {
     alias: {
