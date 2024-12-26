@@ -25,6 +25,9 @@ export default defineConfig({
     headless: true, // You can toggle this
     screenshot: "only-on-failure",
     video: "retain-on-failure",
+    launchOptions: {
+      args: ["--disable-web-security"], // Disable web security (CORS issues)
+    },
   },
   reporter: [["list"], ["html"]], // Output options
   // Compile ts using ts-node

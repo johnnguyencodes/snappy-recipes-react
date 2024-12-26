@@ -57,7 +57,10 @@ const Recipes: React.FC<IRecipesProps> = ({
       {isFavoritesVisible ? (
         !favoritesArray || favoritesArray.length === 0 ? (
           <div>
-            <p>Your favorite recipes will appear here.</p>
+            <h2>Favorite recipes</h2>
+            <div>
+              <p>Your favorite recipes will appear here.</p>
+            </div>
           </div>
         ) : (
           favoritesArray.map((recipe) => (
