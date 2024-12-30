@@ -83,10 +83,6 @@ test.describe("Testing App functionality", () => {
       "This test is only supported in Firefox due to network issues with Imgur API in other browsers."
     );
 
-    page.on("console", (msg) => {
-      console.log(`Browser Console [${msg.type()}]: ${msg.text()}`);
-    });
-
     await page.goto("/");
     await expect(page.getByText("random recipes found.")).toBeVisible();
     await page.getByTestId("upload-button").click();

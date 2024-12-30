@@ -2,6 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./src/tests/end-to-end-tests/", // Adjust to your tests folder
+  testMatch: "**/end-to-end-tests/*.spec.ts",
   timeout: 10 * 1000,
   expect: {
     // maximum time expect() should wait for the condition to be met

@@ -29,7 +29,11 @@ export default defineConfig({
         process.env.VITE_GOOGLE_API_KEY || "mock-google-api-key-for-tests",
     },
 
-    exclude: ["**/node_modules/**", "**/dist/**"],
+    exclude: [
+      "**/node_modules/**",
+      "**/dist/**",
+      "src/tests/end-to-end-tests/**",
+    ],
   },
   resolve: {
     alias: {
