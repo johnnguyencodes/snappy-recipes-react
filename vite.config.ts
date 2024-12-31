@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
-    base: mode === "production" ? "/snappy-recipes-react/" : "/",
+    base: "/snappy-recipes-react",
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
