@@ -1,12 +1,34 @@
 import { test, expect } from "@playwright/test";
+import { fileURLToPath } from "url";
+import fs from "fs";
 import path from "path";
 
-test.describe("Testing App functionality", () => {
-  // ensure app is running at 192.168.1.22:5173 before running tests
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+test.describe("Testing App functionality with mocked Spoonacular API", () => {
+  // ensure app is running at 192.168.1.22:5173 before running tests if running locally.
+  const spoonacularCache = JSON.parse(
+    fs.readFileSync(
+      path.resolve(__dirname, "../../../public/spoonacularCache.json"),
+      "utf-8"
+    )
+  );
+
+  test.beforeEach(async ({ page }) => {
+    // Intercecpt API requests to Spoonacular
+    await page.route("**/api**spoonacular/*", (route) => {
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(spoonacularCache),
+      });
+    });
+  });
 
   test("searches for 'pizza' and sees results", async ({ page }) => {
     // Go to homepage
-    await page.goto("/"); // uses baseURL in config
+    await page.goto(""); // uses baseURL in config
 
     // Locate the input
     const searchInput = page.getByTestId("text-input");
@@ -26,7 +48,7 @@ test.describe("Testing App functionality", () => {
   test("searches for 'pizza' and presses enter to see results", async ({
     page,
   }) => {
-    await page.goto("/"); // uses baseURL in config
+    await page.goto(""); // uses baseURL in config
     await page.getByTestId("text-input").click();
     await page.getByTestId("text-input").fill("pizza");
     await page.getByTestId("text-input").press("Enter");
@@ -38,7 +60,7 @@ test.describe("Testing App functionality", () => {
   test("User can view a random recipe’s details, favorite it, then view and unfavorite it in the favorites list, ensuring the list is empty afterward.", async ({
     page,
   }) => {
-    await page.goto("/"); // uses baseURL in config
+    await page.goto(""); // uses baseURL in config
     await expect(page.getByText("random recipes found.")).toBeVisible();
     await expect(page.getByText("Asparagus and Pea Soup: Real")).toBeVisible();
     await page
@@ -83,7 +105,7 @@ test.describe("Testing App functionality", () => {
       "This test is only supported in Firefox due to network issues with Imgur API in other browsers."
     );
 
-    await page.goto("/");
+    await page.goto("");
     await expect(page.getByText("random recipes found.")).toBeVisible();
     await page.getByTestId("upload-button").click();
     const fileUrl2 = new URL(

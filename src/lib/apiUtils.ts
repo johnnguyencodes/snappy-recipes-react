@@ -220,15 +220,16 @@ const getRecipes = async (
   ) => void,
   setErrorMessage: (message: string) => void
 ) => {
-  if (process.env.NODE_ENV === "development") {
+  if (
+    process.env.NODE_ENV === "development" ||
+    process.env.NODE_ENV === "test"
+  ) {
     try {
       const response = await fetch("/spoonacularCache.json");
       if (response?.ok) {
-        console.log("Local JSON fetch succeeded");
         return await response.json();
       } else {
         console.error("Local JSON fetch failed or returned non-OK response.");
-        console.log("Falling back to Spoonacular API");
       }
     } catch (error) {
       console.error("Error reading local dev JSON spoonacularCache:", error);
@@ -236,6 +237,7 @@ const getRecipes = async (
       return undefined;
     }
   }
+
   try {
     const response = await fetch(
       `${SPOONACULAR_BASE_URL}&number=100&query=${query}&intolerances=${intolerances}&diet=${restrictions}`,

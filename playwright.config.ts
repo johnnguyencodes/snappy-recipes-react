@@ -13,6 +13,8 @@ const prodURL = "https://johnnguyencodes.github.io/snappy-recipes-react";
 
 const reportDir = path.resolve(__dirname, "playwright-report");
 
+console.log("Base URL:", isDevelopment ? devURL : prodURL);
+
 // Ensure the report directory exists
 if (!fs.existsSync(reportDir)) {
   fs.mkdirSync(reportDir, { recursive: true });
@@ -21,13 +23,13 @@ if (!fs.existsSync(reportDir)) {
 export default defineConfig({
   testDir: "./src/tests/end-to-end-tests/", // Adjust to your tests folder
   testMatch: "**/end-to-end-tests/*.spec.ts",
-  timeout: 10 * 1000,
+  timeout: 30 * 1000,
   expect: {
     // maximum time expect() should wait for the condition to be met
-    timeout: 5000,
+    timeout: 15000,
   },
   // Run tests in files in parallel
-  fullyParallel: true,
+  fullyParallel: false,
   // Fail the build on CI if you accidentally left test only in the source code
   forbidOnly: !!process.env.CI,
   // Retry on CI only
@@ -49,7 +51,9 @@ export default defineConfig({
     },
   },
   webServer: {
-    command: isDevelopment ? "npm run dev" : "npm run preview",
+    command: isDevelopment
+      ? "NODE_ENV=test npm run dev"
+      : "NODE_ENV=test npm run preview",
     port: isDevelopment ? 5173 : 4173,
     timeout: 30 * 1000,
     reuseExistingServer: isDevelopment,
