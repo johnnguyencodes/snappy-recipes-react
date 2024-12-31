@@ -20,20 +20,18 @@ describe("App Component", () => {
         _init?: RequestInit
       ): Promise<Response> => {
         const url = typeof input === "string" ? input : input.toString();
+        console.log("Mocked fetch URL:", url); // Add this to see what URL is being called
 
-        if (url.includes("imgur")) {
+        if (url.includes("/spoonacular")) {
+          return new Response(JSON.stringify(mockResponse), {
+            status: 200,
+            statusText: "OK",
+          });
+        } else if (url.includes("imgur")) {
           return new Response(JSON.stringify({}), {
             status: 200,
             statusText: "OK",
           });
-        } else if (url.includes("spoonacular")) {
-          return new Response(
-            JSON.stringify({
-              ok: true,
-              ...mockResponse,
-            }),
-            { status: 200, statusText: "OK" }
-          );
         }
         return Promise.reject(new Error("Unexpected API call: " + url));
       }
@@ -54,6 +52,7 @@ describe("App Component", () => {
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledTimes(3);
 
+      // Verify the sequence of calls
       expect(global.fetch).toHaveBeenNthCalledWith(
         1,
         expect.stringContaining("https://api.imgur.com/oauth2/token"),
@@ -64,15 +63,19 @@ describe("App Component", () => {
 
       expect(global.fetch).toHaveBeenNthCalledWith(
         2,
-        expect.stringContaining("query=&"),
-        expect.any(Object)
+        expect.stringContaining("/spoonacularCache.json")
       );
 
       expect(global.fetch).toHaveBeenNthCalledWith(
         3,
-        expect.stringContaining("query=pizza"),
-        expect.any(Object)
+        expect.stringContaining("/spoonacularCache.json")
       );
+    });
+    // Verify DOM changes
+    await waitFor(() => {
+      expect(
+        screen.queryByText("1 recipes found that contains pizza.")
+      ).toBeInTheDocument();
     });
   });
 
@@ -85,19 +88,16 @@ describe("App Component", () => {
       ): Promise<Response> => {
         const url = typeof input === "string" ? input : input.toString();
 
-        if (url.includes("imgur")) {
+        if (url.includes("/spoonacularCache.json")) {
+          return new Response(JSON.stringify(mockResponse), {
+            status: 200,
+            statusText: "OK",
+          });
+        } else if (url.includes("imgur")) {
           return new Response(JSON.stringify({}), {
             status: 200,
             statusText: "OK",
           });
-        } else if (url.includes("spoonacular")) {
-          return new Response(
-            JSON.stringify({
-              ok: true,
-              ...mockResponse,
-            }),
-            { status: 200, statusText: "OK" }
-          );
         }
         return Promise.reject(new Error("Unexpected API call: " + url));
       }
@@ -130,15 +130,20 @@ describe("App Component", () => {
 
       expect(global.fetch).toHaveBeenNthCalledWith(
         2,
-        expect.stringContaining("query=&"),
-        expect.any(Object)
+        expect.stringContaining("/spoonacularCache.json")
       );
 
       expect(global.fetch).toHaveBeenNthCalledWith(
         3,
-        expect.stringContaining("query=pizza"),
-        expect.any(Object)
+        expect.stringContaining("/spoonacularCache.json")
       );
+    });
+
+    // Verify DOM changes
+    await waitFor(() => {
+      expect(
+        screen.queryByText("1 recipes found that contains pizza.")
+      ).toBeInTheDocument();
     });
   });
 });
