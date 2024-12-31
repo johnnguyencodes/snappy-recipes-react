@@ -37,7 +37,7 @@ export default defineConfig({
   webServer: {
     command: isDevelopment ? "npm run dev" : "npm run preview",
     port: isDevelopment ? 5173 : 3000,
-    timeout: 120 * 1000, // 2 minutes
+    timeout: 60 * 1000, // 2 minutes
     reuseExistingServer: !isDevelopment, // Reuse the server in production
   },
   reporter: [["list"], ["html"]], // Output options
