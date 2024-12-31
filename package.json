@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "test": "vitest",
+    "test:e2e": "playwright test",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -33,7 +34,7 @@
     "@babel/preset-react": "^7.25.7",
     "@babel/preset-typescript": "^7.25.7",
     "@eslint/js": "^9.16.0",
-    "@playwright/test": "^1.48.2",
+    "@playwright/test": "^1.49.1",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/container-queries": "^0.1.1",
     "@testing-library/jest-dom": "^6.6.3",
@@ -59,9 +60,9 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.2",
     "eslint-plugin-react-refresh": "^0.4.14",
+    "gh-pages": "^6.2.0",
     "globals": "^15.13.0",
     "jsdom": "^25.0.1",
-    "playwright": "^1.48.2",
     "postcss": "^8.4.47",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",

@@ -32,7 +32,7 @@ export default defineConfig({
     exclude: [
       "**/node_modules/**",
       "**/dist/**",
-      "**/playwright/**", // Exclude the Playwright tests directory
+      "src/tests/end-to-end-tests/**",
     ],
   },
   resolve: {
