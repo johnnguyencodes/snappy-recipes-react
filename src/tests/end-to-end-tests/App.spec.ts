@@ -16,14 +16,17 @@ test.describe("Testing App functionality with mocked Spoonacular API", () => {
   );
 
   test.beforeEach(async ({ page }) => {
-    // Intercecpt API requests to Spoonacular
-    await page.route("**/api**spoonacular/*", (route) => {
-      route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify(spoonacularCache),
-      });
-    });
+    // Intercept API requests to the correct Spoonacular route
+    await page.route(
+      "https://api.spoonacular.com/recipes/complexSearch**",
+      (route) => {
+        route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify(spoonacularCache),
+        });
+      }
+    );
   });
 
   test("searches for 'pizza' and sees results", async ({ page }) => {
@@ -32,8 +35,6 @@ test.describe("Testing App functionality with mocked Spoonacular API", () => {
 
     // Locate the input
     const searchInput = page.getByTestId("text-input");
-
-    // Type in "pizza" and click the submit button
     await searchInput.fill("pizza");
 
     const submitButton = page.getByTestId("submit");
@@ -49,9 +50,13 @@ test.describe("Testing App functionality with mocked Spoonacular API", () => {
     page,
   }) => {
     await page.goto(""); // uses baseURL in config
+
     await page.getByTestId("text-input").click();
+
     await page.getByTestId("text-input").fill("pizza");
+
     await page.getByTestId("text-input").press("Enter");
+
     await expect(
       page.getByText("recipes found that contains pizza")
     ).toBeVisible();
@@ -61,29 +66,39 @@ test.describe("Testing App functionality with mocked Spoonacular API", () => {
     page,
   }) => {
     await page.goto(""); // uses baseURL in config
+
     await expect(page.getByText("random recipes found.")).toBeVisible();
+
     await expect(page.getByText("Asparagus and Pea Soup: Real")).toBeVisible();
+
     await page
       .getByRole("img", { name: "Asparagus and Pea Soup: Real" })
       .click();
+
     await expect(
       page.getByRole("heading", { name: "Asparagus and Pea Soup: Real" })
     ).toBeVisible();
     await page.getByRole("button", { name: "Favorite" }).click();
+
     await expect(
       page.getByRole("button", { name: "Unfavorite" })
     ).toBeVisible();
     await page.getByTestId("close-recipe-modal").click();
+
     await page.getByTestId("openFavorites").click();
+
     await expect(page.getByText("Asparagus and Pea Soup: Real")).toBeVisible();
     await page.getByTestId("recipe-card-716406").locator("div").first().click();
+
     await expect(
       page.getByRole("heading", { name: "Asparagus and Pea Soup: Real" })
     ).toBeVisible();
+
     await expect(
       page.getByRole("button", { name: "Unfavorite" })
     ).toBeVisible();
     await page.getByRole("button", { name: "Unfavorite" }).click();
+
     await page.getByTestId("close-recipe-modal").click();
     await expect(page.getByText("Your favorite recipes will")).toBeVisible();
   });
@@ -106,21 +121,26 @@ test.describe("Testing App functionality with mocked Spoonacular API", () => {
     );
 
     await page.goto("");
+
     await expect(page.getByText("random recipes found.")).toBeVisible();
     await page.getByTestId("upload-button").click();
+
     const fileUrl2 = new URL(
       "../fixtures/CavendishBanana.jpg",
       import.meta.url
     );
     const filePath2 = path.normalize(fileUrl2.pathname);
     await page.getByTestId("file-input").setInputFiles(filePath2);
+
     await expect(
       page.getByText("recipes found that contains Fruit.")
     ).toBeVisible();
     await page.getByTestId("upload-button").click();
+
     const fileUrl1 = new URL("../fixtures/RedApple.jpg", import.meta.url);
     const filePath1 = path.normalize(fileUrl1.pathname);
     await page.getByTestId("file-input").setInputFiles(filePath1);
+
     await expect(
       page.getByText("recipes found that contains Food.")
     ).toBeVisible();

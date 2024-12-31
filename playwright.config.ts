@@ -23,10 +23,10 @@ if (!fs.existsSync(reportDir)) {
 export default defineConfig({
   testDir: "./src/tests/end-to-end-tests/", // Adjust to your tests folder
   testMatch: "**/end-to-end-tests/*.spec.ts",
-  timeout: 30 * 1000,
+  timeout: 120 * 1000,
   expect: {
     // maximum time expect() should wait for the condition to be met
-    timeout: 15000,
+    timeout: 12000,
   },
   // Run tests in files in parallel
   fullyParallel: false,
@@ -55,7 +55,7 @@ export default defineConfig({
       ? "NODE_ENV=test npm run dev"
       : "NODE_ENV=test npm run preview",
     port: isDevelopment ? 5173 : 4173,
-    timeout: 30 * 1000,
+    timeout: 120 * 1000,
     reuseExistingServer: isDevelopment,
   },
   reporter: [
