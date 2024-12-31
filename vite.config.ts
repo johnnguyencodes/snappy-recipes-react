@@ -10,12 +10,9 @@ export default defineConfig(({ mode }) => {
   // Load Vite-specific environment variables
   const env = loadEnv(mode, process.cwd(), "");
 
-  // Determine the base URL based on the environment
-  const base = mode === "production" ? "/snappy-recipes-react" : "/";
-
   return {
     plugins: [react()],
-    base,
+    base: mode === "production" ? "/snappy-recipes-react/" : "/",
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
