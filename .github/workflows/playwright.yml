@@ -46,7 +46,7 @@ jobs:
 
       # Run Playwright tests
       - name: Run Playwright tests
-        run: npx playwright test --reporter=junit
+        run: npx playwright test --reporter=html
         env:
           BASE_URL: ${{ secrets.BASE_URL }}
 
