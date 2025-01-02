@@ -119,6 +119,12 @@ module.exports = {
         "darkmode-dimmed5": {
           DEFAULT: "#403E41",
         },
+        "darkmode-panel": {
+          DEFAULT: "#FDF7F3",
+        },
+        "darkmode-light": {
+          DEFAULT: "#FFFCFA",
+        },
         "darkmode-red": {
           DEFAULT: "#FF6188",
         },
@@ -163,6 +169,12 @@ module.exports = {
         },
         "lightmode-dimmed5": {
           DEFAULT: "#D2C9C4",
+        },
+        "lightmode-panel": {
+          DEFAULT: "#FDF7F3",
+        },
+        "lightmode-light": {
+          DEFAULT: "#FFFCFA",
         },
         "lightmode-red": {
           DEFAULT: "#CE4770",
