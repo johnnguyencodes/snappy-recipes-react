@@ -49,6 +49,7 @@ const RecipeCard: React.FC<IRecipeCardProps> = ({
     >
       <CardHeader className="image-container">
         <img
+          className="mb-3 rounded-md"
           src={image}
           alt={title}
           onError={(error) => {
@@ -56,19 +57,30 @@ const RecipeCard: React.FC<IRecipeCardProps> = ({
               "https://placehold.co/312x231";
           }}
         />
-        <CardTitle>{title}</CardTitle>
+        <CardTitle className="text-lightmode-red dark:text-darkmode-yellow">
+          {title}
+        </CardTitle>
         <CardDescription></CardDescription>
       </CardHeader>
-      <CardContent>
-        <p>{readyInMinutes} minutes</p>
-        <p>{servings} servings</p>
-        {diets.map((diet: string) => (
-          <p key={diet}>{diet}</p>
-        ))}
-        <p>{caloriesAmount} calories</p>
-        <p>{carbsAmount}g carbs</p>
-        <p>{fatAmount}g total fat</p>
-        <p>{proteinAmount}g protein</p>
+      <CardContent className="text-lightmode-text dark:text-darkmode-text">
+        <h3>Cooking Details</h3>
+        <p>
+          <span>{readyInMinutes} minutes </span>
+          <span>{servings} servings </span>
+        </p>
+        <h3>Dietary Information</h3>
+        <p>
+          {diets.map((diet: string) => (
+            <span key={diet}>{diet} </span>
+          ))}
+        </p>
+        <h3>Macro-Nutrient Values</h3>
+        <p>
+          <span>{caloriesAmount} calories </span>
+          <span>{carbsAmount}g carbs </span>
+          <span>{fatAmount}g total fat </span>
+          <span>{proteinAmount}g protein </span>
+        </p>
         <Button
           onClick={(event) => {
             event.stopPropagation();
