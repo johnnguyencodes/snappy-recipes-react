@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "../ui/button";
+import { Heart } from "lucide-react";
 
 const RecipeCard: React.FC<IRecipeCardProps> = ({
   recipe,
@@ -47,7 +48,7 @@ const RecipeCard: React.FC<IRecipeCardProps> = ({
         })
       }
     >
-      <CardHeader className="image-container">
+      <CardHeader className="image-container relative">
         <img
           className="mb-3 rounded-md"
           src={image}
@@ -57,6 +58,21 @@ const RecipeCard: React.FC<IRecipeCardProps> = ({
               "https://placehold.co/312x231";
           }}
         />
+        <Button
+          className="absolute right-10 top-8 h-8 w-8 p-0"
+          onClick={(event) => {
+            event.stopPropagation();
+            toggleFavorite(recipe);
+          }}
+          data-testid={`favorite-button-${id}`}
+          variant="primary"
+        >
+          {favoritesArray.some((favorite: IRecipe) => favorite.id === id) ? (
+            <Heart className="h-4 w-4 fill-lightmode-yellow stroke-lightmode-red dark:fill-darkmode-red dark:stroke-darkmode-red" />
+          ) : (
+            <Heart className="h-4 w-4 fill-lightmode-yellow stroke-lightmode-red dark:fill-darkmode-yellow dark:stroke-darkmode-red" />
+          )}
+        </Button>
         <CardTitle className="text-lightmode-red dark:text-darkmode-yellow">
           {title}
         </CardTitle>
@@ -81,17 +97,6 @@ const RecipeCard: React.FC<IRecipeCardProps> = ({
           <span>{fatAmount}g total fat </span>
           <span>{proteinAmount}g protein </span>
         </p>
-        <Button
-          onClick={(event) => {
-            event.stopPropagation();
-            toggleFavorite(recipe);
-          }}
-          data-testid={`favorite-button-${id}`}
-        >
-          {favoritesArray.some((favorite: IRecipe) => favorite.id === id)
-            ? "Unfavorite"
-            : "Favorite"}
-        </Button>
       </CardContent>
       <CardFooter></CardFooter>
     </Card>

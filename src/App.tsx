@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, ChangeEvent, KeyboardEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Settings, MoonStar, Sun } from "lucide-react";
+import { Settings, MoonStar, Sun, ImageUp, Send } from "lucide-react";
 import Recipes from "@/components/app/Recipes";
 import SettingsContent from "@/components/app/SettingsContent";
 
@@ -386,7 +386,8 @@ function App() {
                   disabled={isFetching}
                   variant="default"
                 >
-                  Upload
+                  <ImageUp className="pr-1" />
+                  Upload Image
                 </Button>
                 <input
                   type="file"
@@ -414,6 +415,7 @@ function App() {
                   disabled={isFetching}
                   variant="primary"
                 >
+                  <Send className="pr-1" />
                   Submit
                 </Button>
                 {selectedImagePreviewUrl && (
