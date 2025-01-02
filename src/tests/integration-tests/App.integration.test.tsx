@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event"; // More accurate user interactions
 import "@testing-library/jest-dom";
-import { vi, describe, it, expect, afterEach } from "vitest";
+import { vi, describe, it, expect, afterEach, beforeAll } from "vitest";
 import App from "../../App.tsx";
 import * as appUtils from "../../lib/appUtils"; // Import all as namespace
 import { IRecipe } from "types/AppTypes";
@@ -109,6 +109,18 @@ vi.mock("../../components/app/RecipeCard", () => ({
 }));
 
 describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
+  beforeAll(() => {
+    window.matchMedia = vi.fn().mockImplementation((query) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(), // Deprecated
+      removeListener: vi.fn(), // Deprecated
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }));
+  });
   afterEach(() => {
     vi.clearAllMocks(); // Clear mocks after each test
   });

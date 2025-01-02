@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, ChangeEvent, KeyboardEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Settings } from "lucide-react";
+import { Settings, MoonStar, Sun, ImageUp, Send } from "lucide-react";
 import Recipes from "@/components/app/Recipes";
 import SettingsContent from "@/components/app/SettingsContent";
 
@@ -44,10 +44,25 @@ function App() {
     string | null
   >(null);
   const [isFetching, setIsFetching] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    // Check user's system preference for dark mode
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
+    // Add or remove the `dark` class on the <html> element
+    const root = document.documentElement;
+    if (isDarkMode) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  }, [isDarkMode]);
+
+  useEffect(() => {
+    // refreching Imgur Access Token
     const fetchAccessToken = async () => {
       const token = await refreshAccessToken(showError, setErrorMessage);
       if (token) {
@@ -67,6 +82,7 @@ function App() {
   }, [selectedImagePreviewUrl]);
 
   useEffect(() => {
+    // Fetching random recipes on page load
     const getRandomRecipes = async () => {
       setIsFetching(true);
       try {
@@ -88,6 +104,10 @@ function App() {
     getRandomRecipes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+  };
 
   // app UI handler functions
   const handleUploadButtonClick = () => {
@@ -307,118 +327,140 @@ function App() {
   };
 
   return (
-    <div className="m-10">
-      <div>
-        <header className="row mb-0 flex items-center justify-between">
-          <h1 className="mb-0 pb-0 text-2xl font-extrabold">Snappy Recipes</h1>
-          {statusMessage && (
-            <div className="mb-4 rounded bg-green-100 p-2 text-green-600">
-              {statusMessage}
+    <div className="flex min-h-screen items-center justify-center bg-lightmode-dark1 p-10 dark:bg-darkmode-dark1">
+      <div className="max-w-screen-3xl border-1 w-full rounded-3xl border-lightmode-dimmed5 bg-lightmode-background p-4 text-lightmode-text shadow-lg dark:border-darkmode-dark2 dark:bg-darkmode-background dark:text-darkmode-text">
+        <div className="m-10">
+          <div>
+            <header className="row mb-0 flex items-center justify-between">
+              <h1 className="mb-0 pb-0 text-3xl font-extrabold text-lightmode-red dark:text-darkmode-yellow">
+                Snappy Recipes
+              </h1>
+              {statusMessage && (
+                <div className="mb-4 rounded bg-green-100 p-2 text-green-600">
+                  {statusMessage}
+                </div>
+              )}
+              <div className="flex">
+                <Button
+                  className=""
+                  onClick={handleShowFavoritesClick}
+                  data-testid="openFavorites"
+                  disabled={isFetching}
+                  variant="default"
+                >
+                  Show Favorites
+                </Button>
+                <Button
+                  onClick={handleSettingsClick}
+                  className="ml-2"
+                  data-testid="openSettings"
+                  disabled={isFetching}
+                  variant="default"
+                >
+                  <Settings className="h-4 w-4"></Settings>
+                </Button>
+                <Button
+                  onClick={toggleDarkMode}
+                  className="ml-2"
+                  data-testid="themeToggle"
+                  disabled={isFetching}
+                  variant="default"
+                >
+                  {isDarkMode ? (
+                    <Sun className="h-4 w-4"></Sun>
+                  ) : (
+                    <MoonStar className="h-4 w-4"></MoonStar>
+                  )}
+                </Button>
+              </div>
+            </header>
+            <div className="mt-3">
+              <label htmlFor="input" className="text-sm font-semibold">
+                Search Recipes
+              </label>
+              <div className="row mb-5 flex">
+                <Button
+                  onClick={handleUploadButtonClick}
+                  className="rounded-br-none rounded-tr-none border-r-0"
+                  data-testid="upload-button"
+                  disabled={isFetching}
+                  variant="default"
+                >
+                  <ImageUp className="pr-1" />
+                  Upload Image
+                </Button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  style={{ display: "none" }}
+                  onChange={handleFileChange}
+                  data-testid="file-input"
+                  disabled={isFetching}
+                />
+                <Input
+                  id="input"
+                  ref={searchInputRef}
+                  placeholder="Search by entering your ingredient or upload an image"
+                  onChange={(event) => handleQueryChange(event)}
+                  onKeyDown={(event) => handleKeyDown(event)}
+                  className="rounded-none"
+                  name=""
+                  data-testid="text-input"
+                  disabled={isFetching}
+                />
+                <Button
+                  onClick={() => handleSearch(query)}
+                  className="rounded-bl-none rounded-tl-none"
+                  data-testid="submit"
+                  disabled={isFetching}
+                  variant="primary"
+                >
+                  <Send className="pr-1" />
+                  Submit
+                </Button>
+                {selectedImagePreviewUrl && (
+                  <img
+                    className="border-1 ml-2 max-h-[100px] w-auto rounded-md border border-lightmode-dimmed5 object-cover dark:border-darkmode-dark2"
+                    src={selectedImagePreviewUrl}
+                    alt="recipe preview"
+                  />
+                )}
+              </div>
+              {errorMessage && (
+                <div
+                  className="mb-4 rounded bg-red-100 p-2 text-red-600"
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(errorMessage),
+                  }}
+                ></div>
+              )}
             </div>
-          )}
-          <div className="flex">
-            <Button
-              className="border border-black bg-white font-bold text-black"
-              onClick={handleShowFavoritesClick}
-              data-testid="openFavorites"
-              disabled={isFetching}
-            >
-              Show Favorites
-            </Button>
-            <Button
-              onClick={handleSettingsClick}
-              className="ml-2 border border-black bg-white font-bold text-black"
-              data-testid="openSettings"
-              disabled={isFetching}
-            >
-              <Settings className="h-4 w-4"></Settings>
-            </Button>
           </div>
-        </header>
-        <div className="mt-3">
-          <label htmlFor="input" className="text-sm font-semibold">
-            Search Recipes
-          </label>
-          <div className="row flex">
-            <Button
-              onClick={handleUploadButtonClick}
-              className="rounded-br-none rounded-tr-none"
-              data-testid="upload-button"
-              disabled={isFetching}
+          <Recipes
+            favoritesArray={favoritesArray}
+            toggleFavorite={toggleFavorite}
+            isFavoritesVisible={isFavoritesVisible}
+            recipes={recipeArray}
+            isFetching={isFetching}
+            setIsFetching={setIsFetching}
+          />
+          {isSettingsOpen && (
+            <Modal
+              isOpen={isSettingsOpen}
+              onClose={closeSettingsModal}
+              title="Settings"
+              description="Modify your recipe search by selecting the options below."
             >
-              Upload
-            </Button>
-            <input
-              type="file"
-              ref={fileInputRef}
-              style={{ display: "none" }}
-              onChange={handleFileChange}
-              data-testid="file-input"
-              disabled={isFetching}
-            />
-            <Input
-              id="input"
-              ref={searchInputRef}
-              placeholder="Search by entering your ingredient or upload an image"
-              onChange={(event) => handleQueryChange(event)}
-              onKeyDown={(event) => handleKeyDown(event)}
-              className="rounded-br-none rounded-tr-none"
-              name=""
-              data-testid="text-input"
-              disabled={isFetching}
-            />
-            <Button
-              onClick={() => handleSearch(query)}
-              className="rounded-bl-none rounded-tl-none"
-              data-testid="submit"
-              disabled={isFetching}
-            >
-              Submit
-            </Button>
-          </div>
-          {errorMessage && (
-            <div
-              className="mb-4 rounded bg-red-100 p-2 text-red-600"
-              dangerouslySetInnerHTML={{
-                __html: DOMPurify.sanitize(errorMessage),
-              }}
-            ></div>
-          )}
-          {selectedImagePreviewUrl && (
-            <div>
-              <img
-                src={selectedImagePreviewUrl}
-                alt="recipe preview"
-                width="200px"
-                height="100%"
+              <SettingsContent
+                restrictionsArray={restrictionsArray}
+                intolerancesArray={intolerancesArray}
+                handleRestrictionClick={handleRestrictionClick}
+                handleIntoleranceClick={handleIntoleranceClick}
               />
-            </div>
+            </Modal>
           )}
         </div>
       </div>
-      <Recipes
-        favoritesArray={favoritesArray}
-        toggleFavorite={toggleFavorite}
-        isFavoritesVisible={isFavoritesVisible}
-        recipes={recipeArray}
-        isFetching={isFetching}
-        setIsFetching={setIsFetching}
-      />
-      {isSettingsOpen && (
-        <Modal
-          isOpen={isSettingsOpen}
-          onClose={closeSettingsModal}
-          title="Settings"
-          description="Modify your recipe search by selecting the options below."
-        >
-          <SettingsContent
-            restrictionsArray={restrictionsArray}
-            intolerancesArray={intolerancesArray}
-            handleRestrictionClick={handleRestrictionClick}
-            handleIntoleranceClick={handleIntoleranceClick}
-          />
-        </Modal>
-      )}
     </div>
   );
 }
