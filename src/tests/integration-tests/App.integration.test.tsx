@@ -420,7 +420,7 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
     // Wait for the search results to appear
     console.log("Waiting for search results...");
     const statusMessage = await screen.findByText(
-      "1 recipes found that contain pizza"
+      "1 recipes found that contain pizza."
     );
     const recipeTitle = await screen.findByText("Filtered Pizza Recipe");
 

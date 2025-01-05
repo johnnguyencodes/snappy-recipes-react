@@ -91,115 +91,45 @@ module.exports = {
           4: "hsl(var(--chart-4))",
           5: "hsl(var(--chart-5))",
         },
-        // Light and dark mode colors
-        "darkmode-text": {
-          DEFAULT: "#FCFCFA",
-        },
-        "darkmode-background": {
-          DEFAULT: "#2D2A2E",
-        },
-        "darkmode-dark1": {
-          DEFAULT: "#221F22",
-        },
-        "darkmode-dark2": {
-          DEFAULT: "#19181A",
-        },
-        "darkmode-dimmed1": {
-          DEFAULT: "#C1C0C0",
-        },
-        "darkmode-dimmed2": {
-          DEFAULT: "#939293",
-        },
-        "darkmode-dimmed3": {
-          DEFAULT: "#727072",
-        },
-        "darkmode-dimmed4": {
-          DEFAULT: "#5B595C",
-        },
-        "darkmode-dimmed5": {
-          DEFAULT: "#403E41",
-        },
-        "darkmode-panel": {
-          DEFAULT: "#FDF7F3",
-        },
-        "darkmode-light": {
-          DEFAULT: "#FFFCFA",
-        },
-        "darkmode-red": {
-          DEFAULT: "#FF6188",
-        },
-        "darkmode-orange": {
-          DEFAULT: "#FC9867",
-        },
-        "darkmode-yellow": {
-          DEFAULT: "#FFD866",
-        },
-        "darkmode-green": {
-          DEFAULT: "#AADC76",
-        },
-        "darkmode-blue": {
-          DEFAULT: "#78DCE8",
-        },
-        "darkmode-purple": {
-          DEFAULT: "#AB9DF2",
-        },
-        "lightmode-text": {
-          DEFAULT: "#2C232E",
-        },
-        "lightmode-background": {
-          DEFAULT: "#F8EFE7",
-        },
-        "lightmode-dark1": {
-          DEFAULT: "#EEE5DE",
-        },
-        "lightmode-dark2": {
-          DEFAULT: "#D2C9C4",
-        },
-        "lightmode-dimmed1": {
-          DEFAULT: "#72696D",
-        },
-        "lightmode-dimmed2": {
-          DEFAULT: "#92898A",
-        },
-        "lightmode-dimmed3": {
-          DEFAULT: "#A59C9C",
-        },
-        "lightmode-dimmed4": {
-          DEFAULT: "#BEB5B3",
-        },
-        "lightmode-dimmed5": {
-          DEFAULT: "#D2C9C4",
-        },
-        "lightmode-panel": {
-          DEFAULT: "#FDF7F3",
-        },
-        "lightmode-light": {
-          DEFAULT: "#FFFCFA",
-        },
-        "lightmode-red": {
-          DEFAULT: "#CE4770",
-        },
-        "lightmode-orange": {
-          DEFAULT: "#D4572B",
-        },
-        "lightmode-yellow": {
-          DEFAULT: "#B16803",
-        },
-        "lightmode-green": {
-          DEFAULT: "#218871",
-        },
-        "lightmode-blue": {
-          DEFAULT: "#2473B6",
-        },
-        "lightmode-purple": {
-          DEFAULT: "#6851A2",
-        },
-        "lightmode-highlight": {
-          DEFAULT: "#FEE1CF",
-        },
-        "darkmode-highlight": {
-          DEFAULT: "#CFE8E5",
-        },
+        // dark mode colors
+        "darkmode-text": "#FCFCFA",
+        "darkmode-background": "#2D2A2E",
+        "darkmode-dark1": "#221F22",
+        "darkmode-dark2": "#19181A",
+        "darkmode-dimmed1": "#C1C0C0",
+        "darkmode-dimmed2": "#939293",
+        "darkmode-dimmed3": "#727072",
+        "darkmode-dimmed4": "#5B595C",
+        "darkmode-dimmed5": "#403E41",
+        "darkmode-panel": "#FDF7F3",
+        "darkmode-light": "#FFFCFA",
+        "darkmode-red": "#FF6188",
+        "darkmode-orange": "#FC9867",
+        "darkmode-yellow": "#FFD866",
+        "darkmode-green": "#AADC76",
+        "darkmode-blue": "#78DCE8",
+        "darkmode-purple": "#AB9DF2",
+
+        // lightmode colors
+        "lightmode-text": "#2C232E",
+        "lightmode-background": "#F8EFE7",
+        "lightmode-dark1": "#EEE5DE",
+        "lightmode-dark2": "#D2C9C4",
+        "lightmode-dimmed1": "#72696D",
+        "lightmode-dimmed2": "#92898A",
+        "lightmode-dimmed3": "#A59C9C",
+        "lightmode-dimmed4": "#BEB5B3",
+        "lightmode-dimmed5": "#D2C9C4",
+        "lightmode-panel": "#FDF7F3",
+        "lightmode-light": "#FFFCFA",
+        "lightmode-red": "#CE4770",
+        "lightmode-orange": "#D4572B",
+        "lightmode-yellow": "#B16803",
+        "lightmode-green": "#218871",
+        "lightmode-blue": "#2473B6",
+        "lightmode-purple": "#6851A2",
+        "lightmode-highlight": "#FEE1CF",
+        "darkmode-highlight": "#CFE8E5",
       },
       keyframes: {
         "accordion-down": {

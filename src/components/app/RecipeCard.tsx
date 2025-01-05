@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "../ui/button";
-import { Heart } from "lucide-react";
+import { Heart, Timer, Utensils } from "lucide-react";
 
 const RecipeCard: React.FC<IRecipeCardProps> = ({
   recipe,
@@ -47,6 +47,7 @@ const RecipeCard: React.FC<IRecipeCardProps> = ({
           summary,
         })
       }
+      tabIndex={0}
     >
       <CardHeader className="image-container relative">
         <img
@@ -59,7 +60,7 @@ const RecipeCard: React.FC<IRecipeCardProps> = ({
           }}
         />
         <Button
-          className="absolute right-10 top-8 h-8 w-8 p-0"
+          className="group absolute right-10 top-8 h-8 w-8 p-0"
           onClick={(event) => {
             event.stopPropagation();
             toggleFavorite(recipe);
@@ -68,9 +69,9 @@ const RecipeCard: React.FC<IRecipeCardProps> = ({
           variant="primary"
         >
           {favoritesArray.some((favorite: IRecipe) => favorite.id === id) ? (
-            <Heart className="h-4 w-4 fill-lightmode-yellow stroke-lightmode-red dark:fill-darkmode-red dark:stroke-darkmode-red" />
+            <Heart className="ring-offset ring-offset-10 h-4 w-4 fill-lightmode-background stroke-lightmode-background transition duration-300 focus:outline-none focus:ring-2 focus:ring-lightmode-red focus-visible:outline-none focus-visible:ring focus-visible:ring-lightmode-red dark:fill-darkmode-background dark:stroke-darkmode-background dark:ring-offset-transparent dark:focus:ring-darkmode-yellow dark:focus-visible:ring-darkmode-yellow" />
           ) : (
-            <Heart className="h-4 w-4 fill-lightmode-yellow stroke-lightmode-red dark:fill-darkmode-yellow dark:stroke-darkmode-red" />
+            <Heart className="ring-offset ring-offset-10 h-4 w-4 fill-lightmode-red stroke-lightmode-background transition duration-300 focus:outline-none focus:ring-2 focus:ring-lightmode-red focus-visible:outline-none focus-visible:ring focus-visible:ring-lightmode-red group-hover:fill-lightmode-purple dark:fill-darkmode-yellow dark:stroke-darkmode-background dark:ring-offset-transparent dark:focus:ring-darkmode-yellow dark:focus-visible:ring-darkmode-yellow dark:group-hover:fill-darkmode-green" />
           )}
         </Button>
         <CardTitle className="text-lightmode-red dark:text-darkmode-yellow">
@@ -79,24 +80,42 @@ const RecipeCard: React.FC<IRecipeCardProps> = ({
         <CardDescription></CardDescription>
       </CardHeader>
       <CardContent className="text-lightmode-text dark:text-darkmode-text">
-        <h3>Cooking Details</h3>
-        <p>
-          <span>{readyInMinutes} minutes </span>
-          <span>{servings} servings </span>
-        </p>
-        <h3>Dietary Information</h3>
-        <p>
-          {diets.map((diet: string) => (
-            <span key={diet}>{diet} </span>
-          ))}
-        </p>
-        <h3>Macro-Nutrient Values</h3>
-        <p>
-          <span>{caloriesAmount} calories </span>
-          <span>{carbsAmount}g carbs </span>
-          <span>{fatAmount}g total fat </span>
-          <span>{proteinAmount}g protein </span>
-        </p>
+        <div className="mb-3">
+          <h3 className="text-xl font-semibold">Cooking Details</h3>
+          <p>
+            <span className="mr-3">
+              <Timer
+                className="mr-1 inline-flex translate-y-[-1px] align-middle"
+                size="18"
+              />
+              {readyInMinutes} minutes
+            </span>
+            <span>
+              <Utensils
+                className="mr-1 inline-flex translate-y-[-1px] align-middle"
+                size="18"
+              />
+              {servings} servings
+            </span>
+          </p>
+        </div>
+        <div className="mb-3">
+          <h3 className="text-xl font-semibold">Dietary Information</h3>
+          <p>
+            {diets.map((diet: string) => (
+              <span key={diet}>{diet} </span>
+            ))}
+          </p>
+        </div>
+        <div>
+          <h3 className="text-xl font-semibold">Macro-Nutrient Values</h3>
+          <p>
+            <span>{caloriesAmount} calories </span>
+            <span>{carbsAmount}g carbs </span>
+            <span>{fatAmount}g total fat </span>
+            <span>{proteinAmount}g protein </span>
+          </p>
+        </div>
       </CardContent>
       <CardFooter></CardFooter>
     </Card>
