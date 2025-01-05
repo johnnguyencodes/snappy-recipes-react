@@ -110,7 +110,7 @@ export const DietaryRestrictionDetails: Record<
   [DietaryRestriction.LactoVegetarian]: {
     label: "Lacto-Vegetarian",
     icon: (
-      <Milk className="h-5 w-5 text-lightmode-dimmed3 dark:text-darkmode-dimmed3" />
+      <Milk className="h-5 w-5 text-lightmode-dimmed3 dark:text-darkmode-dimmed1" />
     ),
   },
   [DietaryRestriction.OvoVegetarian]: {
@@ -148,7 +148,7 @@ export const FoodIntoleranceDetails: Record<
   [FoodIntolerance.Dairy]: {
     label: "Dairy",
     icon: (
-      <Milk className="h-5 w-5 text-lightmode-dimmed3 dark:text-darkmode-dimmed3" />
+      <Milk className="h-5 w-5 text-lightmode-dimmed3 dark:text-darkmode-dimmed1" />
     ),
   },
   [FoodIntolerance.Egg]: {

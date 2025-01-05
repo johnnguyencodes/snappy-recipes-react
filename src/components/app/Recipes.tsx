@@ -143,18 +143,6 @@ const Recipes: React.FC<IRecipesProps> = ({
               className="mb-4"
               dangerouslySetInnerHTML={createMarkup(selectedRecipe.summary)}
             ></p>
-            <div>
-              <p>
-                <strong>Ingredients</strong>
-              </p>
-              <ul className="mb-1">
-                {selectedRecipe.nutrition.ingredients.map((ingredient) => (
-                  <li key={ingredient.id}>
-                    {ingredient.amount} {ingredient.unit} {ingredient.name}
-                  </li>
-                ))}
-              </ul>
-            </div>
             <Button
               onClick={(event) => {
                 event.stopPropagation();
