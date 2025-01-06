@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { IRecipe } from "../../../types/AppTypes.ts";
+import { IRecipe } from "../../../types/AppTypes";
 import { callSpoonacularAPI } from "../../lib/appUtils";
 import { getRecipes } from "../../lib/apiUtils";
 import { showError } from "../../lib/formUtils";

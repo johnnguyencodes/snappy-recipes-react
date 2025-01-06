@@ -53,7 +53,7 @@ const Recipes: React.FC<IRecipesProps> = ({
   };
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {isFavoritesVisible ? (
         !favoritesArray || favoritesArray.length === 0 ? (
           <div>
@@ -143,18 +143,6 @@ const Recipes: React.FC<IRecipesProps> = ({
               className="mb-4"
               dangerouslySetInnerHTML={createMarkup(selectedRecipe.summary)}
             ></p>
-            <div>
-              <p>
-                <strong>Ingredients</strong>
-              </p>
-              <ul className="mb-1">
-                {selectedRecipe.nutrition.ingredients.map((ingredient) => (
-                  <li key={ingredient.id}>
-                    {ingredient.amount} {ingredient.unit} {ingredient.name}
-                  </li>
-                ))}
-              </ul>
-            </div>
             <Button
               onClick={(event) => {
                 event.stopPropagation();
