@@ -25,9 +25,10 @@ const SettingsContent: React.FC<ISettingsContentProps> = ({
                     type="checkbox"
                     aria-describedby={restriction.label}
                     checked={
-                      restrictionsArray?.includes(restriction.label) || false
+                      restrictionsArray?.includes(restriction.value) || false
                     }
-                    onChange={() => handleRestrictionClick(restriction.label)}
+                    onChange={() => handleRestrictionClick(restriction.value)}
+                    data-testid={restriction.value}
                     className="dark:checked-border-darkmode-yellow col-start-1 row-start-1 appearance-none rounded border border-gray-300 bg-lightmode-panel text-lightmode-background ring-offset-2 ring-offset-lightmode-background transition duration-300 checked:border-lightmode-red checked:bg-lightmode-red focus:outline-none focus:ring-2 focus:ring-lightmode-red focus-visible:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lightmode-red focus-visible:ring-2 focus-visible:ring-lightmode-red disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 dark:bg-darkmode-dark1 dark:ring-offset-darkmode-background dark:checked:border-darkmode-yellow dark:checked:text-darkmode-background dark:focus:ring-darkmode-yellow dark:focus-visible:outline-darkmode-yellow dark:focus-visible:ring-darkmode-yellow"
                   />
                   <svg
@@ -79,9 +80,10 @@ const SettingsContent: React.FC<ISettingsContentProps> = ({
                   type="checkbox"
                   aria-describedby={intolerance.label}
                   checked={
-                    intolerancesArray?.includes(intolerance.label) || false
+                    intolerancesArray?.includes(intolerance.value) || false
                   }
-                  onChange={() => handleIntoleranceClick(intolerance.label)}
+                  onChange={() => handleIntoleranceClick(intolerance.value)}
+                  data-testid={intolerance.value}
                   className="dark:checked-border-darkmode-yellow col-start-1 row-start-1 appearance-none rounded border border-gray-300 bg-lightmode-panel text-lightmode-background ring-offset-2 ring-offset-lightmode-background transition duration-300 checked:border-lightmode-red checked:bg-lightmode-red focus:outline-none focus:ring-2 focus:ring-lightmode-red focus-visible:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lightmode-red focus-visible:ring-2 focus-visible:ring-lightmode-red disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 dark:bg-darkmode-dark1 dark:ring-offset-darkmode-background dark:checked:border-darkmode-yellow dark:checked:text-darkmode-background dark:focus:ring-darkmode-yellow dark:focus-visible:outline-darkmode-yellow dark:focus-visible:ring-darkmode-yellow"
                 />
                 <svg

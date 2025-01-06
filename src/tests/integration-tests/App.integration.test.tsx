@@ -388,15 +388,18 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
 
     // Simulate selecting dietary restrictions
     console.log("Selecting dietary restrictions...");
-    const veganCheckbox = screen.getByLabelText("Vegan");
+    const veganCheckbox = screen.getByTestId("vegan");
     await userEvent.click(veganCheckbox);
 
     // Simulate selecting food intolerances
     console.log("Selecting food intolerances...");
-    const glutenCheckbox = screen.getByLabelText("Gluten");
+    const glutenCheckbox = screen.getByTestId("gluten");
     await userEvent.click(glutenCheckbox);
 
     // Verify that dietary restrictions and intolerances are selected
+    console.log(
+      "Verifying that dietary restrictions and intolerances are selected..."
+    );
     expect(veganCheckbox).toBeChecked();
     expect(glutenCheckbox).toBeChecked();
 

@@ -141,11 +141,11 @@ function App() {
 
   const handleRestrictionClick = (restriction: string) => {
     const tempArray = [...(restrictionsArray || [])];
-    const index = tempArray.indexOf(restriction);
+    const index = tempArray.indexOf(restriction.toLowerCase());
     if (index > -1) {
       tempArray.splice(index, 1);
     } else {
-      tempArray.push(restriction);
+      tempArray.push(restriction.toLowerCase());
     }
     setRestrictionsArray(tempArray);
     saveToLocalStorage("restrictionsArray", tempArray);
@@ -153,11 +153,11 @@ function App() {
 
   const handleIntoleranceClick = (intolerance: string) => {
     const tempArray = [...(intolerancesArray || [])];
-    const index = tempArray.indexOf(intolerance);
+    const index = tempArray.indexOf(intolerance.toLowerCase());
     if (index > -1) {
       tempArray.splice(index, 1);
     } else {
-      tempArray.push(intolerance);
+      tempArray.push(intolerance.toLowerCase());
     }
     setIntolerancesArray(tempArray);
     saveToLocalStorage("intolerancesArray", tempArray);
