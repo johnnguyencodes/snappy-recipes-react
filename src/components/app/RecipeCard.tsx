@@ -161,21 +161,25 @@ const RecipeCard: React.FC<IRecipeCardProps> = ({
           </p>
         </div>
         <div className="mb-3">
-          <h3 className="text-xl font-semibold">Dietary Information</h3>
-          <p>
-            {diets.map((diet: string) => {
-              const icon = getDietIcon(diet);
-              return (
-                <span
-                  key={diet}
-                  className="mr-2 inline-flex items-center text-sm/6"
-                >
-                  {icon}
-                  <span>{diet}</span>
-                </span>
-              );
-            })}
-          </p>
+          {diets.length > 0 && (
+            <div>
+              <h3 className="text-xl font-semibold">Dietary Information</h3>
+              <p>
+                {diets.map((diet: string) => {
+                  const icon = getDietIcon(diet);
+                  return (
+                    <span
+                      key={diet}
+                      className="mr-2 inline-flex items-center text-sm/6"
+                    >
+                      {icon}
+                      <span>{diet}</span>
+                    </span>
+                  );
+                })}
+              </p>
+            </div>
+          )}
         </div>
         <div>
           <h3 className="text-xl font-semibold">Macro-Nutrients</h3>
