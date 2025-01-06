@@ -40,34 +40,21 @@ const Modal: React.FC<IModalProps> = ({
       <DialogOverlay className="fixed inset-0 bg-black/60 opacity-100" />
       <DialogContent
         ref={modalRef}
-        className="fixed left-1/2 top-1/2 z-50 max-h-[80%] max-w-lg -translate-x-1/2 -translate-y-1/2 transform overflow-auto rounded-md bg-lightmode-panel p-6 opacity-100 shadow-lg dark:bg-darkmode-dark1"
+        className="fixed left-1/2 top-1/2 z-50 max-h-[80%] max-w-lg -translate-x-1/2 -translate-y-1/2 transform overflow-auto rounded-md border-2 border-lightmode-dimmed5 bg-lightmode-panel p-6 opacity-100 shadow-lg dark:border-darkmode-dimmed5 dark:bg-darkmode-dark1"
         id="modal-content"
       >
-        {!title ? (
-          // If there's no explicit title prop, still provide a hidden one
-
-          <DialogTitle className="sr-only">Hidden Title</DialogTitle>
-        ) : (
-          <DialogTitle
-            id="modal-title"
-            className="mx-auto text-center text-2xl font-bold text-lightmode-red dark:text-darkmode-yellow"
-          >
-            {title}
-          </DialogTitle>
-        )}
-        {!description ? (
-          // Provide a hidden description if not passed in
-          <DialogDescription className="sr-only">
-            Hidden description
-          </DialogDescription>
-        ) : (
-          <DialogDescription
-            id="modal-description"
-            className="mx-auto text-sm text-muted-foreground"
-          >
-            {description}
-          </DialogDescription>
-        )}
+        <DialogTitle
+          id="modal-title"
+          className="mx-auto text-center text-2xl font-bold text-lightmode-red dark:text-darkmode-yellow"
+        >
+          {title}
+        </DialogTitle>
+        <DialogDescription
+          id="modal-description"
+          className="mx-auto text-sm text-lightmode-dimmed3 dark:text-darkmode-dimmed3"
+        >
+          {description}
+        </DialogDescription>
         <div>{children}</div>
       </DialogContent>
     </Dialog>

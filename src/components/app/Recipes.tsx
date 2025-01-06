@@ -4,7 +4,7 @@ import RecipeCard from "./RecipeCard";
 import Modal from "./Modal";
 import { validateImageUrl } from "@/lib/appUtils";
 import { Button } from "../ui/button";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Heart } from "lucide-react";
 import DOMPurify from "dompurify";
 
 const createMarkup = (html: string) => {
@@ -121,47 +121,42 @@ const Recipes: React.FC<IRecipesProps> = ({
         >
           <div>
             <img
-              className="w-100 mx-auto mb-4"
+              className="w-100 mx-auto mb-4 h-full w-full rounded-md"
               src={selectedRecipe.image}
               alt={selectedRecipe.title}
             />
-            <Button className="mb-4">
-              <a
-                href={selectedRecipe.sourceUrl}
-                className="flex items-center space-x-1"
-                target="_blank"
-                rel="noopener noreferrer"
+            <div className="align-center mt-5 flex justify-between">
+              <Button asChild className="mb-4" variant="default">
+                <a
+                  href={selectedRecipe.sourceUrl}
+                  className="flex items-center space-x-1 underline hover:text-lightmode-background dark:text-darkmode-background dark:hover:text-darkmode-background"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View Full Recipe
+                  <ExternalLink className="ml-1 h-5 w-5" />
+                </a>
+              </Button>
+              <Button
+                onClick={(event) => {
+                  event.stopPropagation();
+                  toggleFavorite(selectedRecipe);
+                }}
+                variant="primary"
               >
-                <span>Recipe Page</span>
-                <ExternalLink />
-              </a>
-            </Button>
-            <p>
-              <strong>Summary:</strong>
-            </p>
+                {favoritesArray.some(
+                  (favorite: IRecipe) => favorite.id === selectedRecipe.id
+                ) ? (
+                  <Heart className="ring-offset ring-offset-10 h-4 w-4 fill-lightmode-background stroke-lightmode-background transition duration-300 focus:outline-none focus:ring-2 focus:ring-lightmode-red focus-visible:outline-none focus-visible:ring focus-visible:ring-lightmode-red dark:fill-darkmode-background dark:stroke-darkmode-background dark:ring-offset-transparent dark:focus:ring-darkmode-yellow dark:focus-visible:ring-darkmode-yellow" />
+                ) : (
+                  <Heart className="ring-offset ring-offset-10 h-4 w-4 fill-lightmode-red stroke-lightmode-background transition duration-300 focus:outline-none focus:ring-2 focus:ring-lightmode-red focus-visible:outline-none focus-visible:ring focus-visible:ring-lightmode-red group-hover:fill-lightmode-purple dark:fill-darkmode-yellow dark:stroke-darkmode-background dark:ring-offset-transparent dark:focus:ring-darkmode-yellow dark:focus-visible:ring-darkmode-yellow dark:group-hover:fill-darkmode-green" />
+                )}
+              </Button>
+            </div>
             <p
               className="mb-4"
               dangerouslySetInnerHTML={createMarkup(selectedRecipe.summary)}
             ></p>
-            <Button
-              onClick={(event) => {
-                event.stopPropagation();
-                toggleFavorite(selectedRecipe);
-              }}
-            >
-              {favoritesArray.some(
-                (favorite) => favorite.id === selectedRecipe.id
-              )
-                ? "Unfavorite"
-                : "Favorite"}
-            </Button>
-            <Button
-              onClick={closeRecipeModal}
-              className="mt-4"
-              data-testid="close-recipe-modal"
-            >
-              Close
-            </Button>
           </div>
         </Modal>
       )}
