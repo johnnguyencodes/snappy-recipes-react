@@ -2,6 +2,7 @@ import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "./button";
 
 const Dialog = DialogPrimitive.Root;
 
@@ -32,21 +33,25 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg sm:rounded-lg",
+        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border-2 border-lightmode-dimmed5 p-6 shadow-lg dark:border-darkmode-dimmed5 sm:rounded-lg",
         className
       )}
       {...props}
     >
       {children}
-      <DialogPrimitive.Close
-        className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
-        data-testid="closeModal"
+      <Button
+        asChild
+        variant="default"
+        className="absolute right-3 top-3 h-6 w-6 p-0"
       >
-        <div className="rounded-sm bg-black p-3">
-          <X className="h-4 w-4 text-white" />
-        </div>
-        <span className="sr-only">Close</span>
-      </DialogPrimitive.Close>
+        <DialogPrimitive.Close
+          className="rounded-sm ring-offset-background transition duration-300 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
+          data-testid="closeModal"
+        >
+          <X className="h-4 w-4 font-extrabold text-lightmode-text dark:text-darkmode-text" />
+          <span className="sr-only">Close</span>
+        </DialogPrimitive.Close>
+      </Button>
     </DialogPrimitive.Content>
   </DialogPortal>
 ));
@@ -87,7 +92,7 @@ const DialogTitle = React.forwardRef<
   <DialogPrimitive.Title
     ref={ref}
     className={cn(
-      "text-lg font-semibold leading-none tracking-tight",
+      "mt-2 text-lg font-semibold leading-none tracking-tight",
       className
     )}
     {...props}

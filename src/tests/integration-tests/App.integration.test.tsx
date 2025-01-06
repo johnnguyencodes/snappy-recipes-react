@@ -313,7 +313,7 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
     expect(modalContent).toBeInTheDocument();
 
     // Simulate closing the modal
-    const closeButton = screen.getByTestId("close-recipe-modal");
+    const closeButton = screen.getByTestId("closeModal");
     await userEvent.click(closeButton);
 
     // Verify the modal is closed
