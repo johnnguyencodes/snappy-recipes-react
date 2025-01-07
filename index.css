@@ -128,14 +128,8 @@
     margin: 0;
   }
 
-  a {
-    font-weight: 500;
-    color: #646cff; /* Ensures accessible contrast */
-    text-decoration: inherit;
-    transition: color 0.2s ease-in-out;
-  }
-  a:hover {
-    color: #535bf2; /* Provides a clear hover effect for links */
+  .recipe-summary a {
+    @apply inline-block rounded-[6px] text-lightmode-red underline transition duration-300 hover:text-lightmode-purple focus:rounded-[6px] focus:outline-none focus:ring-2 focus:ring-lightmode-red focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lightmode-red dark:text-darkmode-yellow dark:hover:text-darkmode-green dark:focus:ring-darkmode-yellow dark:focus-visible:ring-darkmode-yellow;
   }
 
   /* Enables smooth scrolling experience across the page */
@@ -160,12 +154,12 @@
 @layer components {
   /* Internal links styled with an arrow */
   .internal-link {
-    @apply text-lightmode-red hover:text-lightmode-red-300 dark:text-darkmode-red dark:hover:text-darkmode-red-300 transition after:content-['→'];
+    @apply hover:text-lightmode-red-300 dark:hover:text-darkmode-red-300 text-lightmode-red transition after:content-['→'] dark:text-darkmode-red;
   }
 
   /* External links styled with an arrow pointing outward */
   .external-link {
-    @apply text-lightmode-red hover:text-lightmode-red-300 dark:text-darkmode-red dark:hover:text-darkmode-red-300 transition after:content-['↗'];
+    @apply hover:text-lightmode-red-300 dark:hover:text-darkmode-red-300 text-lightmode-red transition after:content-['↗'] dark:text-darkmode-red;
   }
 
   /* Example of how modals or body overflow can be handled */

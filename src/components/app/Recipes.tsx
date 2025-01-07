@@ -129,7 +129,7 @@ const Recipes: React.FC<IRecipesProps> = ({
               <Button asChild className="mb-4" variant="default">
                 <a
                   href={selectedRecipe.sourceUrl}
-                  className="flex items-center space-x-1 underline hover:text-lightmode-background dark:text-darkmode-background dark:hover:text-darkmode-background"
+                  className="flex items-center space-x-1 text-lightmode-text underline hover:text-lightmode-text dark:text-darkmode-text dark:hover:text-darkmode-text"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -154,7 +154,7 @@ const Recipes: React.FC<IRecipesProps> = ({
               </Button>
             </div>
             <p
-              className="mb-4"
+              className="recipe-summary mb-4"
               dangerouslySetInnerHTML={createMarkup(selectedRecipe.summary)}
             ></p>
           </div>
