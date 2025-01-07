@@ -51,7 +51,7 @@ const Modal: React.FC<IModalProps> = ({
         </DialogTitle>
         <DialogDescription
           id="modal-description"
-          className="mx-auto text-sm text-lightmode-dimmed3 dark:text-darkmode-dimmed3"
+          className="mx-auto text-sm font-semibold text-lightmode-dimmed2 dark:text-darkmode-dimmed2"
         >
           {description}
         </DialogDescription>
