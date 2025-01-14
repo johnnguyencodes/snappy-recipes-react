@@ -23,10 +23,10 @@ if (!fs.existsSync(reportDir)) {
 export default defineConfig({
   testDir: "./src/tests/end-to-end-tests/", // Adjust to your tests folder
   testMatch: "**/end-to-end-tests/*.spec.ts",
-  timeout: 120 * 1000,
+  timeout: 15 * 1000,
   expect: {
     // maximum time expect() should wait for the condition to be met
-    timeout: 12000,
+    timeout: 45000,
   },
   // Run tests in files in parallel
   fullyParallel: false,
