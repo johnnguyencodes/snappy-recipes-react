@@ -142,6 +142,7 @@ const Recipes: React.FC<IRecipesProps> = ({
                   event.stopPropagation();
                   toggleFavorite(selectedRecipe);
                 }}
+                variant="primary"
               >
                 {favoritesArray.some(
                   (favorite: IRecipe) => favorite.id === selectedRecipe.id
