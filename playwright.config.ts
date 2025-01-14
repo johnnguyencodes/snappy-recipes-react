@@ -46,7 +46,8 @@ export default defineConfig({
     screenshot: "only-on-failure",
     video: "retain-on-failure",
     launchOptions: {
-      args: ["--disable-web-security"], // Disable web security (CORS issues)
+      args:
+        process.env.BROWSER_NAME === "webkit" ? [] : ["--disable-web-security"], // Only use this argument for Chromium and Firefox
     },
   },
   webServer: {
@@ -65,15 +66,21 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: {
+        ...devices["Desktop Chrome"],
+        launchOptions: { args: ["--disable-web-security"] },
+      },
     },
     {
       name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
+      use: {
+        ...devices["Desktop Firefox"],
+        launchOptions: { args: ["--disable-web-security"] },
+      },
     },
     {
       name: "webkit",
-      use: { ...devices["Desktop Safari"] },
+      use: { ...devices["Desktop Safari"], launchOptions: { args: [] } }, // WebKit doesn't support --disable-web-security
     },
     /* Test against mobile viewports. */
     // {
