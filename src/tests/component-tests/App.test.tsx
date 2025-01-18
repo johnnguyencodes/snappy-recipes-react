@@ -40,6 +40,7 @@ describe("App Component", () => {
         _init?: RequestInit
       ): Promise<Response> => {
         const url = typeof input === "string" ? input : input.toString();
+        console.log("Mocked fetch URL:", url); // Add this to see what URL is being called
 
         if (url.includes("/spoonacularCache.json")) {
           return new Response(JSON.stringify(mockResponse), {
@@ -58,6 +59,13 @@ describe("App Component", () => {
 
     render(<App />);
 
+    // Verify DOM changes
+    console.log("Verify DOM changes after page load");
+    await waitFor(() => {
+      expect(screen.queryByText("1 random recipes found.")).toBeInTheDocument();
+    });
+
+    console.log("Entering pizza into input");
     const input = screen.getByTestId("text-input") as HTMLInputElement;
     fireEvent.change(input, { target: { value: "pizza" } });
 
@@ -66,6 +74,7 @@ describe("App Component", () => {
       expect(input.value).toBe("pizza");
     });
 
+    console.log("Clicking the submit button");
     const submitButton = screen.getByTestId("submit");
     fireEvent.click(submitButton);
 
@@ -92,6 +101,7 @@ describe("App Component", () => {
       );
     });
 
+    console.log("Verifying DOM changes after submitting search");
     // Verify DOM changes
     await waitFor(() => {
       expect(

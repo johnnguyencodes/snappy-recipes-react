@@ -18,6 +18,7 @@ const Recipes: React.FC<IRecipesProps> = ({
   isFavoritesVisible,
   isFetching,
   setIsFetching,
+  errorMessage,
 }) => {
   const [validatedRecipes, setValidatedRecipes] = useState<IRecipe[] | null>(
     null
@@ -82,10 +83,8 @@ const Recipes: React.FC<IRecipesProps> = ({
             />
           ))
         )
-      ) : (!isFetching && !validatedRecipes) ||
-        (!isFetching && validatedRecipes?.length === 0) ? (
-        // todo: if searching, don't show anything
-        // todo: if not searching and no recipes, then show no recipes found
+      ) : (!isFetching && !validatedRecipes && !errorMessage) ||
+        (!isFetching && validatedRecipes?.length === 0 && !errorMessage) ? (
         <div>
           <p>
             No recipes found. Try a different query, or use different filters in
