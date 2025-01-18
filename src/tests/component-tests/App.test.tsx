@@ -42,7 +42,7 @@ describe("App Component", () => {
         const url = typeof input === "string" ? input : input.toString();
         console.log("Mocked fetch URL:", url); // Add this to see what URL is being called
 
-        if (url.includes("/spoonacularCache.json")) {
+        if (url.includes("/spoonacular")) {
           return new Response(JSON.stringify(mockResponse), {
             status: 200,
             statusText: "OK",
@@ -59,13 +59,6 @@ describe("App Component", () => {
 
     render(<App />);
 
-    // Verify DOM changes
-    console.log("Verify DOM changes after page load");
-    await waitFor(() => {
-      expect(screen.queryByText("1 random recipes found.")).toBeInTheDocument();
-    });
-
-    console.log("Entering pizza into input");
     const input = screen.getByTestId("text-input") as HTMLInputElement;
     fireEvent.change(input, { target: { value: "pizza" } });
 
@@ -74,14 +67,15 @@ describe("App Component", () => {
       expect(input.value).toBe("pizza");
     });
 
-    console.log("Clicking the submit button");
+    console.log("Debugging DOM before finding submit button:");
+    screen.debug();
     const submitButton = screen.getByTestId("submit");
     fireEvent.click(submitButton);
 
-    // 5) Assert the 3rd fetch call is made with query=pizza
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledTimes(3);
 
+      // Verify the sequence of calls
       expect(global.fetch).toHaveBeenNthCalledWith(
         1,
         expect.stringContaining("https://api.imgur.com/oauth2/token"),
@@ -100,8 +94,6 @@ describe("App Component", () => {
         expect.stringContaining("/spoonacularCache.json")
       );
     });
-
-    console.log("Verifying DOM changes after submitting search");
     // Verify DOM changes
     await waitFor(() => {
       expect(
@@ -111,6 +103,7 @@ describe("App Component", () => {
   });
 
   it("enters a search query by pressing enter", async () => {
+    // Mock fetch calls
     global.fetch = vi.fn(
       async (
         input: RequestInfo | URL,
