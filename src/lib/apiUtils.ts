@@ -220,20 +220,10 @@ const getRecipes = async (
   ) => void,
   setErrorMessage: (message: string) => void
 ) => {
-  const restrictionsArrayFromLocalStorage = JSON.parse(
-    localStorage.getItem("restrictionsArray") || "[]"
-  ) as string[];
-
-  const intolerancesArrayFromLocalStorage = JSON.parse(
-    localStorage.getItem("intolerancesArray") || "[]"
-  ) as string[];
-
   if (
     process.env.NODE_ENV === "development" ||
     process.env.NODE_ENV === "test" ||
-    (restrictionsArrayFromLocalStorage.length === 0 &&
-      intolerancesArrayFromLocalStorage.length === 0 &&
-      !query)
+    (intolerances.length === 0 && restrictions.length === 0 && !query)
   ) {
     try {
       const response = await fetch(
