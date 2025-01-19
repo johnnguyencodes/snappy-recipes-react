@@ -27,12 +27,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
+      # Install missing system dependencies
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y libicu70
+
       # Install dependencies
       - name: Install dependencies
         run: npm ci
-
-      - name: Install required libraries
-        run: sudo apt-get install -y libicu70
 
       # Cache Playwright browsers
       - name: Cache Playwright browsers
