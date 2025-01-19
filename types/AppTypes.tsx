@@ -44,6 +44,7 @@ export interface IRecipesProps {
   isFavoritesVisible: boolean;
   isFetching: boolean;
   setIsFetching: React.Dispatch<React.SetStateAction<boolean>>;
+  errorMessage: string | null;
 }
 
 export interface IRecipeCardProps {

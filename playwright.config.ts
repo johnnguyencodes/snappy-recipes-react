@@ -23,10 +23,10 @@ if (!fs.existsSync(reportDir)) {
 export default defineConfig({
   testDir: "./src/tests/end-to-end-tests/", // Adjust to your tests folder
   testMatch: "**/end-to-end-tests/*.spec.ts",
-  timeout: 120 * 1000,
+  timeout: 15 * 1000,
   expect: {
     // maximum time expect() should wait for the condition to be met
-    timeout: 12000,
+    timeout: 45000,
   },
   // Run tests in files in parallel
   fullyParallel: false,
@@ -40,14 +40,14 @@ export default defineConfig({
     // Maximum time each action such as click() can take. Defaults to 0 (no limit)
     actionTimeout: 0,
     baseURL: isDevelopment ? devURL : prodURL,
-    browserName: "chromium",
     // Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer
     trace: "on-first-retry",
     headless: true, // You can toggle this
     screenshot: "only-on-failure",
     video: "retain-on-failure",
     launchOptions: {
-      args: ["--disable-web-security"], // Disable web security (CORS issues)
+      args:
+        process.env.BROWSER_NAME === "webkit" ? [] : ["--disable-web-security"], // Only use this argument for Chromium and Firefox
     },
   },
   webServer: {
@@ -66,15 +66,21 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: {
+        ...devices["Desktop Chrome"],
+        launchOptions: { args: ["--disable-web-security"] },
+      },
     },
     {
       name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
+      use: {
+        ...devices["Desktop Firefox"],
+        launchOptions: { args: ["--disable-web-security"] },
+      },
     },
     {
       name: "webkit",
-      use: { ...devices["Desktop Safari"] },
+      use: { ...devices["Desktop Safari"], launchOptions: { args: [] } }, // WebKit doesn't support --disable-web-security
     },
     /* Test against mobile viewports. */
     // {

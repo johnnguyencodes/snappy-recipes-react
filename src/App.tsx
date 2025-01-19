@@ -283,8 +283,6 @@ function App() {
       }
     } catch (error) {
       console.error("Error handling file upload:", error);
-    } finally {
-      setIsFetching(false);
     }
   };
 
@@ -317,8 +315,6 @@ function App() {
         );
       } catch (error) {
         console.error("Error in handleSearch:", error);
-      } finally {
-        setIsFetching(false);
       }
     } else {
       setIsFetching(false);
@@ -443,6 +439,7 @@ function App() {
             recipes={recipeArray}
             isFetching={isFetching}
             setIsFetching={setIsFetching}
+            errorMessage={errorMessage}
           />
           {isSettingsOpen && (
             <Modal
