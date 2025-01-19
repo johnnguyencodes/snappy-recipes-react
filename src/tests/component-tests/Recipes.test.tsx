@@ -153,6 +153,7 @@ describe("Recipes Component", () => {
         isFavoritesVisible={false}
         isFetching={false}
         setIsFetching={setIsFetchingMock}
+        errorMessage=""
       />
     );
 
@@ -180,6 +181,7 @@ describe("Recipes Component", () => {
         isFavoritesVisible={false}
         isFetching={isFetching}
         setIsFetching={setIsFetchingMock}
+        errorMessage=""
       />
     );
 
@@ -211,6 +213,7 @@ describe("Recipes Component", () => {
         isFavoritesVisible={true}
         isFetching={isFetching}
         setIsFetching={setIsFetchingMock}
+        errorMessage=""
       />
     );
 
