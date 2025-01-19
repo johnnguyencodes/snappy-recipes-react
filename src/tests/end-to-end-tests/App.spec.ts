@@ -65,41 +65,87 @@ test.describe("Testing App functionality with mocked Spoonacular API", () => {
   test("User can view a random recipe’s details, favorite it, then view and unfavorite it in the favorites list, ensuring the list is empty afterward.", async ({
     page,
   }) => {
-    await page.goto(""); // uses baseURL in config
+    // We originally tried locating the dialog by its accessible name:
+    //   const recipeModal = page.getByRole("dialog", { name: /Asparagus and Pea Soup: Real/ })
+    // but it kept timing out because the final accessible name was different (or missing).
+    //
+    // Ultimately, we decided to grab the first open dialog:
+    //   .first()
+    // because we only ever have one dialog open at a time.
+    // This bypasses the need for a matching dialog name in the accessibility tree.
 
+    const recipeModal = page.getByRole("dialog").first();
+
+    // We also had trouble with “pointer-events: none” on the <body>
+    // blocking clicks. Removing that style or forcing the click didn’t fully solve it
+    // until we confirmed the correct overlay (dialog) was actually targeted.
+
+    // Once we found the correct dialog, we locate the heart button
+    // by searching for any <button> that has an <svg> with the “lucide-heart” class/icon.
+    // (No accessible name or data-testid had worked reliably in the final HTML.)
+    const heartButton = recipeModal.locator("button:has(svg.lucide-heart)");
+
+    // 1. Navigate to the home page (baseURL is set in config)
+    await page.goto("");
+
+    // 2. Wait for initial random recipes
+    // We found that random recipes were loaded on the homepage,
+    // so we wait for the text about “random recipes found.”
     await expect(page.getByText("random recipes found.")).toBeVisible();
-
     await expect(page.getByText("Asparagus and Pea Soup: Real")).toBeVisible();
 
+    // 3. Open the Favorites list
+    await page.getByTestId("openFavorites").click();
+
+    // 4. Verify no favorite recipes are listed
+    await expect(page.getByText("Your favorite recipes will")).toBeVisible();
+
+    // 5. Close the Favorites list
+    await page.getByTestId("openFavorites").click();
+
+    // 6. Open the recipe details modal
+    // We locate the recipe card (by its image’s alt text),
+    // which triggers the dialog to appear when clicked.
     await page
       .getByRole("img", { name: "Asparagus and Pea Soup: Real" })
       .click();
 
+    // 7. Wait for the modal content to appear (unique to the modal)
+    // Checking for the heading ensures the dialog is rendered
     await expect(
       page.getByRole("heading", { name: "Asparagus and Pea Soup: Real" })
     ).toBeVisible();
-    await page.getByRole("button", { name: "Favorite" }).click();
 
-    await expect(
-      page.getByRole("button", { name: "Unfavorite" })
-    ).toBeVisible();
-    await page.getByTestId("close-recipe-modal").click();
+    // 8. Add recipe to Favorites
+    // We can finally click the heart button now that we have the correct dialog reference
+    await heartButton.click();
 
+    // 9. Close the recipe details modal
+    await page.getByTestId("closeModal").click();
+
+    // 10. Open the Favorites list
     await page.getByTestId("openFavorites").click();
 
+    // 11. Verify the recipe is now in Favorites
     await expect(page.getByText("Asparagus and Pea Soup: Real")).toBeVisible();
-    await page.getByTestId("recipe-card-716406").locator("div").first().click();
 
+    // 12. Open the recipe details modal from Favorites
+    await page
+      .getByRole("img", { name: "Asparagus and Pea Soup: Real" })
+      .click();
+
+    // 13. Wait for the modal content to appear (unique to the modal)
     await expect(
       page.getByRole("heading", { name: "Asparagus and Pea Soup: Real" })
     ).toBeVisible();
 
-    await expect(
-      page.getByRole("button", { name: "Unfavorite" })
-    ).toBeVisible();
-    await page.getByRole("button", { name: "Unfavorite" }).click();
+    // 14. Click to remove the recipe from the Favorites list
+    // Because the same heart button is used to “toggle” favorites,
+    // we just click it again to unfavorite.
+    await heartButton.click();
 
-    await page.getByTestId("close-recipe-modal").click();
+    // 15. Close the modal and confirm Favorites is now empty
+    await page.getByTestId("closeModal").click();
     await expect(page.getByText("Your favorite recipes will")).toBeVisible();
   });
 
