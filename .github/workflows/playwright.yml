@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies for WebKit
         run: |
           sudo apt-get update
-          sudo apt-get install -y libicu70 libwoff1 libharfbuzz-icu0 libgstreamer1.0-0 libgstreamer-plugins-base1.0-0
+          sudo apt-get install -y libicu72 libwoff1 libharfbuzz-icu0 libgstreamer1.0-0 libgstreamer-plugins-base1.0-0
 
       # Install dependencies
       - name: Install dependencies
