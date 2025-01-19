@@ -236,7 +236,9 @@ const getRecipes = async (
       !query)
   ) {
     try {
-      const response = await fetch("/spoonacularCache.json");
+      const response = await fetch(
+        `${import.meta.env.BASE_URL}spoonacularCache.json`
+      );
       if (response?.ok) {
         return await response.json();
       } else {
