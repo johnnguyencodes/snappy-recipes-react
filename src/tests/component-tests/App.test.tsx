@@ -16,6 +16,7 @@ describe("App Component", () => {
   });
 
   beforeEach(() => {
+    // to match the current theme
     window.matchMedia = vi.fn().mockImplementation((query) => ({
       matches: false,
       media: query,
@@ -26,9 +27,6 @@ describe("App Component", () => {
       removeEventListener: vi.fn(),
       dispatchEvent: vi.fn(),
     }));
-  });
-
-  beforeEach(() => {
     global.fetch = vi.fn();
   });
 

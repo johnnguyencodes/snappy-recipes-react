@@ -220,21 +220,37 @@ const getRecipes = async (
   ) => void,
   setErrorMessage: (message: string) => void
 ) => {
+  const restrictionsArrayFromLocalStorage = JSON.parse(
+    localStorage.getItem("restrictionsArray") || "[]"
+  ) as string[];
+
+  const intolerancesArrayFromLocalStorage = JSON.parse(
+    localStorage.getItem("intolerancesArray") || "[]"
+  ) as string[];
+
   if (
     process.env.NODE_ENV === "development" ||
-    process.env.NODE_ENV === "test"
+    process.env.NODE_ENV === "test" ||
+    (restrictionsArrayFromLocalStorage.length === 0 &&
+      intolerancesArrayFromLocalStorage.length === 0 &&
+      !query)
   ) {
     try {
       const response = await fetch("/spoonacularCache.json");
       if (response?.ok) {
         return await response.json();
       } else {
-        console.error("Local JSON fetch failed or returned non-OK response.");
+        console.error(
+          "Local JSON fetch failed or returned non-OK response, proceeding with actual Spoonacular API call."
+        );
+        // Proceed to make an actual API call
       }
     } catch (error) {
-      console.error("Error reading local dev JSON spoonacularCache:", error);
-      // Return undefined explicitly for failed local fetch
-      return undefined;
+      console.error(
+        "Error reading local dev JSON spoonacularCache, proceeding with actual Spoonacular API call",
+        error
+      );
+      // Proceed to make an actual API call
     }
   }
 
