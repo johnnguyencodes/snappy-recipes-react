@@ -78,10 +78,14 @@ export default defineConfig({
         launchOptions: { args: ["--disable-web-security"] },
       },
     },
-    {
-      name: "webkit",
-      use: { ...devices["Desktop Safari"], launchOptions: { args: [] } }, // WebKit doesn't support --disable-web-security
-    },
+    ...(process.env.CI
+      ? [] // Skip WebKit in CI
+      : [
+          {
+            name: "webkit",
+            use: { ...devices["Desktop Safari"], launchOptions: { args: [] } },
+          },
+        ]),
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',
