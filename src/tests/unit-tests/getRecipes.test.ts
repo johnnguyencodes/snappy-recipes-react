@@ -270,6 +270,153 @@ describe("getRecipes (mocked  environments)", () => {
       ).rejects.toThrow("Error with fetching recipes with query pasta");
     });
 
+    it("should fallback to the local cache when Spoonacular API limit is reached (status 402)", async () => {
+      const mockCacheData = {
+        recipes: ["Fallback Recipe1", "fallback Recipe2"],
+      };
+
+      global.fetch = vi
+        .fn()
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 402,
+          statusText: "Payment Required",
+        }) // API limit reached
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockCacheData,
+        }); // Succussful fallback to cache
+
+      const mockShowError = vi.fn();
+      const mockSetErrorMessage = vi.fn();
+
+      const result = await getRecipes(
+        "pasta",
+        "gluten",
+        "vegetarian",
+        mockShowError,
+        mockSetErrorMessage
+      );
+
+      expect(fetch).toHaveBeenCalledTimes(2);
+      expect(fetch).toHaveBeenNthCalledWith(
+        1,
+        expect.stringContaining("spoonacular.com"),
+        expect.any(Object)
+      );
+      expect(fetch).toHaveBeenNthCalledWith(2, "/spoonacularCache.json");
+      expect(result).toEqual(mockCacheData);
+      expect(mockShowError).not.toHaveBeenCalled();
+    });
+
+    it("chould show an error if both Spoonacular API limit is exceeded and local cache fetch fails", async () => {
+      global.fetch = vi
+        .fn()
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 402,
+          statusText: "Payment Required",
+        }) // API limit reached
+        .mockRejectedValueOnce(new Error("Local cache fetch failed")); // Cache fetch fails
+
+      const mockShowError = vi.fn();
+      const mockSetErrorMessage = vi.fn();
+
+      const result = await getRecipes(
+        "pasta",
+        "gluten",
+        "vegetarian",
+        mockShowError,
+        mockSetErrorMessage
+      );
+
+      expect(fetch).toHaveBeenCalledTimes(2);
+      expect(fetch).toHaveBeenNthCalledWith(
+        1,
+        expect.stringContaining("spoonacular.com"),
+        expect.any(Object)
+      );
+      expect(fetch).toHaveBeenNthCalledWith(2, "/spoonacularCache.json");
+      expect(result).toBeUndefined();
+      expect(mockShowError).toHaveBeenCalledWith(
+        "errorSpoonacularLimitReached",
+        mockSetErrorMessage,
+        null
+      );
+    });
+
+    it("chould show an error if both Spoonacular API limit is exceeded and local cache fetch fails", async () => {
+      global.fetch = vi
+        .fn()
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 402,
+          statusText: "Payment Required",
+        }) // API limit reached
+        .mockRejectedValueOnce(new Error("Local cache fetch failed")); // Cache fetch fails
+
+      const mockShowError = vi.fn();
+      const mockSetErrorMessage = vi.fn();
+
+      const result = await getRecipes(
+        "pasta",
+        "gluten",
+        "vegetarian",
+        mockShowError,
+        mockSetErrorMessage
+      );
+
+      expect(fetch).toHaveBeenCalledTimes(2);
+      expect(fetch).toHaveBeenNthCalledWith(
+        1,
+        expect.stringContaining("spoonacular.com"),
+        expect.any(Object)
+      );
+      expect(fetch).toHaveBeenNthCalledWith(2, "/spoonacularCache.json");
+      expect(result).toBeUndefined();
+      expect(mockShowError).toHaveBeenCalledWith(
+        "errorSpoonacularLimitReached",
+        mockSetErrorMessage,
+        null
+      );
+    });
+
+    it("should handle malformed JSON response from local cache gracefully", async () => {
+      global.fetch = vi
+        .fn()
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 402,
+          statusText: "Payment Required",
+        }) // API limit reached
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => {
+            throw new SyntaxError("Unexpected token in JSON");
+          },
+        }); // Malformed JSON in cache
+
+      const mockShowError = vi.fn();
+      const mockSetErrorMessage = vi.fn();
+
+      await expect(
+        getRecipes(
+          "pasta",
+          "gluten",
+          "vegetarian",
+          mockShowError,
+          mockSetErrorMessage
+        )
+      ).resolves.toBeUndefined();
+
+      expect(fetch).toHaveBeenCalledTimes(2);
+      expect(mockShowError).toHaveBeenCalledWith(
+        "errorSpoonacularLimitReached",
+        mockSetErrorMessage,
+        null
+      );
+    });
+
     it("should construct the URL with the correct query string", async () => {
       global.fetch = vi.fn().mockResolvedValueOnce({
         ok: true,

@@ -258,7 +258,7 @@ const getRecipes = async (
     );
 
     if (response.status === 402) {
-      // If API limit reached, fallback to local spoonacularCache
+      // If API limit reached (status 402), fallback to local spoonacularCache
       try {
         const response = await fetch(
           `${import.meta.env.BASE_URL}spoonacularCache.json`
