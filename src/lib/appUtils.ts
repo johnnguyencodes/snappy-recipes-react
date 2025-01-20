@@ -18,25 +18,12 @@ const validateImageUrl = (url: string, fallback: string): Promise<string> => {
 };
 
 const saveToLocalStorage = (key: string, value: string | object) => {
-  try {
-    if (typeof window !== "undefined" && window.localStorage) {
-      localStorage.setItem(key, JSON.stringify(value));
-    }
-  } catch (error) {
-    console.warn(`Unable to save to localStorage for key: ${key}`, error);
-  }
+  localStorage.setItem(key, JSON.stringify(value));
 };
 
 const loadFromLocalStorage = (key: string) => {
-  try {
-    if (typeof window !== "undefined" && window.localStorage) {
-      const storedValue = localStorage.getItem(key);
-      return storedValue ? JSON.parse(storedValue) : null;
-    }
-  } catch (error) {
-    console.warn(`Unable to access localStorage for key: ${key}`, error);
-    return null;
-  }
+  const storedValue = localStorage.getItem(key);
+  return storedValue ? JSON.parse(storedValue) : null;
 };
 
 // search validator helper functions
