@@ -258,10 +258,28 @@ const getRecipes = async (
     );
 
     if (response.status === 402) {
-      showError("errorSpoonacularLimitReached", setErrorMessage, null);
-      throw new Error(
-        "Spoonacular API limit reached. Please try again an 24 hours."
-      );
+      // If API limit reached (status 402), fallback to local spoonacularCache
+      try {
+        const response = await fetch(
+          `${import.meta.env.BASE_URL}spoonacularCache.json`
+        );
+        if (response?.ok) {
+          return await response.json();
+        } else {
+          console.error(
+            "Local JSON fetch failed or returned non-OK response after Spoonacular API limit reached"
+          );
+          showError("errorSpoonacularLimitReached", setErrorMessage, null);
+          return undefined;
+        }
+      } catch (error) {
+        console.error(
+          "Error reading local dev JSON spoonacularCache after Spoonacular API limit reached",
+          error
+        );
+        showError("errorSpoonacularLimitReached", setErrorMessage, null);
+        return undefined;
+      }
     } else if (!response.ok) {
       showError("errorSpoonacularGetRequest", setErrorMessage, query);
       throw new Error(`Error with GET fetch request with query ${query}`);
