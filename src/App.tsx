@@ -328,8 +328,8 @@ function App() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-lightmode-dark1 p-10 dark:bg-darkmode-dark1">
-      <div className="max-w-screen-3xl border-1 w-full rounded-3xl border-lightmode-dimmed5 bg-lightmode-background p-4 text-lightmode-text shadow-lg dark:border-darkmode-dark2 dark:bg-darkmode-background dark:text-darkmode-text">
+    <div className="flex items-center justify-center bg-lightmode-dark1 p-10 dark:bg-darkmode-dark1">
+      <div className="max-w-screen-3xl border-1 min-h-[calc(100svh-5rem)] w-full rounded-3xl border-lightmode-dimmed5 bg-lightmode-background p-4 text-lightmode-text shadow-lg dark:border-darkmode-dark2 dark:bg-darkmode-background dark:text-darkmode-text">
         <div className="m-10">
           <div>
             <header className="row mb-0 flex items-center justify-between">
