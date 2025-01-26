@@ -6,6 +6,7 @@ import { validateImageUrl } from "@/lib/appUtils";
 import { Button } from "../ui/button";
 import { ExternalLink, Heart } from "lucide-react";
 import DOMPurify from "dompurify";
+import SkeletonCard from "./SkeletonCard";
 
 const createMarkup = (html: string) => {
   return { __html: DOMPurify.sanitize(html) };
@@ -55,7 +56,12 @@ const Recipes: React.FC<IRecipesProps> = ({
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {isFavoritesVisible ? (
+      {isFetching ? (
+        // Display 8 skeleton cards while fetching
+        Array.from({ length: 12 }).map((_, index) => (
+          <SkeletonCard key={index} />
+        ))
+      ) : isFavoritesVisible ? (
         !favoritesArray || favoritesArray.length === 0 ? (
           <div>
             <h2>Favorite recipes</h2>
