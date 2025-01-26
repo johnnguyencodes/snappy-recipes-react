@@ -100,35 +100,35 @@ export const DietaryRestrictionDetails: Record<
     label: "Vegan",
     value: "vegan",
     icon: (
-      <Leaf className="h-5 w-5 text-lightmode-green dark:text-darkmode-green" />
+      <Leaf className="h-5 w-5 text-lightmode-green duration-300 dark:text-darkmode-green" />
     ),
   },
   [DietaryRestriction.Vegetarian]: {
     label: "Vegetarian",
     value: "vegerarian",
     icon: (
-      <Sprout className="h-5 w-5 text-lightmode-green dark:text-darkmode-green" />
+      <Sprout className="h-5 w-5 text-lightmode-green duration-300 dark:text-darkmode-green" />
     ),
   },
   [DietaryRestriction.LactoVegetarian]: {
     label: "Lacto-Vegetarian",
     value: "lacto-vegerarian",
     icon: (
-      <Milk className="h-5 w-5 text-lightmode-dimmed3 dark:text-darkmode-dimmed1" />
+      <Milk className="h-5 w-5 text-lightmode-dimmed3 duration-300 dark:text-darkmode-dimmed1" />
     ),
   },
   [DietaryRestriction.OvoVegetarian]: {
     label: "Ovo-Vegetarian",
     value: "ovo-vegetarian",
     icon: (
-      <Egg className="h-5 w-5 text-lightmode-yellow dark:text-darkmode-yellow" />
+      <Egg className="h-5 w-5 text-lightmode-yellow duration-300 dark:text-darkmode-yellow" />
     ),
   },
   [DietaryRestriction.Pescetarian]: {
     label: "Pescetarian",
     value: "pescetarian",
     icon: (
-      <Fish className="h-5 w-5 text-lightmode-blue dark:text-darkmode-blue" />
+      <Fish className="h-5 w-5 text-lightmode-blue duration-300 dark:text-darkmode-blue" />
     ),
   },
 };
@@ -155,77 +155,77 @@ export const FoodIntoleranceDetails: Record<
     label: "Dairy",
     value: "dairy",
     icon: (
-      <Milk className="h-5 w-5 text-lightmode-dimmed3 dark:text-darkmode-dimmed1" />
+      <Milk className="h-5 w-5 text-lightmode-dimmed3 duration-300 dark:text-darkmode-dimmed1" />
     ),
   },
   [FoodIntolerance.Egg]: {
     label: "Egg",
     value: "egg",
     icon: (
-      <Egg className="h-5 w-5 text-lightmode-yellow dark:text-darkmode-yellow" />
+      <Egg className="h-5 w-5 text-lightmode-yellow duration-300 dark:text-darkmode-yellow" />
     ),
   },
   [FoodIntolerance.Gluten]: {
     label: "Gluten",
     value: "gluten",
     icon: (
-      <Wheat className="h-5 w-5 text-lightmode-orange dark:text-darkmode-orange" />
+      <Wheat className="h-5 w-5 text-lightmode-orange duration-300 dark:text-darkmode-orange" />
     ),
   },
   [FoodIntolerance.Peanut]: {
     label: "Peanut",
     value: "peanut",
     icon: (
-      <Bean className="h-5 w-5 text-lightmode-yellow dark:text-darkmode-yellow" />
+      <Bean className="h-5 w-5 text-lightmode-yellow duration-300 dark:text-darkmode-yellow" />
     ),
   },
   [FoodIntolerance.Seafood]: {
     label: "Seafood",
     value: "seafood",
     icon: (
-      <Fish className="h-5 w-5 text-lightmode-blue dark:text-darkmode-blue" />
+      <Fish className="h-5 w-5 text-lightmode-blue duration-300 dark:text-darkmode-blue" />
     ),
   },
   [FoodIntolerance.Sesame]: {
     label: "Sesame",
     value: "sesame",
     icon: (
-      <Bean className="h-5 w-5 text-lightmode-orange dark:text-darkmode-orange" />
+      <Bean className="h-5 w-5 text-lightmode-orange duration-300 dark:text-darkmode-orange" />
     ),
   },
   [FoodIntolerance.Shellfish]: {
     label: "Shellfish",
     value: "shellfish",
     icon: (
-      <Shell className="h-5 w-5 text-lightmode-red dark:text-darkmode-red" />
+      <Shell className="h-5 w-5 text-lightmode-red duration-300 dark:text-darkmode-red" />
     ),
   },
   [FoodIntolerance.Soy]: {
     label: "Soy",
     value: "soy",
     icon: (
-      <Bean className="h-5 w-5 text-lightmode-green dark:text-darkmode-green" />
+      <Bean className="h-5 w-5 text-lightmode-green duration-300 dark:text-darkmode-green" />
     ),
   },
   [FoodIntolerance.Sulfite]: {
     label: "Sulfite",
     value: "sulfite",
     icon: (
-      <FlaskConical className="h-5 w-5 text-lightmode-text dark:text-darkmode-text" />
+      <FlaskConical className="h-5 w-5 text-lightmode-text duration-300 dark:text-darkmode-text" />
     ),
   },
   [FoodIntolerance.TreeNut]: {
     label: "Tree Nut",
     value: "tree-nut",
     icon: (
-      <Nut className="h-5 w-5 text-lightmode-yellow dark:text-darkmode-yellow" />
+      <Nut className="h-5 w-5 text-lightmode-yellow duration-300 dark:text-darkmode-yellow" />
     ),
   },
   [FoodIntolerance.Wheat]: {
     label: "Wheat",
     value: "wheat",
     icon: (
-      <Wheat className="h-5 w-5 text-lightmode-orange dark:text-darkmode-orange" />
+      <Wheat className="h-5 w-5 text-lightmode-orange duration-300 dark:text-darkmode-orange" />
     ),
   },
 };

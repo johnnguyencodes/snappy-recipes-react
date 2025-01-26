@@ -21,7 +21,7 @@ import { IRecipe } from "../types/AppTypes";
 import Modal from "./components/app/Modal";
 import DOMPurify from "dompurify";
 
-function App() {
+const App = () => {
   const [imgurAccessToken, setImgurAccessToken] = useState("");
   const [restrictionsArray, setRestrictionsArray] = useState<string[] | null>(
     loadFromLocalStorage("restrictionsArray") || []
@@ -45,20 +45,23 @@ function App() {
   >(null);
   const [isFetching, setIsFetching] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Check user's system preference for dark mode
+    // Load theme from localStorage or fallback to system preferences
+    const savedTheme = loadFromLocalStorage("theme");
+    if (savedTheme) return savedTheme === "dark";
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    // Add or remove the `dark` class on the <html> element
+    // Apply the current theme to the document
     const root = document.documentElement;
     if (isDarkMode) {
       root.classList.add("dark");
     } else {
       root.classList.remove("dark");
     }
+    saveToLocalStorage("theme", isDarkMode ? "dark" : "light");
   }, [isDarkMode]);
 
   useEffect(() => {
@@ -111,7 +114,17 @@ function App() {
   }, []);
 
   const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
+    setIsDarkMode((prevMode) => {
+      const newMode = !prevMode;
+      localStorage.setItem("theme", newMode ? "dark" : "light");
+      const root = document.documentElement;
+      if (newMode) {
+        root.classList.add("dark");
+      } else {
+        root.classList.remove("dark");
+      }
+      return newMode;
+    });
   };
 
   // app UI handler functions
@@ -328,12 +341,12 @@ function App() {
   };
 
   return (
-    <div className="flex items-center justify-center bg-lightmode-dark1 p-10 dark:bg-darkmode-dark1">
-      <div className="max-w-screen-3xl border-1 min-h-[calc(100svh-5rem)] w-full rounded-3xl border-lightmode-dimmed5 bg-lightmode-background p-4 text-lightmode-text shadow-lg dark:border-darkmode-dark2 dark:bg-darkmode-background dark:text-darkmode-text">
+    <div className="flex items-center justify-center bg-lightmode-dark1 p-10 duration-300 dark:bg-darkmode-dark1">
+      <div className="max-w-screen-3xl border-1 min-h-[calc(100svh-5rem)] w-full rounded-3xl border-lightmode-dimmed5 bg-lightmode-background p-4 text-lightmode-text shadow-lg duration-300 dark:border-darkmode-dark2 dark:bg-darkmode-background dark:text-darkmode-text">
         <div className="m-10">
           <div>
             <header className="row mb-0 flex items-center justify-between">
-              <h1 className="mb-0 pb-0 text-3xl font-extrabold text-lightmode-red dark:text-darkmode-yellow">
+              <h1 className="mb-0 pb-0 text-3xl font-extrabold text-lightmode-red duration-300 dark:text-darkmode-yellow">
                 Snappy Recipes
               </h1>
               {statusMessage && (
@@ -422,7 +435,7 @@ function App() {
                 </Button>
                 {selectedImagePreviewUrl && (
                   <img
-                    className="border-1 ml-2 max-h-[100px] w-auto rounded-md border border-lightmode-dimmed5 object-cover dark:border-darkmode-dark2"
+                    className="border-1 ml-2 max-h-[100px] w-auto rounded-md border border-lightmode-dimmed5 object-cover duration-300 dark:border-darkmode-dark2"
                     src={selectedImagePreviewUrl}
                     alt="recipe preview"
                   />
@@ -430,7 +443,7 @@ function App() {
               </div>
               {errorMessage && (
                 <div
-                  className="mb-4 rounded bg-red-100 p-2 text-red-600"
+                  className="mb-4 rounded bg-red-100 p-2 text-red-600 duration-300"
                   dangerouslySetInnerHTML={{
                     __html: DOMPurify.sanitize(errorMessage),
                   }}
@@ -466,6 +479,6 @@ function App() {
       </div>
     </div>
   );
-}
+};
 
 export default App;

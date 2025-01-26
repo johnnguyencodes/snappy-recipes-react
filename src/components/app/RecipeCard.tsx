@@ -141,12 +141,12 @@ const RecipeCard: React.FC<IRecipeCardProps> = ({
             <Heart className="ring-offset ring-offset-10 h-4 w-4 fill-lightmode-red stroke-lightmode-background transition duration-300 focus:outline-none focus:ring-2 focus:ring-lightmode-red focus-visible:outline-none focus-visible:ring focus-visible:ring-lightmode-red group-hover:fill-lightmode-purple dark:fill-darkmode-yellow dark:stroke-darkmode-background dark:ring-offset-transparent dark:focus:ring-darkmode-yellow dark:focus-visible:ring-darkmode-yellow dark:group-hover:fill-darkmode-green" />
           )}
         </Button>
-        <CardTitle className="text-lightmode-red dark:text-darkmode-yellow">
+        <CardTitle className="text-lightmode-red duration-300 dark:text-darkmode-yellow">
           {title}
         </CardTitle>
         <CardDescription></CardDescription>
       </CardHeader>
-      <CardContent className="text-lightmode-text dark:text-darkmode-text">
+      <CardContent className="text-lightmode-text duration-300 dark:text-darkmode-text">
         <div className="mb-3">
           <h3 className="text-xl font-semibold">Cooking Details</h3>
           <p className="text-sm/6">
@@ -173,7 +173,7 @@ const RecipeCard: React.FC<IRecipeCardProps> = ({
                       className="mr-2 inline-flex items-center text-sm/6"
                     >
                       {icon}
-                      <span>{diet}</span>
+                      <span>&nbsp;{diet}</span>
                     </span>
                   );
                 })}
@@ -185,19 +185,19 @@ const RecipeCard: React.FC<IRecipeCardProps> = ({
           <h3 className="text-xl font-semibold">Macro-Nutrients</h3>
           <p className="flex flex-wrap gap-1 text-sm/6">
             <span className="mr-2">
-              <Flame className="mr-0.5 inline-flex h-5 w-5 translate-y-[-1px] align-middle text-lightmode-red dark:text-darkmode-red" />{" "}
+              <Flame className="mr-0.5 inline-flex h-5 w-5 translate-y-[-1px] align-middle text-lightmode-red duration-300 dark:text-darkmode-red" />{" "}
               {caloriesAmount} calories{" "}
             </span>
             <span className="mr-2">
-              <Wheat className="mr-0.5 inline-flex h-5 w-5 translate-y-[-1px] align-middle text-lightmode-yellow dark:text-darkmode-yellow" />
+              <Wheat className="mr-0.5 inline-flex h-5 w-5 translate-y-[-1px] align-middle text-lightmode-yellow duration-300 dark:text-darkmode-yellow" />{" "}
               {carbsAmount}g carbs{" "}
             </span>
             <span className="mr-2">
-              <Droplets className="mr-0.5 inline-flex h-5 w-5 translate-y-[-1px] align-middle text-lightmode-yellow dark:text-darkmode-yellow" />{" "}
+              <Droplets className="mr-0.5 inline-flex h-5 w-5 translate-y-[-1px] align-middle text-lightmode-yellow duration-300 dark:text-darkmode-yellow" />{" "}
               {fatAmount}g total fat{" "}
             </span>
             <span className="mr-2">
-              <Beef className="mr-1 inline-flex h-5 w-5 translate-y-[-1px] align-middle text-lightmode-red dark:text-darkmode-red" />{" "}
+              <Beef className="mr-1 inline-flex h-5 w-5 translate-y-[-1px] align-middle text-lightmode-red duration-300 dark:text-darkmode-red" />{" "}
               {proteinAmount}g protein{" "}
             </span>
           </p>
