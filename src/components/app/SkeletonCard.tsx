@@ -7,7 +7,10 @@ import {
 
 const SkeletonCard = () => {
   return (
-    <Card className="skeleton-card duration-1500 animate-pulse">
+    <Card
+      className="skeleton-card duration-1500 animate-pulse"
+      data-testid="skeleton-card"
+    >
       <CardHeader className="image-container relative">
         <div className="skeleton-image mb-3 h-[220px] rounded-md bg-lightmode-dimmed5 dark:bg-darkmode-dimmed5"></div>
         <div className="skeleton-title w-1/1 mt-2 h-8 rounded bg-lightmode-dimmed5 dark:bg-darkmode-dimmed5"></div>

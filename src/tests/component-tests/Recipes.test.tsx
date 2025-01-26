@@ -1,4 +1,4 @@
-import { render, screen, cleanup } from "@testing-library/react";
+import { render, screen, cleanup, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
 import Recipes from "../../components/app/Recipes";
@@ -13,6 +13,7 @@ describe("Recipes Component", () => {
    * React.Dispatch<React.SetStateAction<boolean>>. That means
    * it can accept either a boolean or a callback function.
    */
+
   function createSetIsFetchingMock(initialValue: boolean) {
     let current = initialValue;
 
@@ -163,6 +164,44 @@ describe("Recipes Component", () => {
         "No recipes found. Try a different query, or use different filters in your settings."
       )
     ).toBeInTheDocument();
+  });
+
+  it("renders skeleton cards while fetching and then renders validated recipe cards", async () => {
+    // Mock validateImageUrl to resolve with a "validated" image
+    const validateImageUrlMock = vi.spyOn(appUtils, "validateImageUrl");
+    validateImageUrlMock.mockResolvedValue("validated-image.jpg");
+
+    const { setIsFetchingMock, isFetching } = createSetIsFetchingMock(true);
+
+    render(
+      <Recipes
+        recipes={[mockRecipe]}
+        favoritesArray={[]}
+        toggleFavorite={vi.fn()}
+        isFavoritesVisible={false}
+        isFetching={isFetching}
+        setIsFetching={setIsFetchingMock}
+        errorMessage=""
+      />
+    );
+
+    // Assert that skeleton cards are displayed initially
+    expect(screen.getAllByTestId("skeleton-card").length).toBe(12);
+
+    // Wait for the validated recipe to appear
+    await waitFor(() => {
+      expect(screen.getByText("Mock Recipe")).toBeInTheDocument();
+    });
+
+    // Confirm validateImageUrl was called
+    expect(validateImageUrlMock).toHaveBeenCalledTimes(1);
+    expect(validateImageUrlMock).toHaveBeenCalledWith(
+      "mock-image.jpg",
+      "https://placehold.co/312x231"
+    );
+
+    // Confirm that setIsFetching was called with false after validation
+    expect(setIsFetchingMock).toHaveBeenCalledWith(false);
   });
 
   it("validates each recipe's image and then renders the validated recipe cards", async () => {
