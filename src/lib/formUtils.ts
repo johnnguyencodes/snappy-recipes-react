@@ -91,11 +91,11 @@ const showError = (
       break;
     case "errorIncorrectFile":
       message =
-        "Unsupported file type. Please upload an image in JPG, PNG, or GIF format.";
+        "Unsupported file type. Please upload an image in JPG, PNG, or GIF format smaller than 10MB.";
       break;
     case "errorFileExceedsSize":
       message =
-        "The selected file is too large. Please choose an image smaller than 10MB.";
+        "The selected file is too large. Please choose an image in JPG, PNG, or GIF format smaller than 10MB.";
       break;
     case "errorRefreshToken":
       message =
@@ -151,6 +151,9 @@ const showError = (
       break;
     case "noError":
       message = "";
+      break;
+    case "triggerError":
+      message = "This is an error message";
       break;
     default:
       message =

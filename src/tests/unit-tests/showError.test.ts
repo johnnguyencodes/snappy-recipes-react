@@ -61,12 +61,12 @@ describe("showError", () => {
     {
       errorType: "errorFileExceedsSize",
       expected:
-        "The selected file is too large. Please choose an image smaller than 10MB.",
+        "The selected file is too large. Please choose an image in JPG, PNG, or GIF format smaller than 10MB.",
     },
     {
       errorType: "errorIncorrectFile",
       expected:
-        "Unsupported file type. Please upload an image in JPG, PNG, or GIF format.",
+        "Unsupported file type. Please upload an image in JPG, PNG, or GIF format smaller than 10MB.",
     },
     {
       errorType: "unknownErrorType",
