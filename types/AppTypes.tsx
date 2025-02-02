@@ -92,6 +92,33 @@ export enum DietaryRestriction {
   Pescetarian = "pescetarian",
 }
 
+export type Option = {
+  value: string;
+  label: string;
+  icon: string;
+};
+
+export interface IDropdownCheckboxMenuProps<
+  T extends string | number | symbol,
+> {
+  placeholder: string | null;
+  filterArray: { value: string }[] | null;
+  handleFilterClick: (filter: string) => void;
+  filterDetails: Record<
+    T,
+    { label: string; value: string; icon: ReactElement }
+  > | null;
+  disabled: boolean;
+}
+
+export interface ICustomDropDownMenuProps {
+  id: string;
+  checked: boolean;
+  onChange: () => void;
+  label: string;
+  icon: React.ReactElement;
+}
+
 export const DietaryRestrictionDetails: Record<
   DietaryRestriction,
   { label: string; value: string; icon: ReactElement }

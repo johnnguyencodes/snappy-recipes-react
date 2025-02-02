@@ -1,9 +1,13 @@
 import { useState, useEffect, useRef, ChangeEvent, KeyboardEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Settings, MoonStar, Sun, ImageUp, Send } from "lucide-react";
+import { MoonStar, Sun, ImageUp, Search, CircleAlert } from "lucide-react";
 import Recipes from "@/components/app/Recipes";
-import SettingsContent from "@/components/app/SettingsContent";
+import DropdownCheckboxMenu from "@/components/app/DropdownCheckboxMenu";
+import {
+  DietaryRestrictionDetails,
+  FoodIntoleranceDetails,
+} from "../types/AppTypes.tsx";
 
 import {
   saveToLocalStorage,
@@ -151,6 +155,10 @@ const App = () => {
 
   const handleShowFavoritesClick = () => {
     setIsFavoritesVisible(!isFavoritesVisible);
+  };
+
+  const handleTriggerErrorClick = () => {
+    showError("triggerError", setErrorMessage, null);
   };
 
   const closeSettingsModal = () => {
@@ -345,16 +353,79 @@ const App = () => {
       <div className="max-w-screen-3xl border-1 min-h-[calc(100svh-5rem)] w-full rounded-3xl border-lightmode-dimmed5 bg-lightmode-background p-4 text-lightmode-text shadow-lg duration-300 dark:border-darkmode-dark2 dark:bg-darkmode-background dark:text-darkmode-text">
         <div className="m-10">
           <div>
-            <header className="row mb-0 flex items-center justify-between">
-              <h1 className="mb-0 pb-0 text-3xl font-extrabold text-lightmode-red duration-300 dark:text-darkmode-yellow">
-                Snappy Recipes
-              </h1>
-              {statusMessage && (
-                <div className="mb-4 rounded bg-green-100 p-2 text-green-600">
-                  {statusMessage}
-                </div>
-              )}
+            <header className="mb-5 grid grid-cols-[2fr,3fr,2fr] items-start">
+              <div className="flex-grow">
+                <h1 className="mb-0 pb-0 text-3xl font-extrabold text-lightmode-red duration-300 dark:text-darkmode-yellow">
+                  Snappy Recipes
+                </h1>
+              </div>
               <div className="flex">
+                <div className="flex flex-1 flex-col justify-center space-y-2">
+                  <div className="flex items-center">
+                    <Button
+                      onClick={handleUploadButtonClick}
+                      className="rounded-br-none rounded-tr-none border-r-0"
+                      data-testid="upload-button"
+                      disabled={isFetching}
+                      variant="default"
+                    >
+                      <ImageUp />
+                    </Button>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      style={{ display: "none" }}
+                      onChange={handleFileChange}
+                      data-testid="file-input"
+                      disabled={isFetching}
+                    />
+                    <Input
+                      id="input"
+                      ref={searchInputRef}
+                      placeholder="Search by entering your ingredient or uploading an image"
+                      onChange={(event) => handleQueryChange(event)}
+                      onKeyDown={(event) => handleKeyDown(event)}
+                      className="rounded-none"
+                      name=""
+                      data-testid="text-input"
+                      disabled={isFetching}
+                    />
+                    <Button
+                      onClick={() => handleSearch(query)}
+                      className="rounded-bl-none rounded-tl-none"
+                      data-testid="submit"
+                      disabled={isFetching}
+                      variant="primary"
+                    >
+                      <Search />
+                    </Button>
+                  </div>
+                  <div className="row flex space-x-2">
+                    <DropdownCheckboxMenu
+                      placeholder="Select your restrictions"
+                      filterArray={restrictionsArray}
+                      handleFilterClick={handleRestrictionClick}
+                      filterDetails={DietaryRestrictionDetails}
+                      disabled={isFetching}
+                    />
+                    <DropdownCheckboxMenu
+                      placeholder="Select your intolerance"
+                      filterArray={intolerancesArray}
+                      handleFilterClick={handleIntoleranceClick}
+                      filterDetails={FoodIntoleranceDetails}
+                      disabled={isFetching}
+                    />
+                  </div>
+                </div>
+                {selectedImagePreviewUrl && (
+                  <img
+                    className="border-1 ml-2 max-h-[100px] w-auto rounded-md border border-lightmode-dimmed5 object-cover duration-300 dark:border-darkmode-dark2"
+                    src={selectedImagePreviewUrl}
+                    alt="recipe preview"
+                  />
+                )}
+              </div>
+              <div className="flex flex-grow justify-end">
                 <Button
                   className=""
                   onClick={handleShowFavoritesClick}
@@ -362,16 +433,7 @@ const App = () => {
                   disabled={isFetching}
                   variant="default"
                 >
-                  Show Favorites
-                </Button>
-                <Button
-                  onClick={handleSettingsClick}
-                  className="ml-2"
-                  data-testid="openSettings"
-                  disabled={isFetching}
-                  variant="default"
-                >
-                  <Settings className="h-4 w-4"></Settings>
+                  {isFavoritesVisible ? "Hide Favorites" : "Show Favorites"}
                 </Button>
                 <Button
                   onClick={toggleDarkMode}
@@ -388,68 +450,27 @@ const App = () => {
                 </Button>
               </div>
             </header>
-            <div className="mt-3">
-              {" "}
-              <label htmlFor="input" className="text-sm font-semibold">
-                Search Recipes
-              </label>
-              <div className="row mb-5 flex">
-                <Button
-                  onClick={handleUploadButtonClick}
-                  className="rounded-br-none rounded-tr-none border-r-0"
-                  data-testid="upload-button"
-                  disabled={isFetching}
-                  variant="default"
-                >
-                  <ImageUp className="pr-1" />
-                  Upload Image
-                </Button>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  style={{ display: "none" }}
-                  onChange={handleFileChange}
-                  data-testid="file-input"
-                  disabled={isFetching}
-                />
-                <Input
-                  id="input"
-                  ref={searchInputRef}
-                  placeholder="Search by entering your ingredient or upload an image"
-                  onChange={(event) => handleQueryChange(event)}
-                  onKeyDown={(event) => handleKeyDown(event)}
-                  className="rounded-none"
-                  name=""
-                  data-testid="text-input"
-                  disabled={isFetching}
-                />
-                <Button
-                  onClick={() => handleSearch(query)}
-                  className="rounded-bl-none rounded-tl-none"
-                  data-testid="submit"
-                  disabled={isFetching}
-                  variant="primary"
-                >
-                  <Send className="pr-1" />
-                  Submit
-                </Button>
-                {selectedImagePreviewUrl && (
-                  <img
-                    className="border-1 ml-2 max-h-[100px] w-auto rounded-md border border-lightmode-dimmed5 object-cover duration-300 dark:border-darkmode-dark2"
-                    src={selectedImagePreviewUrl}
-                    alt="recipe preview"
-                  />
+            <div className="row mb-5 flex items-center">
+              <div>
+                {statusMessage && (
+                  <div className="rounded-md bg-lightmode-purple p-2 text-lightmode-background duration-300 dark:bg-darkmode-green dark:text-darkmode-background">
+                    {statusMessage}
+                  </div>
                 )}
               </div>
-              {errorMessage && (
+            </div>
+            {errorMessage && (
+              <div className="row mx-auto mb-5 flex w-fit items-center justify-center rounded-md bg-red-100 p-2 text-red-600 duration-300">
+                <span className="mr-2">
+                  <CircleAlert />
+                </span>
                 <div
-                  className="mb-4 rounded bg-red-100 p-2 text-red-600 duration-300"
                   dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(errorMessage),
+                    __html: DOMPurify.sanitize(errorMessage || ""),
                   }}
                 ></div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
           <Recipes
             favoritesArray={favoritesArray}
