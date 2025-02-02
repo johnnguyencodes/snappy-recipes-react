@@ -101,7 +101,7 @@ export type Option = {
 export interface IDropdownCheckboxMenuProps<
   T extends string | number | symbol,
 > {
-  placeholder: string | null;
+  keyword: string | null;
   filterArray: { value: string }[] | null;
   handleFilterClick: (filter: string) => void;
   filterDetails: Record<
@@ -109,6 +109,7 @@ export interface IDropdownCheckboxMenuProps<
     { label: string; value: string; icon: ReactElement }
   > | null;
   disabled: boolean;
+  dataTestid: string | null;
 }
 
 export interface ICustomDropDownMenuProps {

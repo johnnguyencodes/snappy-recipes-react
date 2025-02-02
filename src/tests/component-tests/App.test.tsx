@@ -67,7 +67,7 @@ describe("App Component", () => {
     const submitButton = screen.getByTestId("submit");
     fireEvent.click(submitButton);
 
-    // 5) Assert the 3rd fetch call is made with query=pizza
+    // Assert the 3rd fetch call is made with query=pizza
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledTimes(3);
 
@@ -91,10 +91,9 @@ describe("App Component", () => {
     });
 
     // Verify DOM changes
+    console.log("verifying dom changes");
     await waitFor(() => {
-      expect(
-        screen.queryByText("1 recipes found that contains pizza.")
-      ).toBeInTheDocument();
+      expect(screen.queryByText("1 recipes with pizza.")).toBeInTheDocument();
     });
   });
 
@@ -158,9 +157,7 @@ describe("App Component", () => {
     });
     // Verify DOM changes
     await waitFor(() => {
-      expect(
-        screen.queryByText("1 recipes found that contains pizza.")
-      ).toBeInTheDocument();
+      expect(screen.queryByText("1 recipes with pizza.")).toBeInTheDocument();
     });
   });
 });

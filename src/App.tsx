@@ -22,7 +22,6 @@ import {
 import { fileValidation, showError, clearErrorMessage } from "./lib/formUtils";
 import { refreshAccessToken } from "./lib/apiUtils";
 import { IRecipe } from "../types/AppTypes";
-import Modal from "./components/app/Modal";
 import DOMPurify from "dompurify";
 
 const App = () => {
@@ -33,7 +32,6 @@ const App = () => {
   const [intolerancesArray, setIntolerancesArray] = useState<string[] | null>(
     loadFromLocalStorage("intolerancesArray") || []
   );
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isFavoritesVisible, setIsFavoritesVisible] = useState(false);
   const [previousFile, setPreviousFile] = useState<File | null>(null);
   const [, setImageFile] = useState<File | null>(null);
@@ -149,20 +147,8 @@ const App = () => {
     }
   };
 
-  const handleSettingsClick = () => {
-    setIsSettingsOpen(true);
-  };
-
   const handleShowFavoritesClick = () => {
     setIsFavoritesVisible(!isFavoritesVisible);
-  };
-
-  const handleTriggerErrorClick = () => {
-    showError("triggerError", setErrorMessage, null);
-  };
-
-  const closeSettingsModal = () => {
-    setIsSettingsOpen(false);
   };
 
   const handleRestrictionClick = (restriction: string) => {
@@ -380,6 +366,7 @@ const App = () => {
                       disabled={isFetching}
                     />
                     <Input
+                      type="text"
                       id="input"
                       ref={searchInputRef}
                       placeholder="Search by entering your ingredient or uploading an image"
@@ -402,18 +389,20 @@ const App = () => {
                   </div>
                   <div className="row flex space-x-2">
                     <DropdownCheckboxMenu
-                      placeholder="Select your restrictions"
+                      keyword="restriction"
                       filterArray={restrictionsArray}
                       handleFilterClick={handleRestrictionClick}
                       filterDetails={DietaryRestrictionDetails}
                       disabled={isFetching}
+                      dataTestid="dropdownRestrictions"
                     />
                     <DropdownCheckboxMenu
-                      placeholder="Select your intolerance"
+                      keyword="intolerance"
                       filterArray={intolerancesArray}
                       handleFilterClick={handleIntoleranceClick}
                       filterDetails={FoodIntoleranceDetails}
                       disabled={isFetching}
+                      dataTestid="dropdownIntolerances"
                     />
                   </div>
                 </div>
@@ -481,21 +470,6 @@ const App = () => {
             setIsFetching={setIsFetching}
             errorMessage={errorMessage}
           />
-          {isSettingsOpen && (
-            <Modal
-              isOpen={isSettingsOpen}
-              onClose={closeSettingsModal}
-              title="Settings"
-              description="Modify your recipe search by selecting the options below."
-            >
-              <SettingsContent
-                restrictionsArray={restrictionsArray}
-                intolerancesArray={intolerancesArray}
-                handleRestrictionClick={handleRestrictionClick}
-                handleIntoleranceClick={handleIntoleranceClick}
-              />
-            </Modal>
-          )}
         </div>
       </div>
     </div>

@@ -126,6 +126,17 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
   });
 
   it("calls callSpoonacularAPI twice and shows '1 recipes found that contains pizza' after entering a valid query", async () => {
+    // Mock ResizeObserver
+    class ResizeObserver {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    }
+    global.ResizeObserver = ResizeObserver;
+
+    // Mock scrollIntoView
+    Element.prototype.scrollIntoView = vi.fn();
+
     // create a mock search query
     const mockQuery = "pizza";
 
@@ -351,10 +362,10 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
         if (
           query === "pizza" &&
           restrictionsArray?.includes("vegan") &&
-          intolerancesArray?.includes("gluten")
+          intolerancesArray?.includes("dairy")
         ) {
           setRecipeArray([filteredMockRecipe]);
-          setStatusMessage("1 recipes found that contain pizza");
+          setStatusMessage("1 recipes with pizza");
         } else {
           setRecipeArray([]);
           setStatusMessage("No recipes found.");
@@ -376,41 +387,33 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
       []
     );
 
-    // Simulate opening the settings screen
-    const openSettingsButton = screen.getByTestId("openSettings");
-    await userEvent.click(openSettingsButton);
+    // Simulate opening the dietary restrictions dropdown menu
+    console.log("opening restrictions menu");
+    const openRestrictionsMenu = screen.getByTestId("dropdownRestrictions");
+    await userEvent.click(openRestrictionsMenu);
 
-    // Verify the settings are open
-    const settingsText = await screen.findByText(
-      "Modify your recipe search by selecting the options below."
-    );
-    expect(settingsText).toBeInTheDocument();
+    // Verify the restrictions are open
+    console.log("verifying restrictions menu is open");
+    const veganText = await screen.findByText("Vegan");
+    expect(veganText).toBeInTheDocument();
 
     // Simulate selecting dietary restrictions
     console.log("Selecting dietary restrictions...");
-    const veganCheckbox = screen.getByTestId("vegan");
+    const veganCheckbox = screen.getByTestId("dropdownRestrictions-item-vegan");
     await userEvent.click(veganCheckbox);
+
+    // Simulate opening the food intolerances dropdown menu
+    const openIntolerancesMenu = screen.getByTestId("dropdownIntolerances");
+    await userEvent.click(openIntolerancesMenu);
+
+    // Verify the intolerances are open
+    const dairyText = await screen.findByText("Dairy");
+    expect(dairyText).toBeInTheDocument();
 
     // Simulate selecting food intolerances
     console.log("Selecting food intolerances...");
-    const glutenCheckbox = screen.getByTestId("gluten");
-    await userEvent.click(glutenCheckbox);
-
-    // Verify that dietary restrictions and intolerances are selected
-    console.log(
-      "Verifying that dietary restrictions and intolerances are selected..."
-    );
-    expect(veganCheckbox).toBeChecked();
-    expect(glutenCheckbox).toBeChecked();
-
-    // Simulate closing the settings screen
-    console.log("Closing the settings screen");
-    const closeSettingsButton = screen.getByTestId("closeModal");
-    await userEvent.click(closeSettingsButton);
-
-    // Verify that the settings modal is now closed
-    console.log("Verifying the settings screen is closed");
-    expect(settingsText).not.toBeInTheDocument();
+    const dairyCheckbox = screen.getByTestId("dropdownIntolerances-item-dairy");
+    await userEvent.click(dairyCheckbox);
 
     // Enter a query and trigger the search
     console.log("Entering the query,", mockQuery);
@@ -422,9 +425,7 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
 
     // Wait for the search results to appear
     console.log("Waiting for search results...");
-    const statusMessage = await screen.findByText(
-      "1 recipes found that contain pizza"
-    );
+    const statusMessage = await screen.findByText("1 recipes with pizza");
     const recipeTitle = await screen.findByText("Filtered Pizza Recipe");
 
     // Verify the results
@@ -439,7 +440,7 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
       expect.any(Function),
       expect.any(Function),
       ["vegan"], // dietary intolerances
-      ["gluten"] // food intolerances
+      ["dairy"] // food intolerances
     );
   });
 

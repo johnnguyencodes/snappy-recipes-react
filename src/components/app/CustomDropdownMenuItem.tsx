@@ -9,7 +9,7 @@ const CustomDropdownMenuItem: React.FC<ICustomDropDownMenuProps> = ({
   icon,
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.stopPropagation(); // Prevent bubbling up
+    e.stopPropagation();
     onChange();
   };
 
@@ -47,11 +47,9 @@ const CustomDropdownMenuItem: React.FC<ICustomDropDownMenuProps> = ({
           </svg>
         </div>
       </div>
-
-      {/* Label and Icon */}
       <label
         htmlFor={id}
-        onClick={(e) => e.stopPropagation()} // Prevents double triggering
+        onClick={(e) => e.stopPropagation()}
         className="flex w-full cursor-pointer items-center gap-2 font-medium text-lightmode-text dark:text-darkmode-text"
       >
         <span className="cursor-pointer">{icon}</span>
