@@ -102,7 +102,7 @@ export interface IDropdownCheckboxMenuProps<
   T extends string | number | symbol,
 > {
   keyword: string | null;
-  filterArray: { value: string }[] | null;
+  filterArray: { value: string }[] | string[] | null;
   handleFilterClick: (filter: string) => void;
   filterDetails: Record<
     T,

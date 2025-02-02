@@ -390,7 +390,11 @@ const App = () => {
                   <div className="row flex space-x-2">
                     <DropdownCheckboxMenu
                       keyword="restriction"
-                      filterArray={restrictionsArray}
+                      filterArray={
+                        restrictionsArray
+                          ? restrictionsArray.map((value) => ({ value }))
+                          : []
+                      }
                       handleFilterClick={handleRestrictionClick}
                       filterDetails={DietaryRestrictionDetails}
                       disabled={isFetching}
@@ -398,7 +402,11 @@ const App = () => {
                     />
                     <DropdownCheckboxMenu
                       keyword="intolerance"
-                      filterArray={intolerancesArray}
+                      filterArray={
+                        intolerancesArray
+                          ? intolerancesArray.map((value) => ({ value }))
+                          : []
+                      }
                       handleFilterClick={handleIntoleranceClick}
                       filterDetails={FoodIntoleranceDetails}
                       disabled={isFetching}

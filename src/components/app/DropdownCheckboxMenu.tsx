@@ -65,7 +65,15 @@ const DropdownCheckboxMenu = <T extends string>({
                       label={typedFilter.label}
                       icon={typedFilter.icon}
                       checked={
-                        filterArray?.includes(typedFilter.value) || false
+                        Array.isArray(filterArray)
+                          ? filterArray.every(
+                              (item) => typeof item === "string"
+                            )
+                            ? filterArray.includes(typedFilter.value) // Case 1: string[]
+                            : filterArray.some(
+                                (item) => item.value === typedFilter.value
+                              ) // Case 2: { value: string }[]
+                          : false
                       }
                       onChange={() => handleFilterClick(typedFilter.value)}
                     />
