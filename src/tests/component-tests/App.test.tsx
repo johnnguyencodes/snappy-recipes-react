@@ -93,7 +93,7 @@ describe("App Component", () => {
     // Verify DOM changes
     console.log("verifying dom changes");
     await waitFor(() => {
-      expect(screen.queryByText("1 recipes with pizza.")).toBeInTheDocument();
+      expect(screen.queryByText("1 recipes with pizza")).toBeInTheDocument();
     });
   });
 
@@ -157,7 +157,7 @@ describe("App Component", () => {
     });
     // Verify DOM changes
     await waitFor(() => {
-      expect(screen.queryByText("1 recipes with pizza.")).toBeInTheDocument();
+      expect(screen.queryByText("1 recipes with pizza")).toBeInTheDocument();
     });
   });
 });

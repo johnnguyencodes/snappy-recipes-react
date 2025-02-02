@@ -75,9 +75,7 @@ describe("callSpoonacularAPI", () => {
       mockSetErrorMessage
     );
     expect(mockSetRecipeArray).toHaveBeenCalledWith(mockResponse.results);
-    expect(mockSetStatusMessage).toHaveBeenCalledWith(
-      "1 recipes found that contains pasta."
-    );
+    expect(mockSetStatusMessage).toHaveBeenCalledWith("1 recipes with pasta");
     expect(mockShowError).not.toHaveBeenCalled();
   });
 
@@ -115,9 +113,7 @@ describe("callSpoonacularAPI", () => {
     );
 
     expect(mockSetRecipeArray).toHaveBeenCalledWith(mockResponse.results);
-    expect(mockSetStatusMessage).toHaveBeenCalledWith(
-      "2 random recipes found."
-    );
+    expect(mockSetStatusMessage).toHaveBeenCalledWith("2 random recipes");
   });
 
   it("should handle an API error gracefully", async () => {
