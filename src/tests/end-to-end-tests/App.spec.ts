@@ -41,9 +41,7 @@ test.describe("Testing App functionality with mocked Spoonacular API", () => {
     await submitButton.click();
 
     // Wait and assert that results for "pizza" appear
-    await expect(
-      page.getByText("recipes found that contains pizza")
-    ).toBeVisible();
+    await expect(page.getByText("recipes with pizza")).toBeVisible();
   });
 
   test("searches for 'pizza' and presses enter to see results", async ({
@@ -57,9 +55,7 @@ test.describe("Testing App functionality with mocked Spoonacular API", () => {
 
     await page.getByTestId("text-input").press("Enter");
 
-    await expect(
-      page.getByText("recipes found that contains pizza")
-    ).toBeVisible();
+    await expect(page.getByText("recipes with pizza")).toBeVisible();
   });
 
   test("User can view a random recipe’s details, favorite it, then view and unfavorite it in the favorites list, ensuring the list is empty afterward.", async ({
@@ -91,7 +87,7 @@ test.describe("Testing App functionality with mocked Spoonacular API", () => {
     // 2. Wait for initial random recipes
     // We found that random recipes were loaded on the homepage,
     // so we wait for the text about “random recipes found.”
-    await expect(page.getByText("random recipes found.")).toBeVisible();
+    await expect(page.getByText("random recipes")).toBeVisible();
     await expect(page.getByText("Asparagus and Pea Soup: Real")).toBeVisible();
 
     // 3. Open the Favorites list
@@ -167,7 +163,7 @@ test.describe("Testing App functionality with mocked Spoonacular API", () => {
     }
     await page.goto("");
 
-    await expect(page.getByText("random recipes found.")).toBeVisible();
+    await expect(page.getByText("random recipes")).toBeVisible();
     await page.getByTestId("upload-button").click();
 
     const fileUrl2 = new URL(
@@ -177,17 +173,13 @@ test.describe("Testing App functionality with mocked Spoonacular API", () => {
     const filePath2 = path.normalize(fileUrl2.pathname);
     await page.getByTestId("file-input").setInputFiles(filePath2);
 
-    await expect(
-      page.getByText("recipes found that contains Fruit.")
-    ).toBeVisible();
+    await expect(page.getByText("recipes with Fruit")).toBeVisible();
     await page.getByTestId("upload-button").click();
 
     const fileUrl1 = new URL("../fixtures/RedApple.jpg", import.meta.url);
     const filePath1 = path.normalize(fileUrl1.pathname);
     await page.getByTestId("file-input").setInputFiles(filePath1);
 
-    await expect(
-      page.getByText("recipes found that contains Food.")
-    ).toBeVisible();
+    await expect(page.getByText("recipes with Food")).toBeVisible();
   });
 });
