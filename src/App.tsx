@@ -418,7 +418,7 @@ const App = () => {
                   <Button
                     onClick={handleUploadButtonClick}
                     className="border-1 ml-2 h-auto w-[100px] rounded-md border border-lightmode-dimmed5 object-cover duration-300 dark:border-darkmode-dark2"
-                    aria-label="Uploaad button"
+                    aria-label="Image upload button"
                     data-testid="upload-button"
                     disabled={isFetching}
                     variant="primary"
