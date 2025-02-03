@@ -348,23 +348,6 @@ const App = () => {
               <div className="flex">
                 <div className="flex flex-1 flex-col justify-center space-y-2">
                   <div className="flex items-center">
-                    <Button
-                      onClick={handleUploadButtonClick}
-                      className="rounded-br-none rounded-tr-none border-r-0"
-                      data-testid="upload-button"
-                      disabled={isFetching}
-                      variant="default"
-                    >
-                      <ImageUp />
-                    </Button>
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      style={{ display: "none" }}
-                      onChange={handleFileChange}
-                      data-testid="file-input"
-                      disabled={isFetching}
-                    />
                     <Input
                       type="text"
                       id="input"
@@ -372,7 +355,7 @@ const App = () => {
                       placeholder="Search by entering your ingredient or uploading an image"
                       onChange={(event) => handleQueryChange(event)}
                       onKeyDown={(event) => handleKeyDown(event)}
-                      className="rounded-none"
+                      className="rounded-br-none rounded-tr-none"
                       name=""
                       data-testid="text-input"
                       disabled={isFetching}
@@ -414,13 +397,43 @@ const App = () => {
                     />
                   </div>
                 </div>
-                {selectedImagePreviewUrl && (
-                  <img
-                    className="border-1 ml-2 max-h-[100px] w-auto rounded-md border border-lightmode-dimmed5 object-cover duration-300 dark:border-darkmode-dark2"
-                    src={selectedImagePreviewUrl}
-                    alt="recipe preview"
-                  />
+                {selectedImagePreviewUrl ? (
+                  <Button
+                    onClick={handleUploadButtonClick}
+                    className={`border-1 relative ml-2 h-auto w-[100px] rounded-md border border-lightmode-dimmed5 bg-cover bg-center object-cover duration-300 dark:border-darkmode-dark2`}
+                    style={{
+                      backgroundImage: `url(${selectedImagePreviewUrl})`,
+                    }}
+                    aria-label="Uploaded image preview button"
+                    data-testid="upload-button"
+                    disabled={isFetching}
+                    variant="primary"
+                  >
+                    <span className="sr-only">Upload image</span>
+                    <div className="absolute right-0 top-0 rounded bg-lightmode-red text-lightmode-background dark:bg-darkmode-yellow dark:text-darkmode-background">
+                      <ImageUp className="p-0.5" />
+                    </div>
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleUploadButtonClick}
+                    className="border-1 ml-2 h-auto w-[100px] rounded-md border border-lightmode-dimmed5 object-cover duration-300 dark:border-darkmode-dark2"
+                    aria-label="Image upload button"
+                    data-testid="upload-button"
+                    disabled={isFetching}
+                    variant="primary"
+                  >
+                    <ImageUp />
+                  </Button>
                 )}
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  style={{ display: "none" }}
+                  onChange={handleFileChange}
+                  data-testid="file-input"
+                  disabled={isFetching}
+                />
               </div>
               <div className="flex flex-grow justify-end">
                 <Button
