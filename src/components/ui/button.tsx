@@ -11,8 +11,6 @@ const buttonVariants = cva(
       variant: {
         default:
           "border-1 border-lightmode-panel bg-lightmode-dimmed5 text-lightmode-text hover:bg-lightmode-dimmed3/80 dark:border-darkmode-dark1 dark:bg-darkmode-dimmed5 dark:text-darkmode-text dark:hover:bg-darkmode-dimmed4/80",
-        image:
-          "border-1 border-lightmode-panel bg-lightmode-dimmed5 text-lightmode-text dark:text-darkmode-text",
         primary:
           "border-lightmode-panel bg-lightmode-red text-lightmode-background hover:bg-lightmode-purple dark:border-darkmode-dark1 dark:bg-darkmode-yellow dark:text-darkmode-background dark:hover:bg-darkmode-green",
         link: "bg-lightmode-red text-lightmode-background decoration-2 underline-offset-4 hover:bg-lightmode-purple hover:underline dark:bg-darkmode-yellow dark:text-darkmode-background dark:hover:bg-darkmode-green",
