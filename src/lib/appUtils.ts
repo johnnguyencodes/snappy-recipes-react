@@ -7,6 +7,7 @@ import {
 } from "./apiUtils";
 import { ChangeEvent } from "react";
 import { IRecipe } from "types/AppTypes";
+import commonIngredientsArray from "../data/commonIngredients.json";
 
 const validateImageUrl = (url: string, fallback: string): Promise<string> => {
   return new Promise((resolve) => {
@@ -140,6 +141,7 @@ const analyzeImage = async (
       showError,
       setErrorMessage
     );
+
     const labelAnnotations = googleJson.responses[0]?.labelAnnotations;
 
     if (!labelAnnotations || labelAnnotations.length === 0) {
@@ -147,16 +149,68 @@ const analyzeImage = async (
       throw new Error("No label annotations found in Google API response");
     }
 
-    const [firstAnnotation] = labelAnnotations;
-    // eslint-disable-next-line
-    const { description: imageTitle, score: _score } = firstAnnotation;
-
-    return imageTitle;
+    return analyzeGoogleLabelAnnotations(labelAnnotations);
   } catch (error) {
     console.error("Error fetching data from Google Vision API:", error);
     return null;
   }
 };
+
+const analyzeGoogleLabelAnnotations = (labelAnnotations): string | null => {
+  const [firstAnnotation] = labelAnnotations;
+  // eslint-disable-next-line
+  const { description: imageTitle, score: _score } = firstAnnotation;
+
+  console.log(labelAnnotations);
+  console.log(commonIngredientsArray);
+  return "food";
+};
+
+// interface LabelAnnotation {
+//   description: string;
+//   score?: number;
+// }
+
+// interface ImageRecognitionResponse {
+//   responses: {
+//     labelAnnotations?: LabelAnnotation[];
+//   }[];
+// }
+
+// const onImageRecognitionSuccess = (
+//   data: ImageRecognitionResponse,
+//   showError: (
+//     errorType: string,
+//     setErrorMessage: (message: string) => void,
+//     query: string | null
+//   ) => void,
+//   setErrorMessage: (message: string) => void
+// ) => {
+//   const labelAnnotations = data.responses[0]?.labelAnnotations;
+//   // if (!labelAnnotations) {
+//   //   this.showRecognitionFailure();
+//   //   return;
+//   // }
+
+//   if (!labelAnnotations || labelAnnotations.length === 0) {
+//     showError("errorNoLabelAnnotions", setErrorMessage, null);
+//     console.error("No label annotations found.");
+//     return;
+//   }
+
+//   const [firstAnnotation] = labelAnnotations;
+//   // Score will be a variable I will use in the future, ignoring for now
+//   // @ts-ignore
+//   const { description: imageTitle, score } = firstAnnotation;
+
+//   // // Get recipes based on title
+//   // getRecipes(imageTitle, showError, setErrorMessage);
+// };
+
+// const onImageRecognitionError = (error) => {
+//   console.error("Image recognition error:", error);
+//   // Add error UI handling here
+// };
 
 const callSpoonacularAPI = async (
   query: string,

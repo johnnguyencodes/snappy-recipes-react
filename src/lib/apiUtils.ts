@@ -162,52 +162,6 @@ const postImageUrlToGoogle = async (
   }
 };
 
-// interface LabelAnnotation {
-//   description: string;
-//   score?: number;
-// }
-
-// interface ImageRecognitionResponse {
-//   responses: {
-//     labelAnnotations?: LabelAnnotation[];
-//   }[];
-// }
-
-// const onImageRecognitionSuccess = (
-//   data: ImageRecognitionResponse,
-//   showError: (
-//     errorType: string,
-//     setErrorMessage: (message: string) => void,
-//     query: string | null
-//   ) => void,
-//   setErrorMessage: (message: string) => void
-// ) => {
-//   const labelAnnotations = data.responses[0]?.labelAnnotations;
-//   // if (!labelAnnotations) {
-//   //   this.showRecognitionFailure();
-//   //   return;
-//   // }
-
-//   if (!labelAnnotations || labelAnnotations.length === 0) {
-//     showError("errorNoLabelAnnotions", setErrorMessage, null);
-//     console.error("No label annotations found.");
-//     return;
-//   }
-
-//   const [firstAnnotation] = labelAnnotations;
-//   // Score will be a variable I will use in the future, ignoring for now
-//   // @ts-ignore
-//   const { description: imageTitle, score } = firstAnnotation;
-
-//   // // Get recipes based on title
-//   // getRecipes(imageTitle, showError, setErrorMessage);
-// };
-
-// const onImageRecognitionError = (error) => {
-//   console.error("Image recognition error:", error);
-//   // Add error UI handling here
-// };
-
 // Fetch recipes from Spoonacular
 const getRecipes = async (
   query: string,
