@@ -50,7 +50,7 @@ describe("analyzeImage", () => {
       expect.any(Function),
       mockSetErrorMessage
     );
-    expect(result).toBe("Delicious Pasta");
+    expect(result).toBe("delicious pasta");
     expect(mockShowError).not.toHaveBeenCalled();
     expect(mockSetErrorMessage).not.toHaveBeenCalled();
   });
