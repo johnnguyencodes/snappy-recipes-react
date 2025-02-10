@@ -199,21 +199,19 @@ const App = () => {
     setRecipeArray: React.Dispatch<React.SetStateAction<IRecipe[] | null>>,
     setStatusMessage: React.Dispatch<React.SetStateAction<string | null>>,
     setImageFile: React.Dispatch<React.SetStateAction<File | null>>,
+    setQuery: React.Dispatch<React.SetStateAction<string>>,
     setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>,
     searchInputRef: React.RefObject<HTMLInputElement>,
     setSelectedImagePreviewUrl?: React.Dispatch<
       React.SetStateAction<string | null>
     >,
-    setQuery?: React.Dispatch<React.SetStateAction<string>>,
     setPreviousFile?: React.Dispatch<React.SetStateAction<File | null>>
   ) => {
     setRecipeArray(null);
     setStatusMessage("");
     setImageFile(null);
+    setQuery("");
     setErrorMessage("");
-    if (setQuery) {
-      setQuery("");
-    }
     if (searchInputRef.current) {
       searchInputRef.current.value = "";
     }
@@ -231,9 +229,9 @@ const App = () => {
       setRecipeArray,
       setStatusMessage,
       setImageFile,
+      setQuery,
       setErrorMessage,
-      searchInputRef,
-      setQuery
+      searchInputRef
     );
 
     let currentFile: File | null = null;
@@ -307,6 +305,7 @@ const App = () => {
       setRecipeArray,
       setStatusMessage,
       setImageFile,
+      setQuery,
       setErrorMessage,
       searchInputRef,
       setSelectedImagePreviewUrl,
