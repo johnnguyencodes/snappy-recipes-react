@@ -276,16 +276,20 @@ const App = () => {
           return;
         }
 
-        const analyzedQuery = await analyzeImage(imageURL, setErrorMessage);
-        if (!analyzedQuery) {
+        const { bestMatch, sortedDescriptions } = await analyzeImage(
+          imageURL,
+          setErrorMessage
+        );
+        if (!bestMatch) {
           setStatusMessage("");
           setIsFetching(false);
           return;
         }
 
-        setQuery(analyzedQuery);
+        setQuery(bestMatch);
+
         await callSpoonacularAPI(
-          analyzedQuery,
+          bestMatch,
           setErrorMessage,
           setStatusMessage,
           setRecipeArray,
@@ -359,6 +363,7 @@ const App = () => {
                       name=""
                       data-testid="text-input"
                       disabled={isFetching}
+                      value={query}
                     />
                     <Button
                       onClick={() => handleSearch(query)}

@@ -8,6 +8,7 @@ import {
 import { ChangeEvent } from "react";
 import { IRecipe } from "types/AppTypes";
 import commonIngredientsArray from "../data/commonIngredients.json";
+import { FuzzySearcher, Query, SearcherFactory } from "@m31coding/fuzzy-search";
 
 const validateImageUrl = (url: string, fallback: string): Promise<string> => {
   return new Promise((resolve) => {
@@ -149,21 +150,64 @@ const analyzeImage = async (
       throw new Error("No label annotations found in Google API response");
     }
 
-    return analyzeGoogleLabelAnnotations(labelAnnotations);
+    return analyzedGoogleLabelAnnotations(labelAnnotations);
   } catch (error) {
     console.error("Error fetching data from Google Vision API:", error);
     return null;
   }
 };
 
-const analyzeGoogleLabelAnnotations = (labelAnnotations): string | null => {
-  const [firstAnnotation] = labelAnnotations;
-  // eslint-disable-next-line
-  const { description: imageTitle, score: _score } = firstAnnotation;
+/**
+ * Fuzzy matches a list of descriptions against common ingredients.
+ * @param {string[]} descriptions - The descriptions from image labels.
+ * @param {number} minQuality - Minimum match quality (0.0 to 1.0).
+ * @returns {string[]} - List of best-matching ingredients.
+ */
 
-  console.log(labelAnnotations);
-  console.log(commonIngredientsArray);
-  return "food";
+const findBestMatches = (descriptions, minQuality = 0.6) => {
+  const searcher = SearcherFactory.createDefaultSearcher();
+  searcher.indexEntities(
+    commonIngredientsArray,
+    (item) => item, // Unique ID (the ingredient itself)
+    (item) => [item] // Searchable terms (ingredient names)
+  );
+
+  for (const description of descriptions) {
+    const result = searcher.getMatches(new Query(description));
+
+    // Find the best match above the quality threshold
+    const bestMatch = result.matches.find(
+      (match) => match.quality >= minQuality
+    );
+
+    console.log("bestMatch:", bestMatch);
+
+    // if there is a match, return the best match
+    if (bestMatch) {
+      return bestMatch.entity;
+    }
+  }
+
+  // otherwise, return the first description
+  return descriptions[0];
+};
+
+const analyzedGoogleLabelAnnotations = (labelAnnotations): string | null => {
+  // Sorting annotations by the average of score and topicality
+  const sortedAnnotations = labelAnnotations.sort((a, b) => {
+    const averageA = (a.score + a.topicality) / 2;
+    const averageB = (b.score + b.topicality) / 2;
+    return averageB - averageA;
+  });
+
+  const sortedDescriptions = sortedAnnotations.map(({ description }) =>
+    description.toLowerCase()
+  );
+
+  return {
+    bestMatch: findBestMatches(sortedDescriptions),
+    sortedDescriptions: sortedDescriptions,
+  };
 };
 
 // interface LabelAnnotation {
