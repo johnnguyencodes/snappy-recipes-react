@@ -199,19 +199,21 @@ const App = () => {
     setRecipeArray: React.Dispatch<React.SetStateAction<IRecipe[] | null>>,
     setStatusMessage: React.Dispatch<React.SetStateAction<string | null>>,
     setImageFile: React.Dispatch<React.SetStateAction<File | null>>,
-    setQuery: React.Dispatch<React.SetStateAction<string>>,
     setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>,
     searchInputRef: React.RefObject<HTMLInputElement>,
     setSelectedImagePreviewUrl?: React.Dispatch<
       React.SetStateAction<string | null>
     >,
+    setQuery?: React.Dispatch<React.SetStateAction<string>>,
     setPreviousFile?: React.Dispatch<React.SetStateAction<File | null>>
   ) => {
     setRecipeArray(null);
     setStatusMessage("");
     setImageFile(null);
-    setQuery("");
     setErrorMessage("");
+    if (setQuery) {
+      setQuery("");
+    }
     if (searchInputRef.current) {
       searchInputRef.current.value = "";
     }
@@ -229,9 +231,9 @@ const App = () => {
       setRecipeArray,
       setStatusMessage,
       setImageFile,
-      setQuery,
       setErrorMessage,
-      searchInputRef
+      searchInputRef,
+      setQuery
     );
 
     let currentFile: File | null = null;
@@ -276,20 +278,16 @@ const App = () => {
           return;
         }
 
-        const { bestMatch, sortedDescriptions } = await analyzeImage(
-          imageURL,
-          setErrorMessage
-        );
-        if (!bestMatch) {
+        const analyzedQuery = await analyzeImage(imageURL, setErrorMessage);
+        if (!analyzedQuery) {
           setStatusMessage("");
           setIsFetching(false);
           return;
         }
 
-        setQuery(bestMatch);
-
+        setQuery(analyzedQuery);
         await callSpoonacularAPI(
-          bestMatch,
+          analyzedQuery,
           setErrorMessage,
           setStatusMessage,
           setRecipeArray,
@@ -309,7 +307,6 @@ const App = () => {
       setRecipeArray,
       setStatusMessage,
       setImageFile,
-      setQuery,
       setErrorMessage,
       searchInputRef,
       setSelectedImagePreviewUrl,
@@ -363,7 +360,6 @@ const App = () => {
                       name=""
                       data-testid="text-input"
                       disabled={isFetching}
-                      value={query}
                     />
                     <Button
                       onClick={() => handleSearch(query)}

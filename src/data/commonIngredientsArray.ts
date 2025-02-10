@@ -1,4 +1,4 @@
-[
+const commonIngredientsArray: string[] = [
   "apple",
   "apricot",
   "avocado",
@@ -942,5 +942,7 @@
   "tonic water",
   "club soda",
   "edible glitter",
-  "candy pearls"
-]
+  "candy pearls",
+];
+
+export default commonIngredientsArray;

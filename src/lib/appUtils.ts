@@ -7,8 +7,8 @@ import {
 } from "./apiUtils";
 import { ChangeEvent } from "react";
 import { IRecipe } from "types/AppTypes";
-import commonIngredientsArray from "../data/commonIngredients.json";
-import { FuzzySearcher, Query, SearcherFactory } from "@m31coding/fuzzy-search";
+import commonIngredientsArray from "../data/commonIngredientsArray";
+import { Query, SearcherFactory } from "@m31coding/fuzzy-search";
 
 const validateImageUrl = (url: string, fallback: string): Promise<string> => {
   return new Promise((resolve) => {
@@ -143,7 +143,11 @@ const analyzeImage = async (
       setErrorMessage
     );
 
-    const labelAnnotations = googleJson.responses[0]?.labelAnnotations;
+    const labelAnnotations: Array<{
+      description: string;
+      score: number;
+      topicality: number;
+    }> = googleJson.responses[0]?.labelAnnotations;
 
     if (!labelAnnotations || labelAnnotations.length === 0) {
       showError("errorNoLabelAnnotations", setErrorMessage, null);
@@ -157,19 +161,17 @@ const analyzeImage = async (
   }
 };
 
-/**
- * Fuzzy matches a list of descriptions against common ingredients.
- * @param {string[]} descriptions - The descriptions from image labels.
- * @param {number} minQuality - Minimum match quality (0.0 to 1.0).
- * @returns {string[]} - List of best-matching ingredients.
- */
+const findBestMatches = (
+  descriptions: string[],
+  minQuality = 0.6
+): string | null => {
+  const searcher = SearcherFactory.createDefaultSearcher<string, string>();
 
-const findBestMatches = (descriptions, minQuality = 0.6) => {
-  const searcher = SearcherFactory.createDefaultSearcher();
+  // Index the common ingredients array
   searcher.indexEntities(
     commonIngredientsArray,
-    (item) => item, // Unique ID (the ingredient itself)
-    (item) => [item] // Searchable terms (ingredient names)
+    (item: string) => item, // Unique ID (the ingredient itself)
+    (item: string) => [item] // Searchable terms (ingredient names)
   );
 
   for (const description of descriptions) {
@@ -180,19 +182,23 @@ const findBestMatches = (descriptions, minQuality = 0.6) => {
       (match) => match.quality >= minQuality
     );
 
-    console.log("bestMatch:", bestMatch);
-
     // if there is a match, return the best match
-    if (bestMatch) {
+    if (bestMatch && typeof bestMatch.entity === "string") {
       return bestMatch.entity;
     }
   }
 
   // otherwise, return the first description
-  return descriptions[0];
+  return descriptions[0] || null;
 };
 
-const analyzedGoogleLabelAnnotations = (labelAnnotations): string | null => {
+const analyzedGoogleLabelAnnotations = (
+  labelAnnotations: Array<{
+    description: string;
+    score: number;
+    topicality: number;
+  }>
+): string | null => {
   // Sorting annotations by the average of score and topicality
   const sortedAnnotations = labelAnnotations.sort((a, b) => {
     const averageA = (a.score + a.topicality) / 2;
@@ -204,57 +210,8 @@ const analyzedGoogleLabelAnnotations = (labelAnnotations): string | null => {
     description.toLowerCase()
   );
 
-  return {
-    bestMatch: findBestMatches(sortedDescriptions),
-    sortedDescriptions: sortedDescriptions,
-  };
+  return findBestMatches(sortedDescriptions);
 };
-
-// interface LabelAnnotation {
-//   description: string;
-//   score?: number;
-// }
-
-// interface ImageRecognitionResponse {
-//   responses: {
-//     labelAnnotations?: LabelAnnotation[];
-//   }[];
-// }
-
-// const onImageRecognitionSuccess = (
-//   data: ImageRecognitionResponse,
-//   showError: (
-//     errorType: string,
-//     setErrorMessage: (message: string) => void,
-//     query: string | null
-//   ) => void,
-//   setErrorMessage: (message: string) => void
-// ) => {
-//   const labelAnnotations = data.responses[0]?.labelAnnotations;
-//   // if (!labelAnnotations) {
-//   //   this.showRecognitionFailure();
-//   //   return;
-//   // }
-
-//   if (!labelAnnotations || labelAnnotations.length === 0) {
-//     showError("errorNoLabelAnnotions", setErrorMessage, null);
-//     console.error("No label annotations found.");
-//     return;
-//   }
-
-//   const [firstAnnotation] = labelAnnotations;
-//   // Score will be a variable I will use in the future, ignoring for now
-//   // @ts-ignore
-//   const { description: imageTitle, score } = firstAnnotation;
-
-//   // // Get recipes based on title
-//   // getRecipes(imageTitle, showError, setErrorMessage);
-// };
-
-// const onImageRecognitionError = (error) => {
-//   console.error("Image recognition error:", error);
-//   // Add error UI handling here
-// };
 
 const callSpoonacularAPI = async (
   query: string,
