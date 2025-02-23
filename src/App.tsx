@@ -1,7 +1,14 @@
 import { useState, useEffect, useRef, ChangeEvent, KeyboardEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MoonStar, Sun, ImageUp, Search, CircleAlert } from "lucide-react";
+import {
+  MoonStar,
+  Sun,
+  ImageUp,
+  Search,
+  CircleAlert,
+  Heart,
+} from "lucide-react";
 import Recipes from "@/components/app/Recipes";
 import DropdownCheckboxMenu from "@/components/app/DropdownCheckboxMenu";
 import {
@@ -335,13 +342,13 @@ const App = () => {
   };
 
   return (
-    <div className="flex items-center justify-center bg-lightmode-dark1 p-10 duration-300 dark:bg-darkmode-dark1">
-      <div className="max-w-screen-3xl border-1 min-h-[calc(100svh-5rem)] w-full rounded-3xl border-lightmode-dimmed5 bg-lightmode-background p-4 text-lightmode-text shadow-lg duration-300 dark:border-darkmode-dark2 dark:bg-darkmode-background dark:text-darkmode-text">
-        <div className="m-10">
+    <div className="flex items-center justify-center bg-lightmode-dark1 p-0 duration-300 dark:bg-darkmode-dark1 sm:p-6 md:p-7 lg:p-8 xl:p-10">
+      <div className="border-1 min-h-[calc(100svh-5rem)] w-full max-w-[1540px] rounded-none border-lightmode-dimmed5 bg-lightmode-background text-lightmode-text shadow-lg duration-300 dark:border-darkmode-dark2 dark:bg-darkmode-background dark:text-darkmode-text sm:rounded-3xl">
+        <div className="m-4 sm:m-6 md:m-7 lg:m-8 xl:m-10">
           <div>
-            <header className="mb-5 grid grid-cols-[2fr,3fr,2fr] items-start">
-              <div className="flex-grow">
-                <h1 className="mb-0 pb-0 text-3xl font-extrabold text-lightmode-red duration-300 dark:text-darkmode-yellow">
+            <header className="mb-5 grid grid-cols-[1fr,3fr] items-start lg:grid-cols-[3fr,4fr,3fr]">
+              <div className="my-auto flex-grow">
+                <h1 className="px-1 py-0 text-[clamp(1.125rem,5vw,1.875rem)] font-extrabold text-lightmode-red duration-300 dark:text-darkmode-yellow">
                   Snappy Recipes
                 </h1>
               </div>
@@ -400,7 +407,7 @@ const App = () => {
                 {selectedImagePreviewUrl ? (
                   <Button
                     onClick={handleUploadButtonClick}
-                    className={`border-1 relative ml-2 h-auto w-[100px] rounded-md border border-lightmode-dimmed5 bg-cover bg-center object-cover duration-300 dark:border-darkmode-dark2`}
+                    className="border-1 relative ml-2 h-auto rounded-md border border-lightmode-dimmed5 bg-cover bg-center object-cover duration-300 dark:border-darkmode-dark2 xs:w-full xs:max-w-[100px] sm:w-[100px]"
                     style={{
                       backgroundImage: `url(${selectedImagePreviewUrl})`,
                     }}
@@ -417,7 +424,7 @@ const App = () => {
                 ) : (
                   <Button
                     onClick={handleUploadButtonClick}
-                    className="border-1 ml-2 h-auto w-[100px] rounded-md border border-lightmode-dimmed5 object-cover duration-300 dark:border-darkmode-dark2"
+                    className="border-1 relative ml-2 h-auto rounded-md border border-lightmode-dimmed5 bg-cover bg-center object-cover duration-300 dark:border-darkmode-dark2 xs:w-full xs:max-w-[100px] sm:w-[100px]"
                     aria-label="Image upload button"
                     data-testid="upload-button"
                     disabled={isFetching}
@@ -435,15 +442,19 @@ const App = () => {
                   disabled={isFetching}
                 />
               </div>
-              <div className="flex flex-grow justify-end">
+              <div className="hidden flex-grow justify-end lg:flex">
                 <Button
-                  className=""
+                  className="group"
                   onClick={handleShowFavoritesClick}
-                  data-testid="openFavorites"
+                  data-testid="desktopToggleFavorites"
                   disabled={isFetching}
                   variant="default"
                 >
-                  {isFavoritesVisible ? "Hide Favorites" : "Show Favorites"}
+                  {isFavoritesVisible ? (
+                    <Heart className="ring-offset ring-offset-10 h-4 w-4 fill-lightmode-text stroke-lightmode-text transition duration-300 hover:fill-lightmode-dimmed3/80 focus:outline-none focus:ring-2 focus:ring-lightmode-red focus-visible:outline-none focus-visible:ring focus-visible:ring-lightmode-red dark:fill-darkmode-text dark:stroke-darkmode-text dark:ring-offset-transparent dark:hover:bg-lightmode-dimmed4/80 dark:focus:ring-darkmode-yellow dark:focus-visible:ring-darkmode-yellow" />
+                  ) : (
+                    <Heart className="ring-offset ring-offset-10 h-4 w-4 stroke-lightmode-text transition duration-300 focus:outline-none focus:ring-2 focus:ring-lightmode-red focus-visible:outline-none focus-visible:ring focus-visible:ring-lightmode-red dark:stroke-darkmode-text dark:ring-offset-transparent dark:focus:ring-darkmode-yellow dark:focus-visible:ring-darkmode-yellow" />
+                  )}
                 </Button>
                 <Button
                   onClick={toggleDarkMode}
@@ -460,13 +471,41 @@ const App = () => {
                 </Button>
               </div>
             </header>
-            <div className="row mb-5 flex items-center">
+            <div className="row mb-5 flex content-between items-center">
               <div>
                 {statusMessage && (
                   <div className="rounded-md bg-lightmode-purple p-2 text-lightmode-background duration-300 dark:bg-darkmode-green dark:text-darkmode-background">
                     {statusMessage}
                   </div>
                 )}
+              </div>
+              <div className="flex flex-grow justify-end lg:hidden">
+                <Button
+                  className=""
+                  onClick={handleShowFavoritesClick}
+                  data-testid="mobileToggleFavorites"
+                  disabled={isFetching}
+                  variant="default"
+                >
+                  {isFavoritesVisible ? (
+                    <Heart className="ring-offset ring-offset-10 h-4 w-4 fill-lightmode-text stroke-lightmode-text transition duration-300 hover:fill-lightmode-dimmed3/80 focus:outline-none focus:ring-2 focus:ring-lightmode-red focus-visible:outline-none focus-visible:ring focus-visible:ring-lightmode-red dark:fill-darkmode-text dark:stroke-darkmode-text dark:ring-offset-transparent dark:hover:bg-lightmode-dimmed4/80 dark:focus:ring-darkmode-yellow dark:focus-visible:ring-darkmode-yellow" />
+                  ) : (
+                    <Heart className="ring-offset ring-offset-10 h-4 w-4 stroke-lightmode-text transition duration-300 focus:outline-none focus:ring-2 focus:ring-lightmode-red focus-visible:outline-none focus-visible:ring focus-visible:ring-lightmode-red dark:stroke-darkmode-text dark:ring-offset-transparent dark:focus:ring-darkmode-yellow dark:focus-visible:ring-darkmode-yellow" />
+                  )}
+                </Button>
+                <Button
+                  onClick={toggleDarkMode}
+                  className="ml-2"
+                  data-testid="themeToggle"
+                  disabled={isFetching}
+                  variant="default"
+                >
+                  {isDarkMode ? (
+                    <Sun className="h-4 w-4"></Sun>
+                  ) : (
+                    <MoonStar className="h-4 w-4"></MoonStar>
+                  )}
+                </Button>
               </div>
             </div>
             {errorMessage && (

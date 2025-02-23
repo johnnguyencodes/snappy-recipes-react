@@ -651,7 +651,7 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
     expect(favoriteButton).toHaveTextContent("Unfavorite");
 
     // Navigate to the Favorites section
-    const favoritesButton = screen.getByTestId("openFavorites");
+    const favoritesButton = screen.getByTestId("desktopToggleFavorites");
     await userEvent.click(favoritesButton);
 
     // Verify the favorited recipe is displayed in Favorites
@@ -668,7 +668,7 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
     render(<App />);
 
     // Navigate to the Favorites section
-    const favoritesButton = screen.getByTestId("openFavorites");
+    const favoritesButton = screen.getByTestId("desktopToggleFavorites");
     await userEvent.click(favoritesButton);
 
     // Verify the "Unfavorite" button is present and has the correct text

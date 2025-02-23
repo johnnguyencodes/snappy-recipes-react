@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,19 @@ const DropdownCheckboxMenu = <T extends string>({
   disabled,
   dataTestid,
 }: IDropdownCheckboxMenuProps<T>) => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Track screen width to determine button text
+  useEffect(() => {
+    const updateScreenSize = () => {
+      setIsMobile(window.innerWidth < 768); // Tailwind `sm:` breakpoint (640px)
+    };
+
+    updateScreenSize();
+    window.addEventListener("resize", updateScreenSize);
+    return () => window.removeEventListener("resize", updateScreenSize);
+  });
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -34,9 +46,11 @@ const DropdownCheckboxMenu = <T extends string>({
           disabled={disabled}
           data-testid={dataTestid}
         >
-          {filterArray && filterArray.length > 0
-            ? `${filterArray.length} ${keyword}${filterArray.length === 1 ? "" : "s"} selected`
-            : `Select your ${keyword}s`}
+          {isMobile
+            ? `${keyword}s`
+            : filterArray && filterArray.length > 0
+              ? `${filterArray.length} ${keyword}${filterArray.length === 1 ? "" : "s"} selected`
+              : `Select your ${keyword}s`}
           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
