@@ -91,13 +91,13 @@ test.describe("Testing App functionality with mocked Spoonacular API", () => {
     await expect(page.getByText("Asparagus and Pea Soup: Real")).toBeVisible();
 
     // 3. Open the Favorites list
-    await page.getByTestId("openFavorites").click();
+    await page.getByTestId("desktopToggleFavorites").click();
 
     // 4. Verify no favorite recipes are listed
     await expect(page.getByText("Your favorite recipes will")).toBeVisible();
 
     // 5. Close the Favorites list
-    await page.getByTestId("openFavorites").click();
+    await page.getByTestId("desktopToggleFavorites").click();
 
     // 6. Open the recipe details modal
     // We locate the recipe card (by its image’s alt text),
@@ -120,7 +120,7 @@ test.describe("Testing App functionality with mocked Spoonacular API", () => {
     await page.getByTestId("closeModal").click();
 
     // 10. Open the Favorites list
-    await page.getByTestId("openFavorites").click();
+    await page.getByTestId("desktopToggleFavorites").click();
 
     // 11. Verify the recipe is now in Favorites
     await expect(page.getByText("Asparagus and Pea Soup: Real")).toBeVisible();
