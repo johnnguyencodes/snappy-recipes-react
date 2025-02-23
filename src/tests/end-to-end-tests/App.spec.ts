@@ -173,13 +173,13 @@ test.describe("Testing App functionality with mocked Spoonacular API", () => {
     const filePath2 = path.normalize(fileUrl2.pathname);
     await page.getByTestId("file-input").setInputFiles(filePath2);
 
-    await expect(page.getByText("recipes with Fruit")).toBeVisible();
+    await expect(page.getByText("recipes with banana")).toBeVisible();
     await page.getByTestId("upload-button").click();
 
     const fileUrl1 = new URL("../fixtures/RedApple.jpg", import.meta.url);
     const filePath1 = path.normalize(fileUrl1.pathname);
     await page.getByTestId("file-input").setInputFiles(filePath1);
 
-    await expect(page.getByText("recipes with Food")).toBeVisible();
+    await expect(page.getByText("recipes with apple")).toBeVisible();
   });
 });
