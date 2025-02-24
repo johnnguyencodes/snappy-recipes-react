@@ -15,16 +15,21 @@
         } else {
           root.classList.remove("dark");
         }
+
+        // Only enable debug-screens in development mode (use Vite env variable)
+        if (window.__APP_ENV__ === "development") {
+          document.body.classList.add("debug-screens");
+        }
       });
     </script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/snappy-recipes-react/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + React + TS</title>
-    <script type="module" crossorigin src="/snappy-recipes-react/assets/index-t0kdW3jr.js"></script>
-    <link rel="stylesheet" crossorigin href="/snappy-recipes-react/assets/index-DNf_1oap.css">
+    <script type="module" crossorigin src="/snappy-recipes-react/assets/index-VcowOh3T.js"></script>
+    <link rel="stylesheet" crossorigin href="/snappy-recipes-react/assets/index-C1FZJuHB.css">
   </head>
-  <body class="debug-screens">
+  <body>
     <div id="root"></div>
   </body>
 </html>
