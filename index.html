@@ -15,6 +15,11 @@
         } else {
           root.classList.remove("dark");
         }
+
+        // Only enable debug-screens in development mode (use Vite env variable)
+        if (window.__APP_ENV__ === "development") {
+          document.body.classList.add("debug-screens");
+        }
       });
     </script>
     <meta charset="UTF-8" />
@@ -22,7 +27,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + React + TS</title>
   </head>
-  <body class="debug-screens">
+  <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

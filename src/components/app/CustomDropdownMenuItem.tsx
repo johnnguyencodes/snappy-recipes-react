@@ -52,8 +52,10 @@ const CustomDropdownMenuItem: React.FC<ICustomDropDownMenuProps> = ({
         onClick={(e) => e.stopPropagation()}
         className="flex w-full cursor-pointer items-center gap-2 font-medium text-lightmode-text dark:text-darkmode-text"
       >
-        <span className="cursor-pointer">{icon}</span>
-        <span className="cursor-pointer">{label}</span>
+        <span className="hidden cursor-pointer md:flex">{icon}</span>
+        <span className="md:test-[14px] cursor-pointer xs:text-[12px] sm:text-[13px]">
+          {label}
+        </span>
       </label>
     </div>
   );
