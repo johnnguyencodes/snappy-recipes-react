@@ -1,5 +1,9 @@
 declare global {
-  var importMeta: {
+  interface Window {
+    __APP_ENV__?: string;
+  }
+
+  const importMeta: {
     env: {
       VITE_SPOONACULAR_API_KEY: string;
       VITE_IMGUR_CLIENT_ID: string;
@@ -13,10 +17,7 @@ declare global {
   };
 
   // If global.fetch is not recognized
-  var fetch: typeof fetch;
+  const fetch: typeof fetch;
 }
-
-/// <reference types="playwright" />
-/// <reference types="vitest" />
 
 export {};

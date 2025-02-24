@@ -42,7 +42,7 @@ const DropdownCheckboxMenu = <T extends string>({
           variant="default"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className="w-full justify-between xs:p-1 xs:pl-2 sm:px-4 sm:py-2"
           disabled={disabled}
           data-testid={dataTestid}
         >
