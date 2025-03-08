@@ -14,7 +14,9 @@ import DropdownCheckboxMenu from "@/components/app/DropdownCheckboxMenu";
 import {
   DietaryRestrictionDetails,
   FoodIntoleranceDetails,
-} from "../types/AppTypes.tsx";
+} from "../types/AppTypes";
+import appleImage from "@/tests/fixtures/RedApple.jpg";
+import bananaImage from "@/tests/fixtures/CavendishBanana.jpg";
 
 import {
   saveToLocalStorage,
@@ -342,8 +344,8 @@ const App = () => {
   };
 
   return (
-    <div className="flex items-center justify-center bg-lightmode-dark1 p-0 duration-300 dark:bg-darkmode-dark1 sm:p-6 md:p-7 lg:p-8 xl:p-10">
-      <div className="border-1 min-h-[calc(100svh-5rem)] w-full max-w-[1540px] rounded-none border-lightmode-dimmed5 bg-lightmode-background text-lightmode-text shadow-lg duration-300 dark:border-darkmode-dark2 dark:bg-darkmode-background dark:text-darkmode-text sm:rounded-3xl">
+    <div className="flex min-h-screen items-center justify-center bg-lightmode-dark1 p-0 duration-300 dark:bg-darkmode-dark1 sm:p-6 md:p-7 lg:p-8 xl:p-10">
+      <div className="border-1 w-full max-w-[1540px] rounded-none border-lightmode-dimmed5 bg-lightmode-background text-lightmode-text shadow-lg duration-300 dark:border-darkmode-dark2 dark:bg-darkmode-background dark:text-darkmode-text xs:min-h-screen sm:min-h-[calc(100svh-5rem)] sm:rounded-3xl">
         <div className="m-4 sm:m-6 md:m-7 lg:m-8 xl:m-10">
           <div>
             <header className="mb-5 grid grid-cols-[1fr,3fr] items-start lg:grid-cols-[3fr,4fr,3fr]">
@@ -441,6 +443,28 @@ const App = () => {
                   data-testid="file-input"
                   disabled={isFetching}
                 />
+                <div>
+                  <Button
+                    // onClick={}
+                    className="mb-2 ml-2 h-10 w-10 border border-lightmode-dimmed3 bg-white bg-cover bg-center"
+                    style={{
+                      backgroundImage: `url(${appleImage})`,
+                    }}
+                    data-testid="themeToggle"
+                    disabled={isFetching}
+                    variant="default"
+                  ></Button>
+                  <Button
+                    // onClick={}
+                    className="ml-2 h-10 w-10 border border-lightmode-dimmed3 bg-cover bg-center bg-no-repeat"
+                    style={{
+                      backgroundImage: `url(${bananaImage})`,
+                    }}
+                    data-testid="themeToggle"
+                    disabled={isFetching}
+                    variant="default"
+                  ></Button>
+                </div>
               </div>
               <div className="hidden flex-grow justify-end lg:flex">
                 <Button
@@ -473,9 +497,15 @@ const App = () => {
             </header>
             <div className="row mb-5 flex content-between items-center">
               <div>
-                {statusMessage && (
+                {!isFavoritesVisible && statusMessage && (
                   <div className="rounded-md bg-lightmode-purple p-2 text-lightmode-background duration-300 dark:bg-darkmode-green dark:text-darkmode-background">
                     {statusMessage}
+                  </div>
+                )}
+                {isFavoritesVisible && (
+                  <div className="rounded-md bg-lightmode-purple p-2 text-lightmode-background duration-300 dark:bg-darkmode-green dark:text-darkmode-background">
+                    Displaying {favoritesArray.length} favorite{" "}
+                    {favoritesArray.length === 1 ? "recipe" : "recipes"}
                   </div>
                 )}
               </div>
