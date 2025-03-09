@@ -99,7 +99,7 @@ const showError = (
       break;
     case "errorRefreshToken":
       message =
-        'There was an issue refreshing the Imgur access token. Please try again later. If the problem persists, <a style="color: rgb(220 38 38); text-decoration: underline; font-weight: 400;" href="https://github.com/johnnguyencodes/snappy-recipes-react/issues/new" target="_blank" rel="noopener noreferrer">report the issue here</a>.';
+        'Imgur token refresh failed, disabling image uploads. Try again later or <a style="color: rgb(220 38 38); text-decoration: underline; font-weight: 400;" href="https://github.com/johnnguyencodes/snappy-recipes-react/issues/new" target="_blank" rel="noopener noreferrer">report the issue here</a>.';
       break;
     case "errorPostImageData":
       message =

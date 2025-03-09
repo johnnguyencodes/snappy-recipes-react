@@ -2,12 +2,19 @@ import { useState, useEffect, useRef, ChangeEvent, KeyboardEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   MoonStar,
   Sun,
   ImageUp,
   Search,
   CircleAlert,
   Heart,
+  Info,
 } from "lucide-react";
 import Recipes from "@/components/app/Recipes";
 import DropdownCheckboxMenu from "@/components/app/DropdownCheckboxMenu";
@@ -307,6 +314,33 @@ const App = () => {
     }
   };
 
+  const uploadPreselectedImage = async (preselectedImageFile: string) => {
+    try {
+      const response = await fetch(preselectedImageFile);
+      const blob = await response.blob();
+
+      // Create a File object
+      const file = new File([blob], "preselectedImage.jpg", {
+        type: blob.type,
+      });
+
+      // Creata a synthetic FileList
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      const fileList = dataTransfer.files;
+
+      // Create a synthetic event to pass into handleFileChange
+      const syntheticEvent = {
+        target: { files: fileList },
+      } as ChangeEvent<HTMLInputElement>;
+
+      // Call handleFileChange with the synthetic event
+      handleFileChange(syntheticEvent);
+    } catch (error) {
+      console.error("Error fetching the preselected image:", error);
+    }
+  };
+
   const handleSearch = async (query: string) => {
     setIsFetching(true);
 
@@ -361,7 +395,7 @@ const App = () => {
                       type="text"
                       id="input"
                       ref={searchInputRef}
-                      placeholder="Search by entering your ingredient or uploading an image"
+                      placeholder="Search by ingredient or upload/snap a photo."
                       onChange={(event) => handleQueryChange(event)}
                       onKeyDown={(event) => handleKeyDown(event)}
                       className="rounded-br-none rounded-tr-none"
@@ -369,6 +403,7 @@ const App = () => {
                       data-testid="text-input"
                       disabled={isFetching}
                     />
+
                     <Button
                       onClick={() => handleSearch(query)}
                       className="rounded-bl-none rounded-tl-none"
@@ -406,35 +441,47 @@ const App = () => {
                     />
                   </div>
                 </div>
-                {selectedImagePreviewUrl ? (
-                  <Button
-                    onClick={handleUploadButtonClick}
-                    className="border-1 relative ml-2 h-auto rounded-md border border-lightmode-dimmed5 bg-cover bg-center object-cover duration-300 dark:border-darkmode-dark2 xs:w-full xs:max-w-[100px] sm:w-[100px]"
-                    style={{
-                      backgroundImage: `url(${selectedImagePreviewUrl})`,
-                    }}
-                    aria-label="Uploaded image preview button"
-                    data-testid="upload-button"
-                    disabled={isFetching}
-                    variant="primary"
-                  >
-                    <span className="sr-only">Upload image</span>
-                    <div className="absolute right-0 top-0 rounded bg-lightmode-red text-lightmode-background dark:bg-darkmode-yellow dark:text-darkmode-background">
-                      <ImageUp className="p-0.5" />
-                    </div>
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={handleUploadButtonClick}
-                    className="border-1 relative ml-2 h-auto rounded-md border border-lightmode-dimmed5 bg-cover bg-center object-cover duration-300 dark:border-darkmode-dark2 xs:w-full xs:max-w-[100px] sm:w-[100px]"
-                    aria-label="Image upload button"
-                    data-testid="upload-button"
-                    disabled={isFetching}
-                    variant="primary"
-                  >
-                    <ImageUp />
-                  </Button>
-                )}
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      {selectedImagePreviewUrl ? (
+                        <Button
+                          onClick={handleUploadButtonClick}
+                          className="border-1 relative ml-2 h-full rounded-md border border-lightmode-dimmed5 bg-cover bg-center object-cover duration-300 dark:border-darkmode-dark2 xs:w-full xs:max-w-[100px] sm:w-[100px]"
+                          style={{
+                            backgroundImage: `url(${selectedImagePreviewUrl})`,
+                          }}
+                          aria-label="Uploaded image preview button"
+                          data-testid="upload-button"
+                          disabled={isFetching}
+                          variant="primary"
+                        >
+                          <span className="sr-only">Upload image</span>
+                          <div className="absolute right-0 top-0 rounded bg-lightmode-red text-lightmode-background transition duration-300 dark:bg-darkmode-yellow dark:text-darkmode-background">
+                            <ImageUp className="p-0.5" />
+                          </div>
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={handleUploadButtonClick}
+                          className="border-1 relative ml-2 h-full rounded-md border border-lightmode-dimmed5 bg-cover bg-center object-cover duration-300 dark:border-darkmode-dark2 xs:w-full xs:max-w-[100px] sm:w-[100px]"
+                          aria-label="Image upload button"
+                          data-testid="upload-button"
+                          disabled={isFetching}
+                          variant="primary"
+                        >
+                          <ImageUp />
+                        </Button>
+                      )}
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        For best results, take or upload a clear, focused photo
+                        of a single food item.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <input
                   type="file"
                   ref={fileInputRef}
@@ -444,26 +491,66 @@ const App = () => {
                   disabled={isFetching}
                 />
                 <div>
-                  <Button
-                    // onClick={}
-                    className="mb-2 ml-2 h-10 w-10 border border-lightmode-dimmed3 bg-white bg-cover bg-center"
-                    style={{
-                      backgroundImage: `url(${appleImage})`,
-                    }}
-                    data-testid="themeToggle"
-                    disabled={isFetching}
-                    variant="default"
-                  ></Button>
-                  <Button
-                    // onClick={}
-                    className="ml-2 h-10 w-10 border border-lightmode-dimmed3 bg-cover bg-center bg-no-repeat"
-                    style={{
-                      backgroundImage: `url(${bananaImage})`,
-                    }}
-                    data-testid="themeToggle"
-                    disabled={isFetching}
-                    variant="default"
-                  ></Button>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Button
+                          onClick={() => uploadPreselectedImage(appleImage)}
+                          className="mb-2 ml-2 h-10 w-10 border border-lightmode-dimmed3 bg-white bg-cover bg-center"
+                          style={{
+                            backgroundImage: `url(${appleImage})`,
+                          }}
+                          data-testid="themeToggle"
+                          disabled={isFetching}
+                          variant="default"
+                        >
+                          <input
+                            type="file"
+                            style={{ display: "none" }}
+                            onChange={handleFileChange}
+                            data-testid="file-input"
+                            disabled={isFetching}
+                          />
+                          <div className="absolute right-0 top-0 rounded bg-lightmode-red text-lightmode-background transition duration-300 dark:bg-darkmode-yellow dark:text-darkmode-background">
+                            <Info className="h-3.5 w-3.5 p-0" />
+                          </div>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Click to upload this image to search for recipes.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Button
+                          onClick={() => uploadPreselectedImage(bananaImage)}
+                          className="ml-2 h-10 w-10 border border-lightmode-dimmed3 bg-cover bg-center bg-no-repeat"
+                          style={{
+                            backgroundImage: `url(${bananaImage})`,
+                          }}
+                          data-testid="themeToggle"
+                          disabled={isFetching}
+                          variant="default"
+                        >
+                          <input
+                            type="file"
+                            style={{ display: "none" }}
+                            onChange={handleFileChange}
+                            data-testid="file-input"
+                            disabled={isFetching}
+                          />
+                          <div className="absolute right-0 top-0 rounded bg-lightmode-red text-lightmode-background transition duration-300 dark:bg-darkmode-yellow dark:text-darkmode-background">
+                            <Info className="h-3.5 w-3.5 p-0" />
+                          </div>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Click to upload this image to search for recipes.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
               </div>
               <div className="hidden flex-grow justify-end lg:flex">
