@@ -55,7 +55,7 @@ const Recipes: React.FC<IRecipesProps> = ({
   };
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="relative grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {isFetching &&
         // Display skeleton cards when fetching
         Array.from({ length: 12 }).map((_, index) => (
@@ -63,11 +63,8 @@ const Recipes: React.FC<IRecipesProps> = ({
         ))}
       {isFavoritesVisible ? (
         !favoritesArray || favoritesArray.length === 0 ? (
-          <div>
-            <h2>Favorite recipes</h2>
-            <div>
-              <p>Your favorite recipes will appear here.</p>
-            </div>
+          <div className="absolute left-0 top-0">
+            <p>Click the heart icon on a recipe to add it to your favorites.</p>
           </div>
         ) : (
           favoritesArray.map((recipe) => (
@@ -91,9 +88,7 @@ const Recipes: React.FC<IRecipesProps> = ({
         )
       ) : (!isFetching && !validatedRecipes && !errorMessage) ||
         (!isFetching && validatedRecipes?.length === 0 && !errorMessage) ? (
-        // todo: if searching, don't show anything
-        // todo: if not searching and no recipes, then show no recipes found
-        <div>
+        <div className="absolute left-0 top-0">
           <p>
             No recipes found. Try a different query, or use different filters in
             your settings.

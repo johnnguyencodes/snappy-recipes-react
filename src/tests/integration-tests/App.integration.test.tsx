@@ -686,7 +686,7 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
 
     // Wait for the recipe to be removed and the favorites section to be empty
     const emptyFavoritesMessage = await screen.findByText(
-      "Your favorite recipes will appear here."
+      "Click the heart icon on a recipe to add it to your favorites."
     );
     expect(emptyFavoritesMessage).toBeInTheDocument();
   });
