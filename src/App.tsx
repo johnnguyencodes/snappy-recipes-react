@@ -508,7 +508,7 @@ const App = () => {
                             type="file"
                             style={{ display: "none" }}
                             onChange={handleFileChange}
-                            data-testid="file-input"
+                            data-testid="apple-image-file-input"
                             disabled={isFetching}
                           />
                           <div className="absolute right-0 top-0 rounded bg-lightmode-red text-lightmode-background transition duration-300 dark:bg-darkmode-yellow dark:text-darkmode-background">
@@ -538,7 +538,7 @@ const App = () => {
                             type="file"
                             style={{ display: "none" }}
                             onChange={handleFileChange}
-                            data-testid="file-input"
+                            data-testid="banana-image-file-input"
                             disabled={isFetching}
                           />
                           <div className="absolute right-0 top-0 rounded bg-lightmode-red text-lightmode-background transition duration-300 dark:bg-darkmode-yellow dark:text-darkmode-background">
