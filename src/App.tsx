@@ -614,6 +614,102 @@ const App = () => {
                     </div>
                   )}
                 </div>
+                <div className="flex flex-col">
+                  <div className="mb-2 flex sm:hidden">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Button
+                            onClick={() => uploadPreselectedImage(appleImage)}
+                            className="h-[40px] w-[40px] border border-lightmode-dimmed3 bg-white bg-cover bg-center"
+                            style={{
+                              backgroundImage: `url(${appleImage})`,
+                            }}
+                            data-testid="themeToggle"
+                            disabled={isFetching}
+                            variant="default"
+                          >
+                            <input
+                              type="file"
+                              style={{ display: "none" }}
+                              onChange={handleFileChange}
+                              data-testid="apple-image-file-input"
+                              disabled={isFetching}
+                            />
+                            <div className="absolute right-0 top-0 rounded bg-lightmode-red text-lightmode-background transition duration-300 dark:bg-darkmode-yellow dark:text-darkmode-background">
+                              <Info className="h-3.5 w-3.5 p-0" />
+                            </div>
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>
+                            Click to upload this image to search for recipes.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Button
+                            onClick={() => uploadPreselectedImage(bananaImage)}
+                            className="ml-2 h-[40px] w-[40px] border border-lightmode-dimmed3 bg-cover bg-center bg-no-repeat"
+                            style={{
+                              backgroundImage: `url(${bananaImage})`,
+                            }}
+                            data-testid="themeToggle"
+                            disabled={isFetching}
+                            variant="default"
+                          >
+                            <input
+                              type="file"
+                              style={{ display: "none" }}
+                              onChange={handleFileChange}
+                              data-testid="banana-image-file-input"
+                              disabled={isFetching}
+                            />
+                            <div className="absolute right-0 top-0 rounded bg-lightmode-red text-lightmode-background transition duration-300 dark:bg-darkmode-yellow dark:text-darkmode-background">
+                              <Info className="h-3.5 w-3.5 p-0" />
+                            </div>
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>
+                            Click to upload this image to search for recipes.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  <div>
+                    <Button
+                      className="w-[40px] p-0"
+                      onClick={handleShowFavoritesClick}
+                      data-testid="mobileToggleFavorites"
+                      disabled={isFetching}
+                      variant="default"
+                    >
+                      {isFavoritesVisible ? (
+                        <Heart className="ring-offset ring-offset-10 h-4 w-4 fill-lightmode-text stroke-lightmode-text transition duration-300 hover:fill-lightmode-dimmed3/80 focus:outline-none focus:ring-2 focus:ring-lightmode-red focus-visible:outline-none focus-visible:ring focus-visible:ring-lightmode-red dark:fill-darkmode-text dark:stroke-darkmode-text dark:ring-offset-transparent dark:hover:bg-lightmode-dimmed4/80 dark:focus:ring-darkmode-yellow dark:focus-visible:ring-darkmode-yellow" />
+                      ) : (
+                        <Heart className="ring-offset ring-offset-10 h-4 w-4 stroke-lightmode-text transition duration-300 focus:outline-none focus:ring-2 focus:ring-lightmode-red focus-visible:outline-none focus-visible:ring focus-visible:ring-lightmode-red dark:stroke-darkmode-text dark:ring-offset-transparent dark:focus:ring-darkmode-yellow dark:focus-visible:ring-darkmode-yellow" />
+                      )}
+                    </Button>
+                    <Button
+                      onClick={toggleDarkMode}
+                      className="ml-2 w-[40px] p-0"
+                      data-testid="themeToggle"
+                      disabled={isFetching}
+                      variant="default"
+                    >
+                      {isDarkMode ? (
+                        <Sun className="h-4 w-4"></Sun>
+                      ) : (
+                        <MoonStar className="h-4 w-4"></MoonStar>
+                      )}
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
             {errorMessage && (
