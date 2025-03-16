@@ -587,7 +587,10 @@ const App = () => {
               </div>
             </header>
             <div className="row mb-5 flex content-between items-center">
-              <div className="xs:hidden sm:flex">
+              <div
+                className="xs:hidden sm:flex"
+                data-testid="desktop-container"
+              >
                 {!isFavoritesVisible && statusMessage && (
                   <div className="rounded-md bg-lightmode-purple p-2 text-lightmode-background duration-300 dark:bg-darkmode-green dark:text-darkmode-background">
                     {statusMessage}
@@ -601,7 +604,10 @@ const App = () => {
                 )}
               </div>
               <div className="flex flex-grow xs:justify-between sm:justify-end lg:hidden">
-                <div className="xs:flex sm:hidden">
+                <div
+                  className="xs:flex sm:hidden"
+                  data-testid="mobile-container"
+                >
                   {!isFavoritesVisible && statusMessage && (
                     <div className="h-fit rounded-md bg-lightmode-purple p-2 text-lightmode-background duration-300 dark:bg-darkmode-green dark:text-darkmode-background">
                       {statusMessage}

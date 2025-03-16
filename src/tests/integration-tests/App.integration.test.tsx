@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event"; // More accurate user interactions
 import "@testing-library/jest-dom";
 import { vi, describe, it, expect, afterEach, beforeAll } from "vitest";
@@ -187,6 +187,8 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
     console.log("Rendering App...");
     render(<App />);
 
+    const desktopContainer = screen.getByTestId("desktop-container");
+
     // Verify initial callSpoonacularAPI function was called
     expect(mockCallSpoonacularAPI).toHaveBeenCalledWith(
       "",
@@ -204,7 +206,7 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
     ).toBeNull();
     expect(screen.queryByText("Mock Recipe")).toBeNull();
 
-    await screen.findByText("1 random recipes found.");
+    await within(desktopContainer).findByText("1 random recipes found.");
     expect(screen.getByTestId("submit")).not.toBeDisabled();
 
     // Simulate entering a query
@@ -221,7 +223,8 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
     console.log(
       "Waiting for '1 recipes found that contains pizza' to appear..."
     );
-    const statusMessage = await screen.findByText(
+
+    const statusMessage = await within(desktopContainer).findByText(
       "1 recipes found that contains pizza"
     );
     console.log("Found status message in DOM!");
@@ -292,6 +295,8 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
     // Render the app
     render(<App />);
 
+    const desktopContainer = screen.getByTestId("desktop-container");
+
     // Initial state checks
     console.log("Initial state checked: no final message or recipe present.");
     expect(
@@ -299,7 +304,7 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
     ).toBeNull();
     expect(screen.queryByText("Mock Recipe")).toBeNull();
 
-    await screen.findByText("1 random recipes found.");
+    await within(desktopContainer).findByText("1 random recipes found.");
     expect(screen.getByTestId("submit")).not.toBeDisabled();
 
     // Simulate entering a query
@@ -376,6 +381,8 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
     console.log("Rendering app for food/diet test");
     render(<App />);
 
+    const desktopContainer = screen.getByTestId("desktop-container");
+
     // Verify initial callSpoonacularAPI function was called
     console.log("Verifying initial callSpoonacularAPI call");
     expect(mockCallSpoonacularAPI).toHaveBeenCalledWith(
@@ -425,7 +432,9 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
 
     // Wait for the search results to appear
     console.log("Waiting for search results...");
-    const statusMessage = await screen.findByText("1 recipes with pizza");
+    const statusMessage = await within(desktopContainer).findByText(
+      "1 recipes with pizza"
+    );
     const recipeTitle = await screen.findByText("Filtered Pizza Recipe");
 
     // Verify the results
@@ -544,6 +553,8 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
     console.log("Rendering App...");
     render(<App />);
 
+    const desktopContainer = screen.getByTestId("desktop-container");
+
     // Verify initial callSpoonacularAPI("") was called
     expect(mockCallSpoonacularAPI).toHaveBeenCalledWith(
       "",
@@ -580,9 +591,10 @@ describe("Searching for a recipe, favoriting it, and viewing favorites", () => {
     console.log(
       "Waiting for '1 recipes found that contains pasta' to appear..."
     );
-    const statusMessage = await screen.findByText(
+    const statusMessage = await within(desktopContainer).findByText(
       "1 recipes found that contains pasta"
     );
+
     console.log("Found status message in DOM!");
 
     // Assert that the status message and mock recipe are present
