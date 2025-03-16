@@ -94,7 +94,11 @@ test.describe("Testing App functionality with mocked Spoonacular API", () => {
     await page.getByTestId("desktopToggleFavorites").click();
 
     // 4. Verify no favorite recipes are listed
-    await expect(page.getByText("Your favorite recipes will")).toBeVisible();
+    await expect(
+      page.getByText(
+        "Click the heart icon on a recipe to add it to your favorites."
+      )
+    ).toBeVisible();
 
     // 5. Close the Favorites list
     await page.getByTestId("desktopToggleFavorites").click();
@@ -142,7 +146,11 @@ test.describe("Testing App functionality with mocked Spoonacular API", () => {
 
     // 15. Close the modal and confirm Favorites is now empty
     await page.getByTestId("closeModal").click();
-    await expect(page.getByText("Your favorite recipes will")).toBeVisible();
+    await expect(
+      page.getByText(
+        "Click the heart icon on a recipe to add it to your favorites."
+      )
+    ).toBeVisible();
   });
 
   test("User can search for a recipe using a file upload.", async ({

@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { describe, it, vi, expect, afterEach, beforeEach } from "vitest";
 import App from "../../App";
@@ -92,8 +98,13 @@ describe("App Component", () => {
 
     // Verify DOM changes
     console.log("verifying dom changes");
+
+    const desktopContainer = screen.getByTestId("desktop-container");
+
     await waitFor(() => {
-      expect(screen.queryByText("1 recipes with pizza")).toBeInTheDocument();
+      within(desktopContainer).findByText(
+        "1 recipes found that contains pasta"
+      );
     });
   });
 
@@ -155,9 +166,11 @@ describe("App Component", () => {
         expect.stringContaining("/spoonacularCache.json")
       );
     });
-    // Verify DOM changes
+
+    const desktopContainer = screen.getByTestId("desktop-container");
+
     await waitFor(() => {
-      expect(screen.queryByText("1 recipes with pizza")).toBeInTheDocument();
+      within(desktopContainer).findByText("1 recipes with pizza");
     });
   });
 });
